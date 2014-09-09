@@ -1,0 +1,2479 @@
+/*====================================================================*\
+
+Expression.java
+
+Expression class.
+
+\*====================================================================*/
+
+
+// IMPORTS
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.org.blankaspect.exception.AppException;
+
+import uk.org.blankaspect.util.StringUtilities;
+
+//----------------------------------------------------------------------
+
+
+// EXPRESSION CLASS
+
+
+class Expression
+{
+
+////////////////////////////////////////////////////////////////////////
+//  Constants
+////////////////////////////////////////////////////////////////////////
+
+    private static final    String  VARIABLE_STR    = "x";
+
+    // Lexical analyser states
+    private enum LexState
+    {
+        START,
+        WHITESPACE,
+        NUMBER,
+        ALPHA,
+        SYMBOL,
+        EOL,
+        DONE,
+        INVALID
+    }
+
+    // Numeric token states
+    private enum NumericState
+    {
+        SIGNIFICAND,
+        EXP_INDICATOR,
+        EXPONENT
+    }
+
+    // Parser states
+    private enum ParseState
+    {
+        OPERAND,
+        OPERATOR,
+        DONE
+    }
+
+////////////////////////////////////////////////////////////////////////
+//  Enumerated types
+////////////////////////////////////////////////////////////////////////
+
+
+    // UNARY OPERATOR
+
+
+    private enum UnaryOperator
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        ABS
+        (
+            "abs"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.abs( operand );
+            }
+        },
+
+        ACOS
+        (
+            "acos"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.acos( operand );
+            }
+        },
+
+        ACOSH
+        (
+            "acosh"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( (operand < 1.0) ? Double.NaN
+                                         : Math.log( operand + Math.sqrt( operand * operand - 1.0 ) ) );
+            }
+        },
+
+        ACOT
+        (
+            "acot"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.atan( 1.0 / operand );
+            }
+        },
+
+        ACSC
+        (
+            "acsc"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.asin( 1.0 / operand );
+            }
+        },
+
+        ASEC
+        (
+            "asec"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.acos( 1.0 / operand );
+            }
+        },
+
+        ASIN
+        (
+            "asin"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.asin( operand );
+            }
+        },
+
+        ASINH
+        (
+            "asinh"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.log( operand + Math.sqrt( operand * operand + 1.0 ) );
+            }
+        },
+
+        ATAN
+        (
+            "atan"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.atan( operand );
+            }
+        },
+
+        ATANH
+        (
+            "atanh"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( ((operand >= -1.0) && (operand <= 1.0))
+                                                    ? 0.5 * Math.log( (1.0 + operand) / (1.0 - operand) )
+                                                    : Double.NaN );
+            }
+        },
+
+        CEIL
+        (
+            "ceil"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.ceil( operand );
+            }
+        },
+
+        COS
+        (
+            "cos"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.cos( operand );
+            }
+        },
+
+        COSH
+        (
+            "cosh"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( 0.5 * (Math.exp( operand ) + Math.exp( -operand )) );
+            }
+        },
+
+        COT
+        (
+            "cot"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( 1.0 / Math.tan( operand ) );
+            }
+        },
+
+        CSC
+        (
+            "csc"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( 1.0 / Math.sin( operand ) );
+            }
+        },
+
+        EXP
+        (
+            "exp"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.exp( operand );
+            }
+        },
+
+        FLOOR
+        (
+            "floor"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.floor( operand );
+            }
+        },
+
+        LG
+        (
+            "lg"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( Math.log10( operand ) );
+            }
+        },
+
+        LN
+        (
+            "ln"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.log( operand );
+            }
+        },
+
+        ROUND
+        (
+            "round"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.rint( operand );
+            }
+        },
+
+        SEC
+        (
+            "sec"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( 1.0 / Math.cos( operand ) );
+            }
+        },
+
+        SIN
+        (
+            "sin"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.sin( operand );
+            }
+        },
+
+        SINH
+        (
+            "sinh"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return ( 0.5 * (Math.exp( operand ) - Math.exp( -operand )) );
+            }
+        },
+
+        SQRT
+        (
+            "sqrt"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.sqrt( operand );
+            }
+        },
+
+        TAN
+        (
+            "tan"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return Math.tan( operand );
+            }
+        },
+
+        TANH
+        (
+            "tanh"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                double exp2X = Math.exp( 2.0 * operand );
+                return ( (exp2X - 1) / (exp2X + 1) );
+            }
+        },
+
+        PLUS
+        (
+            "plus"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return operand;
+            }
+        },
+
+        MINUS
+        (
+            "minus"
+        )
+        {
+            @Override
+            protected double evaluate( double operand )
+            {
+                return -operand;
+            }
+        };
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private UnaryOperator( String key )
+        {
+            this.key = key;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Abstract methods
+    ////////////////////////////////////////////////////////////////////
+
+        protected abstract double evaluate( double operand );
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : overriding methods
+    ////////////////////////////////////////////////////////////////////
+
+        @Override
+        public String toString( )
+        {
+            return key;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private String  key;
+
+    }
+
+    //==================================================================
+
+
+    // BINARY OPERATOR
+
+
+    private enum BinaryOperator
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        ADD
+        (
+            "add",
+            0
+        )
+        {
+            @Override
+            protected double evaluate( double operand1,
+                                       double operand2 )
+            {
+                return ( operand1 + operand2 );
+            }
+        },
+
+        SUBTRACT
+        (
+            "subtract",
+            0
+        )
+        {
+            @Override
+            protected double evaluate( double operand1,
+                                       double operand2 )
+            {
+                return ( operand1 - operand2 );
+            }
+        },
+
+        MULTIPLY
+        (
+            "multiply",
+            1
+        )
+        {
+            @Override
+            protected double evaluate( double operand1,
+                                       double operand2 )
+            {
+                return ( operand1 * operand2 );
+            }
+        },
+
+        DIVIDE
+        (
+            "divide",
+            1
+        )
+        {
+            @Override
+            protected double evaluate( double operand1,
+                                       double operand2 )
+            {
+                return ( operand1 / operand2 );
+            }
+        },
+
+        REMAINDER
+        (
+            "remainder",
+            1
+        )
+        {
+            @Override
+            protected double evaluate( double operand1,
+                                       double operand2 )
+            {
+                return ( operand1 % operand2 );
+            }
+        },
+
+        IEEE_REMAINDER
+        (
+            "ieeeRemainder",
+            1
+        )
+        {
+            @Override
+            protected double evaluate( double operand1,
+                                       double operand2 )
+            {
+                return ( Math.IEEEremainder( operand1, operand2 ) );
+            }
+        },
+
+        POWER
+        (
+            "power",
+            2
+        )
+        {
+            @Override
+            protected double evaluate( double operand1,
+                                       double operand2 )
+            {
+                return Math.pow( operand1, operand2 );
+            }
+        };
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private BinaryOperator( String key,
+                                int    precedence )
+        {
+            this.key = key;
+            this.precedence = precedence;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Abstract methods
+    ////////////////////////////////////////////////////////////////////
+
+        protected abstract double evaluate( double operand1,
+                                            double operand2 );
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : overriding methods
+    ////////////////////////////////////////////////////////////////////
+
+        @Override
+        public String toString( )
+        {
+            return key;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private String  key;
+        private int     precedence;
+
+    }
+
+    //==================================================================
+
+
+    // KEYWORD
+
+
+    private enum Keyword
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        ABS
+        (
+            "abs",
+            UnaryOperator.ABS
+        ),
+
+        ACOS
+        (
+            "acos",
+            UnaryOperator.ACOS
+        ),
+
+        ACOSH
+        (
+            "acosh",
+            UnaryOperator.ACOSH
+        ),
+
+        ACOT
+        (
+            "acot",
+            UnaryOperator.ACOT
+        ),
+
+        ACSC
+        (
+            "acsc",
+            UnaryOperator.ACSC
+        ),
+
+        ASEC
+        (
+            "asec",
+            UnaryOperator.ASEC
+        ),
+
+        ASIN
+        (
+            "asin",
+            UnaryOperator.ASIN
+        ),
+
+        ASINH
+        (
+            "asinh",
+            UnaryOperator.ASINH
+        ),
+
+        ATAN
+        (
+            "atan",
+            UnaryOperator.ATAN
+        ),
+
+        ATANH
+        (
+            "atanh",
+            UnaryOperator.ATANH
+        ),
+
+        CEIL
+        (
+            "ceil",
+            UnaryOperator.CEIL
+        ),
+
+        COS
+        (
+            "cos",
+            UnaryOperator.COS
+        ),
+
+        COSH
+        (
+            "cosh",
+            UnaryOperator.COSH
+        ),
+
+        COT
+        (
+            "cot",
+            UnaryOperator.COT
+        ),
+
+        CSC
+        (
+            "csc",
+            UnaryOperator.CSC
+        ),
+
+        EXP
+        (
+            "exp",
+            UnaryOperator.EXP
+        ),
+
+        FLOOR
+        (
+            "floor",
+            UnaryOperator.FLOOR
+        ),
+
+        LG
+        (
+            "lg",
+            UnaryOperator.LG
+        ),
+
+        LN
+        (
+            "ln",
+            UnaryOperator.LN
+        ),
+
+        ROUND
+        (
+            "round",
+            UnaryOperator.ROUND
+        ),
+
+        SEC
+        (
+            "sec",
+            UnaryOperator.SEC
+        ),
+
+        SIN
+        (
+            "sin",
+            UnaryOperator.SIN
+        ),
+
+        SINH
+        (
+            "sinh",
+            UnaryOperator.SINH
+        ),
+
+        SQRT
+        (
+            "sqrt",
+            UnaryOperator.SQRT
+        ),
+
+        TAN
+        (
+            "tan",
+            UnaryOperator.TAN
+        ),
+
+        TANH
+        (
+            "tanh",
+            UnaryOperator.TANH
+        ),
+
+        E
+        (
+            "e"
+        ),
+
+        PI
+        (
+            "pi"
+        );
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private Keyword( String key )
+        {
+            this( key, null );
+        }
+
+        //--------------------------------------------------------------
+
+        private Keyword( String        key,
+                         UnaryOperator operator )
+        {
+            this.key = key;
+            this.operator = operator;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Class methods
+    ////////////////////////////////////////////////////////////////////
+
+        private static Keyword forKey( String key )
+        {
+            for ( Keyword value : values( ) )
+            {
+                if ( value.key.equals( key ) )
+                    return value;
+            }
+            return null;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private String          key;
+        private UnaryOperator   operator;
+
+    }
+
+    //==================================================================
+
+
+    // SYMBOL
+
+
+    private enum Symbol
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        PLUS
+        (
+            '+',
+            UnaryOperator.PLUS,
+            BinaryOperator.ADD
+        ),
+
+        MINUS
+        (
+            '-',
+            UnaryOperator.MINUS,
+            BinaryOperator.SUBTRACT
+        ),
+
+        ASTERISK
+        (
+            '*',
+            BinaryOperator.MULTIPLY
+        ),
+
+        SLASH
+        (
+            '/',
+            BinaryOperator.DIVIDE
+        ),
+
+        PERCENT
+        (
+            '%',
+            BinaryOperator.REMAINDER
+        ),
+
+        BACKSLASH
+        (
+            '\\',
+            BinaryOperator.IEEE_REMAINDER
+        ),
+
+        CARET
+        (
+            '^',
+            BinaryOperator.POWER
+        ),
+
+        OPENING_PARENTHESIS
+        (
+            '('
+        ),
+
+        CLOSING_PARENTHESIS
+        (
+            ')'
+        );
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private Symbol( char key )
+        {
+            this( key, null, null );
+        }
+
+        //--------------------------------------------------------------
+
+        private Symbol( char           key,
+                        BinaryOperator binaryOperator )
+        {
+            this( key, null, binaryOperator );
+        }
+
+        //--------------------------------------------------------------
+
+        private Symbol( char           key,
+                        UnaryOperator  unaryOperator,
+                        BinaryOperator binaryOperator )
+        {
+            this.key = key;
+            this.unaryOperator = unaryOperator;
+            this.binaryOperator = binaryOperator;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Class methods
+    ////////////////////////////////////////////////////////////////////
+
+        public static Symbol forKey( char key )
+        {
+            for ( Symbol symbol : values( ) )
+            {
+                if ( symbol.key == key )
+                    return symbol;
+            }
+            return null;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private char            key;
+        private UnaryOperator   unaryOperator;
+        private BinaryOperator  binaryOperator;
+
+    }
+
+    //==================================================================
+
+
+    // ERROR IDENTIFIERS
+
+
+    private enum ErrorId
+        implements AppException.Id
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        CHARACTER_NOT_ALLOWED
+        ( "The character '%1' is not allowed in an expression." ),
+
+        INVALID_NUMBER
+        ( "\"%1\" is not a valid number." ),
+
+        UNRECOGNISED_TOKEN
+        ( "The token \"%1\" is not recognised." ),
+
+        OPERAND_EXPECTED
+        ( "An operand was expected." ),
+
+        BINARY_OPERATOR_EXPECTED
+        ( "A binary operator was expected." ),
+
+        UNEXPECTED_CLOSING_PARENTHESIS
+        ( "An unexpected ')' was found." ),
+
+        CLOSING_PARENTHESIS_EXPECTED
+        ( "A ')' was expected." );
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private ErrorId( String message )
+        {
+            this.message = message;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : AppException.Id interface
+    ////////////////////////////////////////////////////////////////////
+
+        public String getMessage( )
+        {
+            return message;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private String  message;
+
+    }
+
+    //==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+    // EXPRESSION EXCEPTION CLASS
+
+
+    public static class Exception
+        extends AppException
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        private static final    String  INDICATOR_STR   = "^";
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private Exception( ErrorId id,
+                           int     offset )
+        {
+            super( id );
+            this.offset = offset;
+        }
+
+        //--------------------------------------------------------------
+
+        private Exception( ErrorId id,
+                           String  str,
+                           int     offset )
+        {
+            super( id );
+            setSubstitutionStrings( str );
+            this.offset = offset;
+        }
+
+        //--------------------------------------------------------------
+
+        private Exception( String str,
+                           int    offset )
+        {
+            super( str );
+            this.offset = offset;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods
+    ////////////////////////////////////////////////////////////////////
+
+        public int getOffset( )
+        {
+            return offset;
+        }
+
+        //--------------------------------------------------------------
+
+        public String getIndicatorString( )
+        {
+            return ( (offset == 0) ? INDICATOR_STR
+                                   : StringUtilities.createCharString( ' ', offset ) + INDICATOR_STR );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private int offset;
+
+    }
+
+    //==================================================================
+
+
+    // TOKEN CLASS
+
+
+    private static class Token
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Member classes : non-inner classes
+    ////////////////////////////////////////////////////////////////////
+
+
+        // NUMBER TOKEN
+
+
+        private static class NumberToken
+            extends Token
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private NumberToken( int    offset,
+                                 double value )
+            {
+                super( offset );
+                this.value = value;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public String toString( )
+            {
+                return Double.toString( value );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private double  value;
+
+        }
+
+        //==============================================================
+
+
+        // VARIABLE TOKEN
+
+
+        private static class VariableToken
+            extends Token
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private VariableToken( int offset )
+            {
+                super( offset );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public String toString( )
+            {
+                return VARIABLE_STR;
+            }
+
+            //----------------------------------------------------------
+
+        }
+
+        //==============================================================
+
+
+        // KEYWORD TOKEN
+
+
+        private static class KeywordToken
+            extends Token
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constants
+        ////////////////////////////////////////////////////////////////
+
+            private static final    String  INVALID_KEYWORD_STR = "<invalid keyword>";
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private KeywordToken( int     offset,
+                                  Keyword keyword )
+            {
+                super( offset );
+                this.keyword = keyword;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public String toString( )
+            {
+                return ( (keyword == null) ? INVALID_KEYWORD_STR : keyword.key );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private Keyword keyword;
+
+        }
+
+        //==============================================================
+
+
+        // SYMBOL TOKEN
+
+
+        private static class SymbolToken
+            extends Token
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constants
+        ////////////////////////////////////////////////////////////////
+
+            private static final    String  INVALID_SYMBOL_STR  = "<invalid symbol>";
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private SymbolToken( int    offset,
+                                 Symbol symbol )
+            {
+                super( offset );
+                this.symbol = symbol;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public String toString( )
+            {
+                return ( (symbol == null) ? INVALID_SYMBOL_STR : Character.toString( symbol.key ) );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private Symbol  symbol;
+
+        }
+
+        //==============================================================
+
+
+        // END-OF-FILE TOKEN
+
+
+        private static class EofToken
+            extends Token
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constants
+        ////////////////////////////////////////////////////////////////
+
+            private static final    String  END_STR = "<end>";
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private EofToken( int offset )
+            {
+                super( offset );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public String toString( )
+            {
+                return END_STR;
+            }
+
+            //----------------------------------------------------------
+
+        }
+
+        //==============================================================
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private Token( int offset )
+        {
+            this.offset = offset;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        private int offset;
+
+    }
+
+    //==================================================================
+
+
+    // NODE CLASS
+
+
+    private static class Node
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Member classes : non-inner classes
+    ////////////////////////////////////////////////////////////////////
+
+
+        // CONSTANT NODE
+
+
+        private static class ConstantNode
+            extends Node
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constants
+        ////////////////////////////////////////////////////////////////
+
+            private static final    String  KIND_STR    = "constant";
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private ConstantNode( Node   parent,
+                                  double value )
+            {
+                super( parent );
+                this.value = value;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public boolean equals( Object obj )
+            {
+                if ( obj instanceof ConstantNode )
+                {
+                    ConstantNode node = (ConstantNode)obj;
+                    return ( (value == node.value) && super.equals( obj ) );
+                }
+                return false;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            public int hashCode( )
+            {
+                long bits = Double.doubleToRawLongBits( value );
+                return super.hashCode( ) * 31 + ((int)bits ^ (int)(bits >> 32));
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected boolean isTerminal( )
+            {
+                return true;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getKindString( )
+            {
+                return KIND_STR;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getValueString( )
+            {
+                return Double.toString( value );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected double evaluate( double x )
+            {
+                return value;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private double  value;
+
+        }
+
+        //==============================================================
+
+
+        // VARIABLE NODE
+
+
+        private static class VariableNode
+            extends Node
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constants
+        ////////////////////////////////////////////////////////////////
+
+            private static final    String  KIND_STR    = "variable";
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private VariableNode( Node parent )
+            {
+                super( parent );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public boolean equals( Object obj )
+            {
+                return ( (obj instanceof VariableNode) && super.equals( obj ) );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            public int hashCode( )
+            {
+                return super.hashCode( );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected boolean isTerminal( )
+            {
+                return true;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getKindString( )
+            {
+                return KIND_STR;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getValueString( )
+            {
+                return VARIABLE_STR;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected double evaluate( double x )
+            {
+                return x;
+            }
+
+            //----------------------------------------------------------
+
+        }
+
+        //==============================================================
+
+
+        // UNARY OPERATOR NODE
+
+
+        private static class UnaryOperatorNode
+            extends Node
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constants
+        ////////////////////////////////////////////////////////////////
+
+            private static final    String  KIND_STR    = "unaryOperator";
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private UnaryOperatorNode( Node          parent,
+                                       UnaryOperator unaryOperator )
+            {
+                super( parent );
+                this.unaryOperator = unaryOperator;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public boolean equals( Object obj )
+            {
+                if ( obj instanceof UnaryOperatorNode )
+                {
+                    UnaryOperatorNode node = (UnaryOperatorNode)obj;
+                    return ( (unaryOperator == node.unaryOperator) && super.equals( obj ) );
+                }
+                return false;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            public int hashCode( )
+            {
+                return ( super.hashCode( ) * 31 + unaryOperator.ordinal( ) );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getKindString( )
+            {
+                return KIND_STR;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getValueString( )
+            {
+                return unaryOperator.toString( );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected double evaluate( double x )
+            {
+                return unaryOperator.evaluate( leftChild.evaluate( x ) );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private UnaryOperator   unaryOperator;
+
+        }
+
+        //==============================================================
+
+
+        // BINARY OPERATOR NODE
+
+
+        private static class BinaryOperatorNode
+            extends Node
+        {
+
+        ////////////////////////////////////////////////////////////////
+        //  Constants
+        ////////////////////////////////////////////////////////////////
+
+            private static final    String  KIND_STR    = "binaryOperator";
+
+        ////////////////////////////////////////////////////////////////
+        //  Constructors
+        ////////////////////////////////////////////////////////////////
+
+            private BinaryOperatorNode( Node           parent,
+                                        BinaryOperator binaryOperator )
+            {
+                super( parent );
+                this.binaryOperator = binaryOperator;
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance methods : overriding methods
+        ////////////////////////////////////////////////////////////////
+
+            @Override
+            public boolean equals( Object obj )
+            {
+                if ( obj instanceof BinaryOperatorNode )
+                {
+                    BinaryOperatorNode node = (BinaryOperatorNode)obj;
+                    return ( (binaryOperator == node.binaryOperator) && super.equals( obj ) );
+                }
+                return false;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            public int hashCode( )
+            {
+                return ( super.hashCode( ) * 31 + binaryOperator.ordinal( ) );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getKindString( )
+            {
+                return KIND_STR;
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected String getValueString( )
+            {
+                return binaryOperator.toString( );
+            }
+
+            //----------------------------------------------------------
+
+            @Override
+            protected double evaluate( double x )
+            {
+                return binaryOperator.evaluate( leftChild.evaluate( x ), rightChild.evaluate( x ) );
+            }
+
+            //----------------------------------------------------------
+
+        ////////////////////////////////////////////////////////////////
+        //  Instance variables
+        ////////////////////////////////////////////////////////////////
+
+            private BinaryOperator  binaryOperator;
+
+        }
+
+        //==============================================================
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private Node( )
+        {
+        }
+
+        //--------------------------------------------------------------
+
+        private Node( Node parent )
+        {
+            this.parent = parent;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : overriding methods
+    ////////////////////////////////////////////////////////////////////
+
+        @Override
+        public boolean equals( Object obj )
+        {
+            if ( !(obj instanceof Node) )
+                return false;
+
+            Node node = (Node)obj;
+            if ( leftChild == null )
+            {
+                if ( node.leftChild != null )
+                    return false;
+            }
+            else
+            {
+                if ( !leftChild.equals( node.leftChild ) )
+                    return false;
+            }
+
+            if ( rightChild == null )
+            {
+                if ( node.rightChild != null )
+                    return false;
+            }
+            else
+            {
+                if ( !rightChild.equals( node.rightChild ) )
+                    return false;
+            }
+
+            return true;
+        }
+
+        //--------------------------------------------------------------
+
+        @Override
+        public int hashCode( )
+        {
+            int code = ((leftChild == null) ? 0 : leftChild.hashCode( ));
+            code = code * 31 + ((rightChild == null) ? 0 : rightChild.hashCode( ));
+            return code;
+        }
+
+        //--------------------------------------------------------------
+
+        @Override
+        public String toString( )
+        {
+            return toNodeString( 0 );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods
+    ////////////////////////////////////////////////////////////////////
+
+        protected boolean isEmpty( )
+        {
+            return ( (leftChild == null) && (rightChild == null) );
+        }
+
+        //--------------------------------------------------------------
+
+        protected boolean isTerminal( )
+        {
+            return false;
+        }
+
+        //--------------------------------------------------------------
+
+        protected String getKindString( )
+        {
+            return null;
+        }
+
+        //--------------------------------------------------------------
+
+        protected String getValueString( )
+        {
+            return null;
+        }
+
+        //--------------------------------------------------------------
+
+        protected boolean addChild( Node node )
+        {
+            if ( leftChild == null )
+            {
+                leftChild = node;
+                return true;
+            }
+            if ( rightChild == null )
+            {
+                rightChild = node;
+                return true;
+            }
+            return false;
+        }
+
+        //--------------------------------------------------------------
+
+        protected Node addChild( BinaryOperator operator )
+        {
+            Node node = new BinaryOperatorNode( this, operator );
+            if ( parent == null )
+            {
+                node.leftChild = leftChild;
+                leftChild = node;
+            }
+            else
+            {
+                node.leftChild = rightChild;
+                rightChild = node;
+            }
+            node.leftChild.parent = node;
+            return node;
+        }
+
+        //--------------------------------------------------------------
+
+        protected double evaluate( double x )
+        {
+            return Double.NaN;
+        }
+
+        //--------------------------------------------------------------
+
+        private Node getBinaryOperatorAncestor( int precedence )
+        {
+            Node node = this;
+            while ( node.parent != null )
+            {
+                node = node.parent;
+                if ( (node instanceof BinaryOperatorNode) &&
+                     (((BinaryOperatorNode)node).binaryOperator.precedence < precedence) )
+                    break;
+            }
+            return node;
+        }
+
+        //--------------------------------------------------------------
+
+        private String toNodeString( int level )
+        {
+            String str = getKindString( );
+            if ( str == null )
+                str = new String( );
+            else
+                str += " : " + getValueString( );
+
+            String indent = StringUtilities.createCharString( ' ', level * 4 );
+            if ( leftChild != null )
+                str += "\n" + indent + "<L> " + leftChild.toNodeString( level + 1 );
+            if ( rightChild != null )
+                str += "\n" + indent + "<R> " + rightChild.toNodeString( level + 1 );
+
+            return str;
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance variables
+    ////////////////////////////////////////////////////////////////////
+
+        protected   Node    parent;
+        protected   Node    leftChild;
+        protected   Node    rightChild;
+
+    }
+
+    //==================================================================
+
+
+    // SYNTAX ERROR CLASS
+
+
+    private static class SyntaxError
+        extends Expression.Exception
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        private static final    String  SYNTAX_ERROR_STR    = "Syntax error in expression";
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private SyntaxError( ErrorId id,
+                             int     offset )
+        {
+            super( id, offset );
+        }
+
+        //--------------------------------------------------------------
+
+    ////////////////////////////////////////////////////////////////////
+    //  Instance methods : overriding methods
+    ////////////////////////////////////////////////////////////////////
+
+        @Override
+        protected String getPrefix( )
+        {
+            return ( SYNTAX_ERROR_STR + ": " );
+        }
+
+        //--------------------------------------------------------------
+
+    }
+
+    //==================================================================
+
+
+    // PARSER ERROR CLASS
+
+
+    /**
+     * A parser error indicates an internal problem with the parser: if the parser performs correctly, a
+     * parser error should never be thrown.
+     */
+
+    private static class ParserError
+        extends Expression.Exception
+    {
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constants
+    ////////////////////////////////////////////////////////////////////
+
+        private static final    String  PARSER_ERROR_STR    = "Parser error";
+
+    ////////////////////////////////////////////////////////////////////
+    //  Constructors
+    ////////////////////////////////////////////////////////////////////
+
+        private ParserError( int errorNum,
+                             int offset )
+        {
+            super( PARSER_ERROR_STR + ' ' + errorNum, offset );
+        }
+
+        //--------------------------------------------------------------
+
+    }
+
+    //==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+    public Expression( String str )
+        throws Expression.Exception
+    {
+        this.str = str;
+        parse( str );
+    }
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class methods
+////////////////////////////////////////////////////////////////////////
+
+    private static boolean isWhitespace( char ch )
+    {
+        final   String  WHITESPACE_CHARS    = " \t\n\r";
+
+        return ( WHITESPACE_CHARS.indexOf( ch ) >= 0 );
+    }
+
+    //------------------------------------------------------------------
+
+    private static boolean isNumber( char ch )
+    {
+        return ( ((ch >= '0') && (ch <= '9')) || (ch == '.') );
+    }
+
+    //------------------------------------------------------------------
+
+    private static boolean isAlpha( char ch )
+    {
+        return ( (ch >= 'a') && (ch <= 'z') );
+    }
+
+    //------------------------------------------------------------------
+
+    private static boolean isSymbol( char ch )
+    {
+        return ( Symbol.forKey( ch ) != null );
+    }
+
+    //------------------------------------------------------------------
+
+    private static LexState getLexState( char ch )
+    {
+        if ( ch == 0 )
+            return LexState.EOL;
+
+        if ( isWhitespace( ch ) )
+            return LexState.WHITESPACE;
+
+        if ( isNumber( ch ) )
+            return LexState.NUMBER;
+
+        if ( isAlpha( ch ) )
+            return LexState.ALPHA;
+
+        if ( isSymbol( ch ) )
+            return LexState.SYMBOL;
+
+        return LexState.INVALID;
+    }
+
+    //------------------------------------------------------------------
+
+    private static Token numberToToken( String str,
+                                        int    offset )
+        throws Expression.Exception
+    {
+        try
+        {
+            return new Token.NumberToken( offset, Double.parseDouble( str ) );
+        }
+        catch ( NumberFormatException e )
+        {
+            throw new Expression.Exception( ErrorId.INVALID_NUMBER, str, offset );
+        }
+    }
+
+    //------------------------------------------------------------------
+
+    private static Token alphaToToken( String str,
+                                       int    offset )
+        throws Expression.Exception
+    {
+        if ( str.equals( VARIABLE_STR ) )
+            return new Token.VariableToken( offset );
+        Keyword keyword = Keyword.forKey( str );
+        if ( keyword == null )
+            throw new Expression.Exception( ErrorId.UNRECOGNISED_TOKEN, str, offset );
+        return new Token.KeywordToken( offset, keyword );
+    }
+
+    //------------------------------------------------------------------
+
+    private static Token symbolToToken( String str,
+                                        int    offset )
+        throws Expression.Exception
+    {
+        if ( str.length( ) > 1 )
+            throw new Expression.Exception( ErrorId.UNRECOGNISED_TOKEN, str, offset );
+        return new Token.SymbolToken( offset, Symbol.forKey( str.charAt( 0 ) ) );
+    }
+
+    //------------------------------------------------------------------
+
+    private static List<Token> toTokens( String str )
+        throws Expression.Exception
+    {
+        List<Token> tokens = new ArrayList<>( );
+        StringBuilder buffer = new StringBuilder( );
+        int charIndex = 0;
+        int offset = 0;
+        NumericState numericState = NumericState.SIGNIFICAND;
+        LexState state = LexState.START;
+        while ( state != LexState.DONE )
+        {
+            char ch = (charIndex >= str.length( )) ? 0 : str.charAt( charIndex );
+            switch ( state )
+            {
+                case START:
+                    state = getLexState( ch );
+                    break;
+
+                case WHITESPACE:
+                {
+                    if ( isWhitespace( ch ) )
+                    {
+                        ++charIndex;
+                        break;
+                    }
+                    state = getLexState( ch );
+                    if ( state != LexState.INVALID )
+                        offset = charIndex;
+                    break;
+                }
+
+                case NUMBER:
+                {
+                    boolean valid = false;
+                    switch ( numericState )
+                    {
+                        case SIGNIFICAND:
+                            if ( isNumber( ch ) )
+                                valid = true;
+                            else
+                            {
+                                if ( (ch == 'E') || (ch == 'e') )
+                                {
+                                    valid = true;
+                                    numericState = NumericState.EXP_INDICATOR;
+                                }
+                            }
+                            break;
+
+                        case EXP_INDICATOR:
+                            if ( isNumber( ch ) || (ch == '+') || (ch == '-') )
+                                valid = true;
+                            numericState = NumericState.EXPONENT;
+                            break;
+
+                        case EXPONENT:
+                            if ( isNumber( ch ) )
+                                valid = true;
+                            break;
+                    }
+                    if ( valid )
+                    {
+                        buffer.append( ch );
+                        ++charIndex;
+                        break;
+                    }
+                    numericState = NumericState.SIGNIFICAND;
+                    state = getLexState( ch );
+                    if ( state != LexState.INVALID )
+                    {
+                        tokens.add( numberToToken( buffer.toString( ), offset ) );
+                        buffer.setLength( 0 );
+                        offset = charIndex;
+                    }
+                    break;
+                }
+
+                case ALPHA:
+                {
+                    if ( isAlpha( ch ) )
+                    {
+                        buffer.append( ch );
+                        ++charIndex;
+                        break;
+                    }
+                    state = getLexState( ch );
+                    if ( state != LexState.INVALID )
+                    {
+                        tokens.add( alphaToToken( buffer.toString( ), offset ) );
+                        buffer.setLength( 0 );
+                        offset = charIndex;
+                    }
+                    break;
+                }
+
+                case SYMBOL:
+                {
+                    if ( isSymbol( ch ) )
+                    {
+                        if ( buffer.length( ) > 0 )
+                        {
+                            tokens.add( symbolToToken( buffer.toString( ), offset ) );
+                            buffer.setLength( 0 );
+                            offset = charIndex;
+                        }
+                        buffer.append( ch );
+                        ++charIndex;
+                        break;
+                    }
+                    state = getLexState( ch );
+                    if ( state != LexState.INVALID )
+                    {
+                        tokens.add( symbolToToken( buffer.toString( ), offset ) );
+                        buffer.setLength( 0 );
+                        offset = charIndex;
+                    }
+                    break;
+                }
+
+                case EOL:
+                    tokens.add( new Token.EofToken( offset ) );
+                    state = LexState.DONE;
+                    break;
+
+                case INVALID:
+                    throw new Expression.Exception( ErrorId.CHARACTER_NOT_ALLOWED, Character.toString( ch ),
+                                                    charIndex );
+
+                case DONE:
+                    // do nothing
+                    break;
+            }
+        }
+
+        return tokens;
+    }
+
+    //------------------------------------------------------------------
+
+    private static Node parse( List<Token> tokens )
+        throws Expression.Exception
+    {
+        Node tree = new Node( );
+        createAbstractSyntaxTree( tokens, 0, tree, false );
+        return tree.leftChild;
+    }
+
+    //------------------------------------------------------------------
+
+    private static int createAbstractSyntaxTree( List<Token> tokens,
+                                                 int         tokenIndex,
+                                                 Node        tree,
+                                                 boolean     subexpression )
+        throws Expression.Exception
+    {
+        Node activeNode = tree;
+        ParseState state = ParseState.OPERAND;
+        while ( state != ParseState.DONE )
+        {
+            Token token = tokens.get( tokenIndex++ );
+            switch ( state )
+            {
+                case OPERAND:
+                {
+                    // Test for terminal node
+                    if ( activeNode.isTerminal( ) )
+                        throw new ParserError( 1, token.offset );
+
+                    // Number token
+                    if ( token instanceof Token.NumberToken )
+                    {
+                        Node node = new Node.ConstantNode( activeNode, ((Token.NumberToken)token).value );
+                        if ( !activeNode.addChild( node ) )
+                            throw new ParserError( 2, token.offset );
+                        activeNode = node;
+                        state = ParseState.OPERATOR;
+                    }
+
+                    // Variable token
+                    else if ( token instanceof Token.VariableToken )
+                    {
+                        Node node = new Node.VariableNode( activeNode );
+                        if ( !activeNode.addChild( node ) )
+                            throw new ParserError( 3, token.offset );
+                        activeNode = node;
+                        state = ParseState.OPERATOR;
+                    }
+
+                    // Keyword token
+                    else if ( token instanceof Token.KeywordToken )
+                    {
+                        Keyword keyword = ((Token.KeywordToken)token).keyword;
+                        UnaryOperator operator = keyword.operator;
+                        if ( operator == null )
+                        {
+                            double value = 0.0;
+                            if ( keyword == Keyword.E )
+                                value = Math.E;
+                            else if ( keyword == Keyword.PI )
+                                value = Math.PI;
+
+                            Node node = new Node.ConstantNode( activeNode, value );
+                            if ( !activeNode.addChild( node ) )
+                                throw new ParserError( 4, token.offset );
+                            activeNode = node;
+                            state = ParseState.OPERATOR;
+                        }
+                        else
+                        {
+                            Node node = new Node.UnaryOperatorNode( activeNode, operator );
+                            if ( !activeNode.addChild( node ) )
+                                throw new ParserError( 5, token.offset );
+                            activeNode = node;
+                        }
+                    }
+
+                    // Symbol token
+                    else if ( token instanceof Token.SymbolToken )
+                    {
+                        Symbol symbol = ((Token.SymbolToken)token).symbol;
+                        if ( symbol == Symbol.OPENING_PARENTHESIS )
+                        {
+                            Node subtree = new Node( );
+                            tokenIndex = createAbstractSyntaxTree( tokens, tokenIndex, subtree, true );
+                            if ( subtree.isEmpty( ) )
+                                throw new SyntaxError( ErrorId.OPERAND_EXPECTED, token.offset );
+                            subtree = subtree.leftChild;
+                            if ( !activeNode.addChild( subtree ) )
+                                throw new ParserError( 6, token.offset );
+                            subtree.parent = activeNode;
+                            activeNode = subtree;
+                            state = ParseState.OPERATOR;
+                        }
+                        else
+                        {
+                            UnaryOperator operator = symbol.unaryOperator;
+                            if ( operator == null )
+                                throw new SyntaxError( ErrorId.OPERAND_EXPECTED, token.offset );
+                            Node node = new Node.UnaryOperatorNode( activeNode, operator );
+                            if ( !activeNode.addChild( node ) )
+                                throw new ParserError( 7, token.offset );
+                            activeNode = node;
+                        }
+                    }
+
+                    // EOF token
+                    else if ( token instanceof Token.EofToken )
+                        throw new SyntaxError( ErrorId.OPERAND_EXPECTED, token.offset );
+
+                    break;
+                }
+
+                case OPERATOR:
+                {
+                    // Number token, variable token or keyword token
+                    if ( (token instanceof Token.NumberToken) ||
+                         (token instanceof Token.VariableToken) ||
+                         (token instanceof Token.KeywordToken) )
+                        throw new SyntaxError( ErrorId.BINARY_OPERATOR_EXPECTED, token.offset );
+
+                    // Symbol token
+                    if ( token instanceof Token.SymbolToken )
+                    {
+                        Symbol symbol = ((Token.SymbolToken)token).symbol;
+                        if ( symbol == Symbol.OPENING_PARENTHESIS )
+                            throw new SyntaxError( ErrorId.BINARY_OPERATOR_EXPECTED, token.offset );
+                        if ( symbol == Symbol.CLOSING_PARENTHESIS )
+                        {
+                            if ( !subexpression )
+                                throw new SyntaxError( ErrorId.UNEXPECTED_CLOSING_PARENTHESIS,
+                                                       token.offset );
+                            state = ParseState.DONE;
+                        }
+                        else
+                        {
+                            BinaryOperator operator = symbol.binaryOperator;
+                            if ( operator == null )
+                                throw new SyntaxError( ErrorId.BINARY_OPERATOR_EXPECTED, token.offset );
+                            activeNode = activeNode.getBinaryOperatorAncestor( operator.precedence ).
+                                                                                    addChild( operator );
+                            state = ParseState.OPERAND;
+                        }
+                    }
+
+                    // EOF token
+                    else if ( token instanceof Token.EofToken )
+                    {
+                        if ( subexpression )
+                            throw new SyntaxError( ErrorId.CLOSING_PARENTHESIS_EXPECTED, token.offset );
+                        state = ParseState.DONE;
+                    }
+
+                    break;
+                }
+
+                case DONE:
+                    // do nothing
+                    break;
+            }
+        }
+
+        return tokenIndex;
+    }
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : overriding methods
+////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        return ( (obj instanceof Expression) && tree.equals( ((Expression)obj).tree ) );
+    }
+
+    //------------------------------------------------------------------
+
+    @Override
+    public int hashCode( )
+    {
+        return tree.hashCode( );
+    }
+
+    //------------------------------------------------------------------
+
+    @Override
+    public String toString( )
+    {
+        return str;
+    }
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+    public double evaluate( double x )
+    {
+        return tree.evaluate( x );
+    }
+
+    //------------------------------------------------------------------
+
+    public String toCanonicalString( )
+    {
+        StringBuilder buffer = new StringBuilder( 256 );
+        if ( tokens != null )
+        {
+            for ( int i = 0; i < tokens.size( ); ++i )
+            {
+                Token token = tokens.get( i );
+                if ( token instanceof Token.EofToken )
+                    break;
+                if ( i > 0 )
+                    buffer.append( ' ' );
+                buffer.append( token );
+            }
+        }
+        return buffer.toString( );
+    }
+
+    //------------------------------------------------------------------
+
+    private void parse( String str )
+        throws Expression.Exception
+    {
+        tokens = toTokens( str );
+        tree = parse( tokens );
+    }
+
+    //------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+    private String      str;
+    private List<Token> tokens;
+    private Node        tree;
+
+}
+
+//----------------------------------------------------------------------
