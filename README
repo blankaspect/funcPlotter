@@ -18,7 +18,7 @@ The Java version of the source code is 1.7 (Java SE 7).
 
 The complete source code of the FuncPlotter application is distributed, along
 with an executable JAR, through SourceForge:
-<http://datecalculator.sourceforge.net/>
+<http://funcplotter.sourceforge.net/>
 The distribution contains an Ant file for building the application from source.
 The motivation for additionally publishing the source code on GitHub is to allow
 it to be browsed without the need to download an archive and extract its
