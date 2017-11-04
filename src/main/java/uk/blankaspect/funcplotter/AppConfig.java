@@ -395,7 +395,7 @@ class AppConfig
 		private CPNewDocumentOnStartup()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.NEW_DOCUMENT_ON_STARTUP));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -495,7 +495,7 @@ class AppConfig
 		private CPShowUnixPathnames()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.SHOW_UNIX_PATHNAMES));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -559,7 +559,7 @@ class AppConfig
 		private CPSelectTextOnFocusGained()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.SELECT_TEXT_ON_FOCUS_GAINED));
-			value = Boolean.TRUE;
+			value = true;
 		}
 
 		//--------------------------------------------------------------
@@ -609,7 +609,7 @@ class AppConfig
 		private CPShowFullPathnames()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.SHOW_FULL_PATHNAMES));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -794,7 +794,7 @@ class AppConfig
 		private CPClearEditListOnSave()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.CLEAR_EDIT_LIST_ON_SAVE));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -1029,7 +1029,7 @@ class AppConfig
 		private CPShowGrid()
 		{
 			super(concatenateKeys(Key.PLOT, Key.SHOW_GRID));
-			value = Boolean.TRUE;
+			value = true;
 		}
 
 		//--------------------------------------------------------------
@@ -1257,7 +1257,7 @@ class AppConfig
 		private CPNormaliseScientificNotation()
 		{
 			super(concatenateKeys(Key.PLOT, Key.NORMALISE_SCIENTIFIC_NOTATION));
-			value = Boolean.TRUE;
+			value = true;
 		}
 
 		//--------------------------------------------------------------
@@ -1307,7 +1307,7 @@ class AppConfig
 		private CPTruncateXScaleText()
 		{
 			super(concatenateKeys(Key.PLOT, Key.TRUNCATE_X_SCALE_TEXT));
-			value = Boolean.TRUE;
+			value = true;
 		}
 
 		//--------------------------------------------------------------
@@ -2060,14 +2060,14 @@ class AppConfig
 
 	public static void showWarningMessage(AppException exception)
 	{
-		App.INSTANCE.showWarningMessage(App.SHORT_NAME + " | " + CONFIG_ERROR_STR, exception);
+		App.INSTANCE.showWarningMessage(App.SHORT_NAME + " : " + CONFIG_ERROR_STR, exception);
 	}
 
 	//------------------------------------------------------------------
 
 	public static void showErrorMessage(AppException exception)
 	{
-		App.INSTANCE.showErrorMessage(App.SHORT_NAME + " | " + CONFIG_ERROR_STR, exception);
+		App.INSTANCE.showErrorMessage(App.SHORT_NAME + " : " + CONFIG_ERROR_STR, exception);
 	}
 
 	//------------------------------------------------------------------
