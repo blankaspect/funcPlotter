@@ -766,7 +766,7 @@ class FunctionDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME + " | " + SYNTAX_ERROR_STR,
+			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME + " : " + SYNTAX_ERROR_STR,
 										  JOptionPane.ERROR_MESSAGE);
 		}
 	}

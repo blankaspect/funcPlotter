@@ -50,7 +50,7 @@ class ErrorListDialog
 	private static final	int	NUM_COLUMNS	= 72;
 	private static final	int	NUM_ROWS	= MAX_NUM_ERRORS + 1;
 
-	private static final	String	FIRST_ERRORS_STR	= " | First " + MAX_NUM_ERRORS + " errors";
+	private static final	String	FIRST_ERRORS_STR	= " : First " + MAX_NUM_ERRORS + " errors";
 
 	private static final	String	KEY	= ErrorListDialog.class.getCanonicalName();
 

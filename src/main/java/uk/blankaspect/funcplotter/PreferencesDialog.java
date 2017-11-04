@@ -139,7 +139,7 @@ class PreferencesDialog
 	private static final	String	GRID_STR						= "Grid";
 	private static final	String	AXIS_STR						= "Axis";
 	private static final	String	SCALE_MARKINGS_STR				= "Scale markings";
-	private static final	String	PLOT_COLOUR_STR					= "Plot colour | ";
+	private static final	String	PLOT_COLOUR_STR					= "Plot colour : ";
 	private static final	String	FOCUSED_BORDER_TITLE_STR		= "Focused border";
 	private static final	String	IMAGE_MARGIN_TITLE_STR			= "Image margin";
 	private static final	String	BACKGROUND_TITLE_STR			= "Background";

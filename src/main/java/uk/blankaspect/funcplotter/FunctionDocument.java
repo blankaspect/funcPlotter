@@ -2673,7 +2673,7 @@ class FunctionDocument
 		Edit edit = null;
 		String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
 		if (JOptionPane.showOptionDialog(getWindow(), DELETE_MESSAGE_STR,
-										 App.SHORT_NAME + " | " + DELETE_FUNCTION_STR,
+										 App.SHORT_NAME + " : " + DELETE_FUNCTION_STR,
 										 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 										 optionStrs, optionStrs[0]) == JOptionPane.OK_OPTION)
 			edit = onDeleteFunction();
@@ -2688,7 +2688,7 @@ class FunctionDocument
 		String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
 		if (hasFunctions() &&
 			 (JOptionPane.showOptionDialog(getWindow(), DELETE_ALL_MESSAGE_STR,
-										   App.SHORT_NAME + " | " + DELETE_ALL_FUNCTIONS_STR,
+										   App.SHORT_NAME + " : " + DELETE_ALL_FUNCTIONS_STR,
 										   JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 										   null, optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION))
 		{
