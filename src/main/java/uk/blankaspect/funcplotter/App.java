@@ -42,8 +42,8 @@ import uk.blankaspect.common.gui.GuiUtils;
 import uk.blankaspect.common.gui.TextRendering;
 
 import uk.blankaspect.common.misc.CalendarTime;
+import uk.blankaspect.common.misc.ClassUtils;
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
-import uk.blankaspect.common.misc.NoYes;
 import uk.blankaspect.common.misc.PropertyString;
 import uk.blankaspect.common.misc.ResourceProperties;
 
@@ -325,40 +325,50 @@ public class App
 
 	//------------------------------------------------------------------
 
+	/**
+	 * Returns a string representation of the version of this application.  If this class was loaded from a JAR, the
+	 * string is created from the values of properties that are defined in a resource named 'build.properties';
+	 * otherwise, the string is created from the date and time when this method is first called.
+	 *
+	 * @return a string representation of the version of this application.
+	 */
+
 	public String getVersionString()
 	{
-		StringBuilder buffer = new StringBuilder(32);
-		String str = buildProperties.get(VERSION_PROPERTY_KEY);
-		if (str != null)
-			buffer.append(str);
-
-		str = buildProperties.get(RELEASE_PROPERTY_KEY);
-		if (str == null)
+		if (versionStr == null)
 		{
-			long time = System.currentTimeMillis();
-			if (buffer.length() > 0)
-				buffer.append(' ');
-			buffer.append('b');
-			buffer.append(CalendarTime.dateToString(time));
-			buffer.append('-');
-			buffer.append(CalendarTime.hoursMinsToString(time));
-		}
-		else
-		{
-			NoYes release = NoYes.forKey(str);
-			if ((release == null) || !release.toBoolean())
+			StringBuilder buffer = new StringBuilder(32);
+			if (ClassUtils.isFromJar(getClass()))
 			{
-				str = buildProperties.get(BUILD_PROPERTY_KEY);
+				// Append version number
+				String str = buildProperties.get(VERSION_PROPERTY_KEY);
 				if (str != null)
-				{
-					if (buffer.length() > 0)
-						buffer.append(' ');
 					buffer.append(str);
+
+				// If this is not a release, append build
+				boolean release = Boolean.parseBoolean(buildProperties.get(RELEASE_PROPERTY_KEY));
+				if (!release)
+				{
+					str = buildProperties.get(BUILD_PROPERTY_KEY);
+					if (str != null)
+					{
+						if (buffer.length() > 0)
+							buffer.append(' ');
+						buffer.append(str);
+					}
 				}
 			}
+			else
+			{
+				long time = System.currentTimeMillis();
+				buffer.append('b');
+				buffer.append(CalendarTime.dateToString(time));
+				buffer.append('-');
+				buffer.append(CalendarTime.hoursMinsToString(time));
+			}
+			versionStr = buffer.toString();
 		}
-
-		return buffer.toString();
+		return versionStr;
 	}
 
 	//------------------------------------------------------------------
@@ -1179,6 +1189,7 @@ public class App
 ////////////////////////////////////////////////////////////////////////
 
 	private	ResourceProperties	buildProperties;
+	private	String				versionStr;
 	private	MainWindow			mainWindow;
 	private	Timer				fileCheckTimer;
 	private	List<DocumentView>	documentsViews;
