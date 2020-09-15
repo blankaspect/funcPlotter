@@ -28,8 +28,9 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.NonEditableTextPaneDialog;
+import uk.blankaspect.common.swing.dialog.NonEditableTextPaneDialog;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
@@ -146,7 +147,7 @@ class ErrorListDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -203,7 +204,7 @@ class ErrorListDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;

@@ -26,9 +26,9 @@ import javax.swing.text.BadLocationException;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.GuiUtils;
+import uk.blankaspect.common.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.textfield.ConstrainedTextField;
+import uk.blankaspect.common.swing.textfield.ConstrainedTextField;
 
 //----------------------------------------------------------------------
 
@@ -164,7 +164,7 @@ class SurrogateMinus
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	char	minusChar;

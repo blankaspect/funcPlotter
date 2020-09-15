@@ -41,18 +41,25 @@ import javax.swing.UIManager;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FontEx;
-import uk.blankaspect.common.gui.IProgressView;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.misc.ColourUtils;
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
-import uk.blankaspect.common.misc.IntegerRange;
 import uk.blankaspect.common.misc.NoYesAsk;
-import uk.blankaspect.common.misc.Property;
-import uk.blankaspect.common.misc.PropertySet;
-import uk.blankaspect.common.misc.PropertyString;
+
+import uk.blankaspect.common.property.Property;
+import uk.blankaspect.common.property.PropertySet;
+
+import uk.blankaspect.common.range.IntegerRange;
+
+import uk.blankaspect.common.swing.colour.ColourProperty;
+import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.swing.font.FontEx;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.ui.progress.IProgressView;
 
 //----------------------------------------------------------------------
 
@@ -108,9 +115,9 @@ class AppConfig
 	private static final	String	CONFIG_ERROR_STR	= "Configuration error";
 	private static final	String	CONFIG_DIR_KEY		= Property.APP_PREFIX + "configDir";
 	private static final	String	PROPERTIES_FILENAME	= App.NAME_KEY + "-properties" + AppConstants.XML_FILE_SUFFIX;
-	private static final	String	FILENAME_BASE		= App.NAME_KEY + "-config";
-	private static final	String	CONFIG_FILENAME		= FILENAME_BASE + AppConstants.XML_FILE_SUFFIX;
-	private static final	String	CONFIG_OLD_FILENAME	= FILENAME_BASE + "-old" + AppConstants.XML_FILE_SUFFIX;
+	private static final	String	FILENAME_STEM		= App.NAME_KEY + "-config";
+	private static final	String	CONFIG_FILENAME		= FILENAME_STEM + AppConstants.XML_FILE_SUFFIX;
+	private static final	String	CONFIG_OLD_FILENAME	= FILENAME_STEM + "-old" + AppConstants.XML_FILE_SUFFIX;
 
 	private static final	String	SAVE_CONFIGURATION_FILE_STR	= "Save configuration file";
 	private static final	String	WRITING_STR					= "Writing";
@@ -213,7 +220,7 @@ class AppConfig
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -373,7 +380,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPDefaultFileKind	cpDefaultFileKind	= new CPDefaultFileKind();
@@ -423,7 +430,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPNewDocumentOnStartup	cpNewDocumentOnStartup	= new CPNewDocumentOnStartup();
@@ -473,7 +480,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPSaveFunctionColours	cpSaveFunctionColours	= new CPSaveFunctionColours();
@@ -537,7 +544,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPShowUnixPathnames	cpShowUnixPathnames	= new CPShowUnixPathnames();
@@ -587,7 +594,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPSelectTextOnFocusGained	cpSelectTextOnFocusGained	= new CPSelectTextOnFocusGained();
@@ -637,7 +644,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPShowFullPathnames	cpShowFullPathnames	= new CPShowFullPathnames();
@@ -721,7 +728,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPMainWindowLocation	cpMainWindowLocation	= new CPMainWindowLocation();
@@ -772,7 +779,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPMaxEditListLength	cpMaxEditListLength	= new CPMaxEditListLength();
@@ -822,7 +829,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPClearEditListOnSave	cpClearEditListOnSave	= new CPClearEditListOnSave();
@@ -880,7 +887,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPLookAndFeel	cpLookAndFeel	= new CPLookAndFeel();
@@ -930,7 +937,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPTextAntialiasing	cpTextAntialiasing	= new CPTextAntialiasing();
@@ -1007,7 +1014,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPlotSize	cpPlotSize	= new CPPlotSize();
@@ -1057,7 +1064,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPShowGrid	cpShowGrid	= new CPShowGrid();
@@ -1107,7 +1114,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPNumFractionDigits	cpNumFractionDigits	= new CPNumFractionDigits();
@@ -1158,7 +1165,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPNumYScaleDigits	cpNumYScaleDigits	= new CPNumYScaleDigits();
@@ -1235,7 +1242,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPFixedPointExponentRange	cpFixedPointExponentRange	= new CPFixedPointExponentRange();
@@ -1285,7 +1292,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPNormaliseScientificNotation	cpNormaliseScientificNotation	= new CPNormaliseScientificNotation();
@@ -1335,7 +1342,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPTruncateXScaleText	cpTruncateXScaleText	= new CPTruncateXScaleText();
@@ -1347,7 +1354,7 @@ class AppConfig
 
 
 	private class CPPlotColourFocusedBorder
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -1385,7 +1392,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPlotColourFocusedBorder	cpPlotColourFocusedBorder	= new CPPlotColourFocusedBorder();
@@ -1397,7 +1404,7 @@ class AppConfig
 
 
 	private class CPPlotColourImageMargin
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -1435,7 +1442,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPlotColourImageMargin	cpPlotColourImageMargin	= new CPPlotColourImageMargin();
@@ -1447,7 +1454,7 @@ class AppConfig
 
 
 	private class CPPlotColourBackground
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -1485,7 +1492,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPlotColourBackground	cpPlotColourBackground	= new CPPlotColourBackground();
@@ -1497,7 +1504,7 @@ class AppConfig
 
 
 	private class CPPlotColourGrid
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -1535,7 +1542,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPlotColourGrid	cpPlotColourGrid	= new CPPlotColourGrid();
@@ -1547,7 +1554,7 @@ class AppConfig
 
 
 	private class CPPlotColourAxis
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -1585,7 +1592,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPlotColourAxis	cpPlotColourAxis	= new CPPlotColourAxis();
@@ -1597,7 +1604,7 @@ class AppConfig
 
 
 	private class CPPlotColourScale
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -1635,7 +1642,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPPlotColourScale	cpPlotColourScale	= new CPPlotColourScale();
@@ -1657,7 +1664,7 @@ class AppConfig
 		private CPFunctionPathname()
 		{
 			super(concatenateKeys(Key.FUNCTION, Key.DIRECTORY));
-			value = PropertyString.USER_HOME_PREFIX;
+			value = PathnameUtils.USER_HOME_PREFIX;
 		}
 
 		//--------------------------------------------------------------
@@ -1679,7 +1686,7 @@ class AppConfig
 
 	public File getFunctionDirectory()
 	{
-		return new File(PropertyString.parsePathname(getFunctionPathname()));
+		return new File(PathnameUtils.parsePathname(getFunctionPathname()));
 	}
 
 	//------------------------------------------------------------------
@@ -1692,7 +1699,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPFunctionPathname	cpFunctionPathname	= new CPFunctionPathname();
@@ -1771,7 +1778,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPFunctionListSize	cpFunctionListSize	= new CPFunctionListSize();
@@ -1783,7 +1790,7 @@ class AppConfig
 
 
 	private class CPFunctionObscuredColour
-		extends Property.ColourProperty
+		extends ColourProperty
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -1805,7 +1812,7 @@ class AppConfig
 		public void parse(Input input)
 			throws AppException
 		{
-			value = input.parseColour();
+			value = parseColour(input);
 		}
 
 		//--------------------------------------------------------------
@@ -1859,7 +1866,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPFunctionObscuredColour	cpFunctionObscuredColour	= new CPFunctionObscuredColour();
@@ -1902,7 +1909,7 @@ class AppConfig
 		{
 			try
 			{
-				values.set(index, input.parseColour());
+				values.set(index, ColourProperty.parseColour(input));
 			}
 			catch (AppException e)
 			{
@@ -1944,7 +1951,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPFunctionColours	cpFunctionColours	= new CPFunctionColours();
@@ -2037,7 +2044,7 @@ class AppConfig
 	//------------------------------------------------------------------
 
 //--////////////////////////////////////////////////////////////////////
-//--//  Instance fields : associated variables in enclosing class
+//--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
 	private	CPFonts	cpFonts	= new CPFonts();
@@ -2142,7 +2149,7 @@ class AppConfig
 		// Set configuration file from pathname of configuration directory
 		else if (!pathname.isEmpty())
 		{
-			file = new File(PropertyString.parsePathname(pathname), CONFIG_FILENAME);
+			file = new File(PathnameUtils.parsePathname(pathname), CONFIG_FILENAME);
 			if (!file.isFile())
 				throw new FileException(ErrorId.NO_CONFIGURATION_FILE, file);
 		}
@@ -2385,7 +2392,7 @@ class AppConfig
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	File			file;

@@ -48,14 +48,20 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.CrosshairCursor;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.range.IntegerRange;
 
-import uk.blankaspect.common.misc.IntegerRange;
-import uk.blankaspect.common.misc.StringUtils;
-import uk.blankaspect.common.misc.TextUtils;
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.cursor.CrosshairCursor;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.common.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 
@@ -95,7 +101,7 @@ class PlotPanel
 
 	private static final	double	SCROLL_FACTOR	= 0.5;
 
-	private static final	double	ONE_OVER_LOG_10	= 1.0 / Math.log(10.0);
+	private static final	double	RECIP_LOG_10	= 1.0 / Math.log(10.0);
 
 	private static final	String	ZERO_STR	= "0";
 
@@ -127,7 +133,7 @@ class PlotPanel
 
 			pixelDelta = interval.getInterval() / (double)dimension;
 			divisionDelta = pixelDelta * MIN_PIXELS_PER_DIVISION;
-			int exponent = (int)Math.floor(Math.log(divisionDelta) * ONE_OVER_LOG_10);
+			int exponent = (int)Math.floor(Math.log(divisionDelta) * RECIP_LOG_10);
 			divisionDelta *= Math.pow(10.0, -exponent);
 			int divIncrement = 1;
 			if (divisionDelta > UPPER_BOUND_1)
@@ -182,7 +188,7 @@ class PlotPanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	double	start;
@@ -234,7 +240,7 @@ class PlotPanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String		text;
@@ -270,7 +276,7 @@ class PlotPanel
 
 		private PopUpComponent(String text)
 		{
-			// Initialise instance fields
+			// Initialise instance variables
 			this.text = text;
 
 			// Set component attributes
@@ -309,7 +315,7 @@ class PlotPanel
 			// Draw text
 			gr.setColor(POP_UP_TEXT_COLOUR);
 			gr.drawString(text, HORIZONTAL_MARGIN,
-						  GuiUtils.getBaselineOffset(height, gr.getFontMetrics()));
+						  FontUtils.getBaselineOffset(height, gr.getFontMetrics()));
 
 			// Draw border
 			gr.setColor(POP_UP_BORDER_COLOUR);
@@ -319,7 +325,7 @@ class PlotPanel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -347,7 +353,7 @@ class PlotPanel
 			numYScaleDigits = AppConfig.INSTANCE.getNumYScaleDigits();
 		setCursor(false);
 
-		// Initialise instance fields
+		// Initialise instance variables
 		this.document = document;
 		this.gridVisible = gridVisible;
 		minusChar = SurrogateMinus.getMinusChar(getFont());
@@ -854,13 +860,13 @@ class PlotPanel
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	int	numYScaleDigits;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	FunctionDocument		document;

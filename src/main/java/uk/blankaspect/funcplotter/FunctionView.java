@@ -69,20 +69,31 @@ import javax.swing.event.ListSelectionListener;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FCheckBoxMenuItem;
-import uk.blankaspect.common.gui.FComboBox;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.FMenu;
-import uk.blankaspect.common.gui.FMenuItem;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.SingleSelectionList;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.misc.ColourUtils;
-import uk.blankaspect.common.misc.InputModifiers;
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.StringUtils;
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.swing.combobox.FComboBox;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.list.SingleSelectionList;
+
+import uk.blankaspect.common.swing.menu.FCheckBoxMenuItem;
+import uk.blankaspect.common.swing.menu.FMenu;
+import uk.blankaspect.common.swing.menu.FMenuItem;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.modifiers.InputModifiers;
+
+import uk.blankaspect.common.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -251,7 +262,7 @@ class FunctionView
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -294,7 +305,7 @@ class FunctionView
 			// Call superclass constructor
 			super(viewableColumns, viewableRows, AppFont.MAIN.getFont(), document);
 
-			// Initialise instance fields
+			// Initialise instance variables
 			minusChar = SurrogateMinus.getMinusChar(getFont());
 
 			// Set component attributes
@@ -371,7 +382,7 @@ class FunctionView
 			// Draw text
 			x = getExtraWidth() + getHorizontalMargin();
 			gr.setColor(getForegroundColour(index));
-			gr.drawString(text, x, y + GuiUtils.getBaselineOffset(rowHeight, fontMetrics));
+			gr.drawString(text, x, y + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
 		}
 
 		//--------------------------------------------------------------
@@ -385,7 +396,7 @@ class FunctionView
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	char	minusChar;
@@ -453,7 +464,7 @@ class FunctionView
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Class fields
+	//  Class variables
 	////////////////////////////////////////////////////////////////////
 
 		private static	List<FunctionButton>	instances;
@@ -558,8 +569,8 @@ class FunctionView
 			AppFont.TEXT_FIELD.apply(this);
 			minusChar = SurrogateMinus.getMinusChar(getFont());
 			FontMetrics fontMetrics = getFontMetrics(getFont());
-			charWidth = Math.max(GuiUtils.getCharWidth('x', fontMetrics),
-								 GuiUtils.getCharWidth('y', fontMetrics));
+			charWidth = Math.max(FontUtils.getCharWidth('x', fontMetrics),
+								 FontUtils.getCharWidth('y', fontMetrics));
 			char[] zeros = StringUtils.createCharArray('0', PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS);
 			int maxStrWidth = fontMetrics.stringWidth(convertString(BASE_STR)) +
 														fontMetrics.charsWidth(zeros, 0, zeros.length);
@@ -653,7 +664,7 @@ class FunctionView
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int		width;
@@ -701,7 +712,7 @@ class FunctionView
 		@Override
 		protected int getColumnWidth()
 		{
-			return (GuiUtils.getCharWidth('0', getFontMetrics(getFont())) + 1);
+			return (FontUtils.getCharWidth('0', getFontMetrics(getFont())) + 1);
 		}
 
 		//--------------------------------------------------------------
@@ -768,7 +779,7 @@ class FunctionView
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		int				x;
@@ -786,7 +797,7 @@ class FunctionView
 
 	public FunctionView(FunctionDocument document)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.document = document;
 
 		// Initialise dimensions of plot and function list
@@ -2152,7 +2163,7 @@ class FunctionView
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Dimension	plotSize;
@@ -2178,7 +2189,7 @@ class FunctionView
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	FunctionDocument	document;

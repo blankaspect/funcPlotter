@@ -35,6 +35,8 @@ import java.io.IOException;
 
 import java.math.BigDecimal;
 
+import java.nio.charset.StandardCharsets;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -56,16 +58,19 @@ import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 import uk.blankaspect.common.exception.ValueOutOfBoundsException;
 
-import uk.blankaspect.common.gui.SingleSelectionList;
+import uk.blankaspect.common.list.IListModel;
 
-import uk.blankaspect.common.misc.ColourUtils;
 import uk.blankaspect.common.misc.FileWritingMode;
-import uk.blankaspect.common.misc.PngOutputFile;
-import uk.blankaspect.common.misc.StringUtils;
 import uk.blankaspect.common.misc.SystemUtils;
 import uk.blankaspect.common.misc.TextFile;
 
-import uk.blankaspect.common.xml.Attribute;
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.swing.image.PngOutputFile;
+
+import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.Comment;
 import uk.blankaspect.common.xml.XmlConstants;
 import uk.blankaspect.common.xml.XmlParseException;
@@ -80,7 +85,7 @@ import uk.blankaspect.common.xml.XmlWriter;
 
 
 class FunctionDocument
-	implements SingleSelectionList.IModel<Function>
+	implements IListModel<Function>
 {
 
 ////////////////////////////////////////////////////////////////////////
@@ -387,7 +392,7 @@ class FunctionDocument
 
 		private Command(String key)
 		{
-			command = new uk.blankaspect.common.misc.Command(this);
+			command = new uk.blankaspect.common.swing.action.Command(this);
 			putValue(Action.ACTION_COMMAND_KEY, key);
 		}
 
@@ -524,10 +529,10 @@ class FunctionDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
-		private	uk.blankaspect.common.misc.Command	command;
+		private	uk.blankaspect.common.swing.action.Command	command;
 
 	}
 
@@ -642,7 +647,7 @@ class FunctionDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -676,7 +681,7 @@ class FunctionDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		File		file;
@@ -739,7 +744,7 @@ class FunctionDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	int			index;
@@ -791,7 +796,7 @@ class FunctionDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	int			index;
@@ -844,7 +849,7 @@ class FunctionDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	PlotInterval	oldInterval;
@@ -898,7 +903,7 @@ class FunctionDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	PlotInterval	oldInterval;
@@ -951,7 +956,7 @@ class FunctionDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	String	oldText;
@@ -1014,7 +1019,7 @@ class FunctionDocument
 			//----------------------------------------------------------
 
 		////////////////////////////////////////////////////////////////
-		//  Instance fields
+		//  Instance variables
 		////////////////////////////////////////////////////////////////
 
 			private	List<Edit>	edits;
@@ -1204,7 +1209,7 @@ class FunctionDocument
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int	maxLength;
@@ -1258,7 +1263,7 @@ class FunctionDocument
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance methods : SingleSelectionList.IModel interface
+//  Instance methods : IListModel interface
 ////////////////////////////////////////////////////////////////////////
 
 	public int getNumElements()
@@ -1442,7 +1447,7 @@ class FunctionDocument
 		if (!fileInfo.file.isFile())
 			throw new FileException(ErrorId.NOT_A_FILE, fileInfo.file);
 
-		// Set instance fields
+		// Set instance variables
 		file = fileInfo.file;
 		fileKind = fileInfo.fileKind;
 
@@ -1455,7 +1460,7 @@ class FunctionDocument
 		System.gc();
 
 		// Read file
-		TextFile textFile = new TextFile(file, TextFile.ENCODING_NAME_UTF8);
+		TextFile textFile = new TextFile(file, StandardCharsets.UTF_8);
 		textFile.addProgressListener(progressView);
 		StringBuilder text = textFile.read();
 
@@ -1489,7 +1494,7 @@ class FunctionDocument
 					  boolean  includeColours)
 		throws AppException
 	{
-		// Set instance fields
+		// Set instance variables
 		if (fileInfo != null)
 		{
 			file = fileInfo.file;
@@ -1520,7 +1525,7 @@ class FunctionDocument
 		try
 		{
 			// Write file
-			TextFile textFile = new TextFile(file, TextFile.ENCODING_NAME_UTF8);
+			TextFile textFile = new TextFile(file, StandardCharsets.UTF_8);
 			textFile.addProgressListener(progressView);
 			textFile.write(text, FileWritingMode.USE_TEMP_FILE);
 
@@ -2248,15 +2253,15 @@ class FunctionDocument
 		throws AppException
 	{
 		// Split string into lower and upper endpoints
-		String[] strs = str.split(",", -1);
-		if (strs.length != 2)
+		List<String> strs = StringUtils.split(str, ',');
+		if (strs.size() != 2)
 			throw new AppException(ErrorId.INVALID_INTERVAL);
 
 		// Parse lower endpoint
 		BigDecimal lowerEndpoint = null;
 		try
 		{
-			String epStr = strs[0].trim();
+			String epStr = strs.get(0).trim();
 			lowerEndpoint = new BigDecimal(epStr);
 			double value = lowerEndpoint.doubleValue();
 			if ((value < PlotInterval.MIN_VALUE) || (value > PlotInterval.MAX_VALUE))
@@ -2273,7 +2278,7 @@ class FunctionDocument
 		BigDecimal upperEndpoint = null;
 		try
 		{
-			String epStr = strs[1].trim();
+			String epStr = strs.get(1).trim();
 			upperEndpoint = new BigDecimal(epStr);
 			double value = upperEndpoint.doubleValue();
 			if ((value < PlotInterval.MIN_VALUE) || (value > PlotInterval.MAX_VALUE))
@@ -2344,11 +2349,11 @@ class FunctionDocument
 									   XmlWriter.Standalone.NO);
 
 			// Write root element start tag
-			List<Attribute> attributes = new ArrayList<>();
-			attributes.add(new Attribute(AttrName.XMLNS, NAMESPACE_NAME));
-			attributes.add(new Attribute(AttrName.VERSION, VERSION));
-			attributes.add(new Attribute(AttrName.X_INTERVAL, xInterval, true));
-			attributes.add(new Attribute(AttrName.Y_INTERVAL, yInterval, true));
+			AttributeList attributes = new AttributeList();
+			attributes.add(AttrName.XMLNS, NAMESPACE_NAME);
+			attributes.add(AttrName.VERSION, VERSION);
+			attributes.add(AttrName.X_INTERVAL, xInterval, true);
+			attributes.add(AttrName.Y_INTERVAL, yInterval, true);
 			writer.writeElementStart(ElementName.FUNCTION_LIST, attributes, 0, true, true);
 
 			// Write comment element
@@ -2359,11 +2364,9 @@ class FunctionDocument
 			for (Function function : functions)
 			{
 				attributes.clear();
-				attributes.add(new Attribute(AttrName.EXPRESSION, function.getExpression(), true));
+				attributes.add(AttrName.EXPRESSION, function.getExpression(), true);
 				if (includeColours)
-					attributes.add(new Attribute(AttrName.COLOUR,
-												 ColourUtils.
-															colourToRgbString(function.getColour())));
+					attributes.add(AttrName.COLOUR, ColourUtils.colourToRgbString(function.getColour()));
 				writer.writeEmptyElement(ElementName.FUNCTION, attributes, 2, true);
 			}
 
@@ -2877,7 +2880,7 @@ class FunctionDocument
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	File			file;

@@ -20,8 +20,9 @@ package uk.blankaspect.funcplotter;
 
 import java.math.BigDecimal;
 
-import uk.blankaspect.common.misc.IntegerRange;
-import uk.blankaspect.common.misc.StringUtils;
+import uk.blankaspect.common.range.IntegerRange;
+
+import uk.blankaspect.common.string.StringUtils;
 
 //----------------------------------------------------------------------
 
@@ -44,7 +45,7 @@ class PlotInterval
 	private static final	String	DEFAULT_LOWER_EP_STR	= "-1.0";
 	private static final	String	DEFAULT_UPPER_EP_STR	= "1.0";
 
-	private static final	double	ONE_OVER_LOG_10	= 1.0 / Math.log(10.0);
+	private static final	double	RECIP_LOG_10	= 1.0 / Math.log(10.0);
 
 	private static final	String	FIXED_ZERO_STR				= "0.0";
 	private static final	String	FIXED_MINUS_ZERO_STR		= "-0.0";
@@ -154,7 +155,7 @@ class PlotInterval
 			value = -value;
 
 		// Get significand as string
-		int exponent = (int)Math.floor(Math.log(value) * ONE_OVER_LOG_10);
+		int exponent = (int)Math.floor(Math.log(value) * RECIP_LOG_10);
 		String sigStr = Long.toString((long)(value * Math.pow(10.0, EXPONENT_OFFSET - exponent)));
 
 		// Normalise radix point and exponent
@@ -376,7 +377,7 @@ class PlotInterval
 	public int getExponent()
 	{
 		double absEp = Math.min(Math.abs(getLowerEndpoint()), Math.abs(getUpperEndpoint()));
-		int exponent = (absEp == 0.0) ? 0 : (int)Math.floor(Math.log(absEp) * ONE_OVER_LOG_10);
+		int exponent = (absEp == 0.0) ? 0 : (int)Math.floor(Math.log(absEp) * RECIP_LOG_10);
 		if (absEp * Math.pow(10.0, -exponent) >= 10.0)
 			++exponent;
 		return exponent;
@@ -385,7 +386,7 @@ class PlotInterval
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	BigDecimal	lowerEndpoint;

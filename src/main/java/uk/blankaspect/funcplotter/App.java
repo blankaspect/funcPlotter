@@ -21,6 +21,11 @@ package uk.blankaspect.funcplotter;
 import java.awt.Point;
 
 import java.io.File;
+import java.io.IOException;
+
+import java.time.LocalDateTime;
+
+import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,20 +39,27 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
+import uk.blankaspect.common.cls.ClassUtils;
+
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.ExceptionUtils;
 import uk.blankaspect.common.exception.TaskCancelledException;
 
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.exception2.LocationException;
 
-import uk.blankaspect.common.misc.CalendarTime;
-import uk.blankaspect.common.misc.ClassUtils;
+import uk.blankaspect.common.filesystem.PathnameUtils;
+
+import uk.blankaspect.common.logging.ErrorLogger;
+
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
-import uk.blankaspect.common.misc.PropertyString;
-import uk.blankaspect.common.misc.ResourceProperties;
 
-import uk.blankaspect.common.textfield.TextFieldUtils;
+import uk.blankaspect.common.resource.ResourceProperties;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.swing.textfield.TextFieldUtils;
 
 //----------------------------------------------------------------------
 
@@ -75,6 +87,8 @@ public class App
 	private static final	String	VERSION_PROPERTY_KEY	= "version";
 	private static final	String	BUILD_PROPERTY_KEY		= "build";
 	private static final	String	RELEASE_PROPERTY_KEY	= "release";
+
+	private static final	String	VERSION_DATE_TIME_PATTERN	= "uuuuMMdd-HHmmss";
 
 	private static final	String	BUILD_PROPERTIES_FILENAME	= "build.properties";
 
@@ -145,88 +159,11 @@ public class App
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	FunctionDocument	document;
 		private	FunctionView		view;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// APPLICATION INITIALISATION CLASS
-
-
-	/**
-	 * The run() method of this class creates the main window and performs the remaining initialisation of the
-	 * application from the event-dispatching thread.
-	 */
-
-	private class DoInitialisation
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DoInitialisation(String[] arguments)
-		{
-			this.arguments = arguments;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			// Create main window
-			mainWindow = new MainWindow();
-
-			// Start file-check timer
-			fileCheckTimer = new Timer(FILE_CHECK_TIMER_INTERVAL, AppCommand.CHECK_MODIFIED_FILE);
-			fileCheckTimer.setRepeats(false);
-			fileCheckTimer.start();
-
-			// No command-line arguments: open new file if configured to do so
-			if (arguments.length == 0)
-			{
-				if (AppConfig.INSTANCE.isNewDocumentOnStartup())
-					AppCommand.CREATE_FILE.execute();
-			}
-
-			// Command-line arguments: open files
-			else
-			{
-				// Create list of files from command-line arguments
-				List<File> files = Arrays.stream(arguments)
-											.map(argument -> new File(PropertyString.parsePathname(argument)))
-											.collect(Collectors.toList());
-
-				// Open files
-				openFiles(files);
-
-				// Update title and menus
-				mainWindow.updateTitleAndMenus();
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance fields
-	////////////////////////////////////////////////////////////////////
-
-		private	String[]	arguments;
 
 	}
 
@@ -360,11 +297,8 @@ public class App
 			}
 			else
 			{
-				long time = System.currentTimeMillis();
 				buffer.append('b');
-				buffer.append(CalendarTime.dateToString(time));
-				buffer.append('-');
-				buffer.append(CalendarTime.hoursMinsToString(time));
+				buffer.append(DateTimeFormatter.ofPattern(VERSION_DATE_TIME_PATTERN).format(LocalDateTime.now()));
 			}
 			versionStr = buffer.toString();
 		}
@@ -405,13 +339,36 @@ public class App
 
 	//------------------------------------------------------------------
 
-	public void init(String[] arguments)
+	public void init(String[] args)
 	{
-		// Initialise instance fields
+		// Log stack trace of uncaught exception
+		if (ClassUtils.isFromJar(getClass()))
+		{
+			Thread.setDefaultUncaughtExceptionHandler((thread, exception) ->
+			{
+				try
+				{
+					ErrorLogger.INSTANCE.write(exception);
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			});
+		}
+
+		// Initialise instance variables
 		documentsViews = new ArrayList<>();
 
 		// Read build properties
-		buildProperties = new ResourceProperties(BUILD_PROPERTIES_FILENAME, getClass());
+		try
+		{
+			buildProperties = new ResourceProperties(BUILD_PROPERTIES_FILENAME);
+		}
+		catch (LocationException e)
+		{
+			e.printStackTrace();
+		}
 
 		// Get clipboard access permission
 		AppConfig config = AppConfig.INSTANCE;
@@ -456,7 +413,36 @@ public class App
 		initFileChoosers();
 
 		// Perform remaining initialisation from event-dispatching thread
-		SwingUtilities.invokeLater(new DoInitialisation(arguments));
+		SwingUtilities.invokeLater(() ->
+		{
+			// Create main window
+			mainWindow = new MainWindow();
+
+			// Start file-check timer
+			new Timer(FILE_CHECK_TIMER_INTERVAL, AppCommand.CHECK_MODIFIED_FILE).start();
+
+			// No command-line arguments: open new file if configured to do so
+			if (args.length == 0)
+			{
+				if (AppConfig.INSTANCE.isNewDocumentOnStartup())
+					AppCommand.CREATE_FILE.execute();
+			}
+
+			// Command-line arguments: open files
+			else
+			{
+				// Create list of files from command-line arguments
+				List<File> files = Arrays.stream(args)
+											.map(argument -> new File(PathnameUtils.parsePathname(argument)))
+											.collect(Collectors.toList());
+
+				// Open files
+				openFiles(files);
+
+				// Update title and menus
+				mainWindow.updateTitleAndMenus();
+			}
+		});
 	}
 
 	//------------------------------------------------------------------
@@ -465,12 +451,10 @@ public class App
 									String titleStr)
 	{
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.REPLACE_STR);
-		return (!file.exists() ||
-				 (JOptionPane.showOptionDialog(mainWindow,
-											   Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
-											   titleStr, JOptionPane.OK_CANCEL_OPTION,
-											   JOptionPane.WARNING_MESSAGE, null, optionStrs,
-											   optionStrs[1]) == JOptionPane.OK_OPTION));
+		return !file.exists()
+				|| (JOptionPane.showOptionDialog(mainWindow, Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
+												 titleStr, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
+												 null, optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION);
 	}
 
 	//------------------------------------------------------------------
@@ -481,8 +465,7 @@ public class App
 		{
 			if (getDocument(i) == document)
 			{
-				mainWindow.setTabText(i, document.getTitleString(false),
-									  document.getTitleString(true));
+				mainWindow.setTabText(i, document.getTitleString(false), document.getTitleString(true));
 				break;
 			}
 		}
@@ -511,8 +494,7 @@ public class App
 		AppCommand.COPY_INTERVALS.setEnabled(getNumDocuments() > 1);
 		AppCommand.EDIT_PREFERENCES.setEnabled(true);
 		AppCommand.TOGGLE_SHOW_FULL_PATHNAMES.setEnabled(true);
-		AppCommand.TOGGLE_SHOW_FULL_PATHNAMES.
-											setSelected(AppConfig.INSTANCE.isShowFullPathnames());
+		AppCommand.TOGGLE_SHOW_FULL_PATHNAMES.setSelected(AppConfig.INSTANCE.isShowFullPathnames());
 	}
 
 	//------------------------------------------------------------------
@@ -606,8 +588,7 @@ public class App
 	{
 		DocumentView documentView = new DocumentView(document);
 		documentsViews.add(documentView);
-		mainWindow.addView(document.getTitleString(false), document.getTitleString(true),
-						   documentView.view);
+		mainWindow.addView(document.getTitleString(false), document.getTitleString(true), documentView.view);
 	}
 
 	//------------------------------------------------------------------
@@ -633,8 +614,7 @@ public class App
 			if (errorStrs.isEmpty())
 				documentRead = true;
 			else
-				ErrorListDialog.showDialog(mainWindow, ERRORS_STR, Utils.getPathname(fileInfo.file),
-										   errorStrs);
+				ErrorListDialog.showDialog(mainWindow, ERRORS_STR, Utils.getPathname(fileInfo.file), errorStrs);
 		}
 		catch (TaskCancelledException e)
 		{
@@ -688,8 +668,7 @@ public class App
 		{
 			int index = mainWindow.getTabIndex();
 			documentsViews.set(index, new DocumentView(document));
-			mainWindow.setTabText(index, document.getTitleString(false),
-								  document.getTitleString(true));
+			mainWindow.setTabText(index, document.getTitleString(false), document.getTitleString(true));
 			mainWindow.setView(index, getView());
 			warnComments(document);
 		}
@@ -713,14 +692,12 @@ public class App
 		// Display prompt to save changed document
 		FunctionDocument.FileInfo fileInfo = document.getFileInfo();
 		String messageStr = ((fileInfo.file == null)
-											? UNNAMED_FILE_STR
-											: Utils.getPathname(fileInfo.file) + CHANGED_MESSAGE1_STR) +
-																					CHANGED_MESSAGE2_STR;
+									? UNNAMED_FILE_STR
+									: Utils.getPathname(fileInfo.file) + CHANGED_MESSAGE1_STR) + CHANGED_MESSAGE2_STR;
 		String[] optionStrs = Utils.getOptionStrings(SAVE_STR, DISCARD_STR);
 		int result = JOptionPane.showOptionDialog(mainWindow, messageStr, SAVE_CLOSE_FILE_STR,
-												  JOptionPane.YES_NO_CANCEL_OPTION,
-												  JOptionPane.QUESTION_MESSAGE, null, optionStrs,
-												  optionStrs[0]);
+												  JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												  optionStrs, optionStrs[0]);
 
 		// Discard changed document
 		if (result == JOptionPane.NO_OPTION)
@@ -802,8 +779,7 @@ public class App
 		openFileChooser.rescanCurrentDirectory();
 		if (openFileChooser.showOpenDialog(mainWindow) == JFileChooser.APPROVE_OPTION)
 		{
-			FileKind fileKind =
-							FileKind.forDescription(openFileChooser.getFileFilter().getDescription());
+			FileKind fileKind = FileKind.forDescription(openFileChooser.getFileFilter().getDescription());
 			fileInfo = new FunctionDocument.FileInfo(openFileChooser.getSelectedFile(), fileKind);
 		}
 		return fileInfo;
@@ -820,8 +796,7 @@ public class App
 		if (saveFileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION)
 		{
 			File file = saveFileChooser.getSelectedFile();
-			FileKind fileKind =
-							FileKind.forDescription(saveFileChooser.getFileFilter().getDescription());
+			FileKind fileKind = FileKind.forDescription(saveFileChooser.getFileFilter().getDescription());
 			if (fileKind != null)
 				file = Utils.appendSuffix(file, fileKind.getFilter().getSuffix(0));
 			fileInfo = new FunctionDocument.FileInfo(file, fileKind);
@@ -840,8 +815,7 @@ public class App
 		exportFileChooser.rescanCurrentDirectory();
 		if (exportFileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION)
 		{
-			exportFile = Utils.appendSuffix(exportFileChooser.getSelectedFile(),
-											AppConstants.PNG_FILE_SUFFIX);
+			exportFile = Utils.appendSuffix(exportFileChooser.getSelectedFile(), AppConstants.PNG_FILE_SUFFIX);
 			return exportFile;
 		}
 		return null;
@@ -852,8 +826,7 @@ public class App
 	private void warnComments(FunctionDocument document)
 	{
 		if (document.hasComments())
-			JOptionPane.showMessageDialog(mainWindow, HAS_COMMENTS_STR, OPEN_FILE_STR,
-										  JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(mainWindow, HAS_COMMENTS_STR, OPEN_FILE_STR, JOptionPane.WARNING_MESSAGE);
 	}
 
 	//------------------------------------------------------------------
@@ -874,8 +847,7 @@ public class App
 
 			case ASK:
 				switch (JOptionPane.showConfirmDialog(mainWindow, SAVE_COLOURS_STR, titleStr,
-													  JOptionPane.YES_NO_CANCEL_OPTION,
-													  JOptionPane.QUESTION_MESSAGE))
+													  JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE))
 				{
 					case JOptionPane.YES_OPTION:
 						return IncludeColours.YES;
@@ -925,10 +897,9 @@ public class App
 				else
 				{
 					String[] optionStrs = Utils.getOptionStrings(AppConstants.CONTINUE_STR);
-					if (JOptionPane.showOptionDialog(mainWindow, e, OPEN_FILE_STR,
-													 JOptionPane.OK_CANCEL_OPTION,
-													 JOptionPane.ERROR_MESSAGE, null, optionStrs,
-													 optionStrs[1]) != JOptionPane.OK_OPTION)
+					if (JOptionPane.showOptionDialog(mainWindow, e, OPEN_FILE_STR, JOptionPane.OK_CANCEL_OPTION,
+													 JOptionPane.ERROR_MESSAGE, null, optionStrs, optionStrs[1])
+																							!= JOptionPane.OK_OPTION)
 						break;
 				}
 			}
@@ -953,19 +924,25 @@ public class App
 				{
 					String messageStr = Utils.getPathname(file) + MODIFIED_MESSAGE_STR;
 					if (JOptionPane.showConfirmDialog(mainWindow, messageStr, MODIFIED_FILE_STR,
-													  JOptionPane.YES_NO_OPTION,
-													  JOptionPane.QUESTION_MESSAGE) ==
-																					JOptionPane.YES_OPTION)
+													  JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
+																						== JOptionPane.YES_OPTION)
 					{
-						revertDocument(fileInfo);
-						mainWindow.updateTitleAndMenus();
+						try
+						{
+							revertDocument(fileInfo);
+							mainWindow.updateTitleAndMenus();
+						}
+						catch (AppException e)
+						{
+							document.setTimestamp(currentTimestamp);
+							throw e;
+						}
 					}
 					else
 						document.setTimestamp(currentTimestamp);
 				}
 			}
 		}
-		fileCheckTimer.start();
 	}
 
 	//------------------------------------------------------------------
@@ -1011,10 +988,9 @@ public class App
 			{
 				String messageStr = Utils.getPathname(file) + REVERT_MESSAGE_STR;
 				String[] optionStrs = Utils.getOptionStrings(REVERT_STR);
-				if (JOptionPane.showOptionDialog(mainWindow, messageStr, REVERT_FILE_STR,
-												 JOptionPane.OK_CANCEL_OPTION,
-												 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
-												 optionStrs[1]) == JOptionPane.OK_OPTION)
+				if (JOptionPane.showOptionDialog(mainWindow, messageStr, REVERT_FILE_STR, JOptionPane.OK_CANCEL_OPTION,
+												 JOptionPane.QUESTION_MESSAGE, null, optionStrs, optionStrs[1])
+																							== JOptionPane.OK_OPTION)
 					revertDocument(fileInfo);
 			}
 		}
@@ -1088,8 +1064,7 @@ public class App
 		{
 			File file = chooseExport();
 			if ((file != null) && confirmWriteFile(file, EXPORT_IMAGE_STR))
-				TaskProgressDialog.showDialog(mainWindow, WRITE_IMAGE_STR,
-											  new Task.WriteImage(document, file));
+				TaskProgressDialog.showDialog(mainWindow, WRITE_IMAGE_STR, new Task.WriteImage(document, file));
 		}
 	}
 
@@ -1143,12 +1118,10 @@ public class App
 			for (int i = 0; i < numDocuments; i++)
 			{
 				if (i != currentIndex)
-					strs[index++] = getDocument(i).
-										getTitleString(AppConfig.INSTANCE.isShowFullPathnames());
+					strs[index++] = getDocument(i).getTitleString(AppConfig.INSTANCE.isShowFullPathnames());
 			}
-			int[] selections = ListSelectionDialog.showDialog(mainWindow, COPY_INTERVALS_STR,
-															  DOCUMENTS_STR, strs);
-			if (selections != null )
+			int[] selections = ListSelectionDialog.showDialog(mainWindow, COPY_INTERVALS_STR, DOCUMENTS_STR, strs);
+			if (selections != null)
 			{
 				FunctionDocument document = getDocument();
 				for (int i : selections)
@@ -1185,13 +1158,12 @@ public class App
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	ResourceProperties	buildProperties;
 	private	String				versionStr;
 	private	MainWindow			mainWindow;
-	private	Timer				fileCheckTimer;
 	private	List<DocumentView>	documentsViews;
 	private	JFileChooser		openFileChooser;
 	private	JFileChooser		saveFileChooser;

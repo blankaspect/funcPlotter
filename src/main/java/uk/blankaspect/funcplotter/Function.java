@@ -22,7 +22,7 @@ import java.awt.Color;
 
 import uk.blankaspect.common.exception.UnexpectedRuntimeException;
 
-import uk.blankaspect.common.misc.ColourUtils;
+import uk.blankaspect.common.swing.colour.ColourUtils;
 
 //----------------------------------------------------------------------
 
@@ -190,7 +190,7 @@ class Function
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Color		colour;

@@ -44,11 +44,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FTextArea;
-import uk.blankaspect.common.gui.GuiUtils;
+import uk.blankaspect.common.swing.action.KeyAction;
 
-import uk.blankaspect.common.misc.KeyAction;
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.textarea.FTextArea;
 
 //----------------------------------------------------------------------
 
@@ -103,7 +107,7 @@ class CommentDialog
 															JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 															JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		FontMetrics fontMetrics = commentArea.getFontMetrics(commentArea.getFont());
-		int width = TEXT_AREA_NUM_COLUMNS * GuiUtils.getCharWidth('0', fontMetrics);
+		int width = TEXT_AREA_NUM_COLUMNS * FontUtils.getCharWidth('0', fontMetrics);
 		int height = TEXT_AREA_NUM_ROWS * fontMetrics.getHeight();
 		commentAreaScrollPane.getViewport().setPreferredSize(new Dimension(width, height));
 		GuiUtils.setViewportBorder(commentAreaScrollPane, TEXT_AREA_VERTICAL_MARGIN,
@@ -269,13 +273,13 @@ class CommentDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Point	location;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	JTextArea	commentArea;
