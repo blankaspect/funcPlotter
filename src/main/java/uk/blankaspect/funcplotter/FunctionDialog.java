@@ -296,7 +296,7 @@ class FunctionDialog
 		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
 
 		// Set icons
-		setIconImages(AppIcon.getAppIconImages());
+		setIconImages(owner.getIconImages());
 
 
 		//----  Edit panel

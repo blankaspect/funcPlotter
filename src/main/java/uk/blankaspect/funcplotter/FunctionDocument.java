@@ -289,63 +289,63 @@ class FunctionDocument
 		SCROLL_LEFT
 		(
 			"scrollLeft",
-			AppIcon.ARROW_LEFT,
+			Icons.ARROW_LEFT,
 			"Scroll left"
 		),
 
 		SCROLL_RIGHT
 		(
 			"scrollRight",
-			AppIcon.ARROW_RIGHT,
+			Icons.ARROW_RIGHT,
 			"Scroll right"
 		),
 
 		SCROLL_DOWN
 		(
 			"scrollDown",
-			AppIcon.ARROW_DOWN,
+			Icons.ARROW_DOWN,
 			"Scroll down"
 		),
 
 		SCROLL_UP
 		(
 			"scrollUp",
-			AppIcon.ARROW_UP,
+			Icons.ARROW_UP,
 			"Scroll up"
 		),
 
 		CENTRE_ON_ORIGIN
 		(
 			"centreOnOrigin",
-			AppIcon.ORIGIN,
+			Icons.ORIGIN,
 			"Centre on origin"
 		),
 
 		X_ZOOM_OUT
 		(
 			"xZoomOut",
-			AppIcon.ZOOM_OUT,
+			Icons.ZOOM_OUT,
 			"x zoom out"
 		),
 
 		X_ZOOM_IN
 		(
 			"xZoomIn",
-			AppIcon.ZOOM_IN,
+			Icons.ZOOM_IN,
 			"x zoom in"
 		),
 
 		Y_ZOOM_OUT
 		(
 			"yZoomOut",
-			AppIcon.ZOOM_OUT,
+			Icons.ZOOM_OUT,
 			"y zoom out"
 		),
 
 		Y_ZOOM_IN
 		(
 			"yZoomIn",
-			AppIcon.ZOOM_IN,
+			Icons.ZOOM_IN,
 			"y zoom in"
 		),
 
