@@ -2,7 +2,7 @@
 
 FileKind.java
 
-File kind enumeration.
+Enumeration: kinds of function file.
 
 \*====================================================================*/
 
@@ -18,13 +18,15 @@ package uk.blankaspect.funcplotter;
 // IMPORTS
 
 
+import java.util.Arrays;
+
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.IStringKeyed;
 
 //----------------------------------------------------------------------
 
 
-// FILE KIND ENUMERATION
+// ENUMERATION: KINDS OF FUNCTION FILE
 
 
 enum FileKind
@@ -52,6 +54,14 @@ enum FileKind
 	);
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	String					key;
+	private	String					text;
+	private	FilenameSuffixFilter	filter;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
@@ -73,39 +83,30 @@ enum FileKind
 
 	public static FileKind forKey(String key)
 	{
-		for (FileKind value : values())
-		{
-			if (value.key.equals(key))
-				return value;
-		}
-		return null;
+		return Arrays.stream(values())
+						.filter(value -> value.key.equals(key))
+						.findFirst()
+						.orElse(null);
 	}
 
 	//------------------------------------------------------------------
 
 	public static FileKind forDescription(String description)
 	{
-		for (FileKind value : values())
-		{
-			if (value.filter.getDescription().equals(description))
-				return value;
-		}
-		return null;
+		return Arrays.stream(values())
+						.filter(value -> value.filter.getDescription().equals(description))
+						.findFirst()
+						.orElse(null);
 	}
 
 	//------------------------------------------------------------------
 
 	public static FileKind forFilename(String filename)
 	{
-		if (filename != null)
-		{
-			for (FileKind value : values())
-			{
-				if (filename.endsWith(value.filter.getSuffix(0)))
-					return value;
-			}
-		}
-		return null;
+		return Arrays.stream(values())
+						.filter(value -> value.filter.accepts(filename))
+						.findFirst()
+						.orElse(null);
 	}
 
 	//------------------------------------------------------------------
@@ -114,6 +115,7 @@ enum FileKind
 //  Instance methods : IStringKeyed interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public String getKey()
 	{
 		return key;
@@ -150,14 +152,6 @@ enum FileKind
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	String					key;
-	private	String					text;
-	private	FilenameSuffixFilter	filter;
 
 }
 

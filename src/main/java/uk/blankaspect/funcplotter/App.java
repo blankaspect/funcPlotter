@@ -54,6 +54,7 @@ import uk.blankaspect.common.logging.ErrorLogger;
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
 
 import uk.blankaspect.common.resource.ResourceProperties;
+import uk.blankaspect.common.resource.ResourceUtils;
 
 import uk.blankaspect.common.swing.misc.GuiUtils;
 
@@ -363,7 +364,7 @@ public class App
 		// Read build properties
 		try
 		{
-			buildProperties = new ResourceProperties(BUILD_PROPERTIES_FILENAME);
+			buildProperties = new ResourceProperties(ResourceUtils.absoluteName(getClass(), BUILD_PROPERTIES_FILENAME));
 		}
 		catch (LocationException e)
 		{
