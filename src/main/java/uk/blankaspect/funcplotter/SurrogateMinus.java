@@ -26,9 +26,9 @@ import javax.swing.text.BadLocationException;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.textfield.ConstrainedTextField;
+import uk.blankaspect.ui.swing.textfield.ConstrainedTextField;
 
 //----------------------------------------------------------------------
 

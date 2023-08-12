@@ -46,9 +46,6 @@ interface AppConstants
 	String	CLEAR_STR			= "Clear";
 	String	ALREADY_EXISTS_STR	= "\nThe file already exists.\nDo you want to replace it?";
 
-	// Temporary-file prefix
-	String	TEMP_FILE_PREFIX	= "_$_";
-
 	// Filename suffixes
 	String	PNG_FILE_SUFFIX		= ".png";
 	String	TEXT_FILE_SUFFIX	= ".txt";

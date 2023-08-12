@@ -2,7 +2,7 @@
 
 ListSelectionDialog.java
 
-List selection dialog box class.
+List selection dialog class.
 
 \*====================================================================*/
 
@@ -45,20 +45,20 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.list.SelectionList;
+import uk.blankaspect.ui.swing.list.SelectionList;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
 
-// LIST SELECTION DIALOG BOX CLASS
+// LIST SELECTION DIALOG CLASS
 
 
 class ListSelectionDialog

@@ -23,21 +23,18 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 
-import java.time.LocalDateTime;
-
-import java.time.format.DateTimeFormatter;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
+
+import uk.blankaspect.common.build.BuildUtils;
 
 import uk.blankaspect.common.cls.ClassUtils;
 
@@ -56,11 +53,11 @@ import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.resource.ResourceProperties;
 import uk.blankaspect.common.resource.ResourceUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
-import uk.blankaspect.common.swing.textfield.TextFieldUtils;
+import uk.blankaspect.ui.swing.textfield.TextFieldUtils;
 
 //----------------------------------------------------------------------
 
@@ -84,12 +81,6 @@ public class App
 	public static final		int		MAX_NUM_DOCUMENTS	= 64;
 
 	private static final	int	FILE_CHECK_TIMER_INTERVAL	= 500;
-
-	private static final	String	VERSION_PROPERTY_KEY	= "version";
-	private static final	String	BUILD_PROPERTY_KEY		= "build";
-	private static final	String	RELEASE_PROPERTY_KEY	= "release";
-
-	private static final	String	VERSION_DATE_TIME_PATTERN	= "uuuuMMdd-HHmmss";
 
 	private static final	String	BUILD_PROPERTIES_FILENAME	= "build.properties";
 
@@ -195,6 +186,13 @@ public class App
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
+	public String getVersionString()
+	{
+		return versionStr;
+	}
+
+	//------------------------------------------------------------------
+
 	public MainWindow getMainWindow()
 	{
 		return mainWindow;
@@ -263,54 +261,9 @@ public class App
 
 	//------------------------------------------------------------------
 
-	/**
-	 * Returns a string representation of the version of this application.  If this class was loaded from a JAR, the
-	 * string is created from the values of properties that are defined in a resource named 'build.properties';
-	 * otherwise, the string is created from the date and time when this method is first called.
-	 *
-	 * @return a string representation of the version of this application.
-	 */
-
-	public String getVersionString()
-	{
-		if (versionStr == null)
-		{
-			StringBuilder buffer = new StringBuilder(32);
-			if (ClassUtils.isFromJar(getClass()))
-			{
-				// Append version number
-				String str = buildProperties.get(VERSION_PROPERTY_KEY);
-				if (str != null)
-					buffer.append(str);
-
-				// If this is not a release, append build
-				boolean release = Boolean.parseBoolean(buildProperties.get(RELEASE_PROPERTY_KEY));
-				if (!release)
-				{
-					str = buildProperties.get(BUILD_PROPERTY_KEY);
-					if (str != null)
-					{
-						if (buffer.length() > 0)
-							buffer.append(' ');
-						buffer.append(str);
-					}
-				}
-			}
-			else
-			{
-				buffer.append('b');
-				buffer.append(DateTimeFormatter.ofPattern(VERSION_DATE_TIME_PATTERN).format(LocalDateTime.now()));
-			}
-			versionStr = buffer.toString();
-		}
-		return versionStr;
-	}
-
-	//------------------------------------------------------------------
-
 	public String getTitleString()
 	{
-		return (LONG_NAME + " " + getVersionString());
+		return (LONG_NAME + " " + versionStr);
 	}
 
 	//------------------------------------------------------------------
@@ -361,21 +314,19 @@ public class App
 		// Initialise instance variables
 		documentsViews = new ArrayList<>();
 
-		// Read build properties
+		// Read build properties and initialise version string
 		try
 		{
-			buildProperties = new ResourceProperties(ResourceUtils.absoluteName(getClass(), BUILD_PROPERTIES_FILENAME));
+			buildProperties = new ResourceProperties(ResourceUtils.normalisedPathname(getClass(), BUILD_PROPERTIES_FILENAME));
+			versionStr = BuildUtils.versionString(getClass(), buildProperties);
 		}
 		catch (LocationException e)
 		{
 			e.printStackTrace();
 		}
 
-		// Get clipboard access permission
-		AppConfig config = AppConfig.INSTANCE;
-		config.getPermissions();
-
 		// Read configuration
+		AppConfig config = AppConfig.INSTANCE;
 		config.read();
 
 		// Set UNIX style for pathnames in file exceptions
@@ -433,9 +384,7 @@ public class App
 			else
 			{
 				// Create list of files from command-line arguments
-				List<File> files = Arrays.stream(args)
-											.map(argument -> new File(PathnameUtils.parsePathname(argument)))
-											.collect(Collectors.toList());
+				List<File> files = Stream.of(args).map(arg -> new File(PathnameUtils.parsePathname(arg))).toList();
 
 				// Open files
 				openFiles(files);

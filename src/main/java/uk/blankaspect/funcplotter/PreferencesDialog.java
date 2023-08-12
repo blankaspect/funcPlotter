@@ -2,7 +2,7 @@
 
 PreferencesDialog.java
 
-Preferences dialog box class.
+Preferences dialog class.
 
 \*====================================================================*/
 
@@ -60,42 +60,42 @@ import uk.blankaspect.common.range.IntegerRange;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.border.TitledBorder;
+import uk.blankaspect.ui.swing.border.TitledBorder;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.checkbox.FCheckBox;
+import uk.blankaspect.ui.swing.checkbox.FCheckBox;
 
-import uk.blankaspect.common.swing.combobox.BooleanComboBox;
-import uk.blankaspect.common.swing.combobox.FComboBox;
+import uk.blankaspect.ui.swing.combobox.BooleanComboBox;
+import uk.blankaspect.ui.swing.combobox.FComboBox;
 
-import uk.blankaspect.common.swing.container.DimensionsSpinnerPanel;
-import uk.blankaspect.common.swing.container.PathnamePanel;
+import uk.blankaspect.ui.swing.container.DimensionsSpinnerPanel;
+import uk.blankaspect.ui.swing.container.PathnamePanel;
 
-import uk.blankaspect.common.swing.font.FontEx;
-import uk.blankaspect.common.swing.font.FontStyle;
+import uk.blankaspect.ui.swing.font.FontEx;
+import uk.blankaspect.ui.swing.font.FontStyle;
 
-import uk.blankaspect.common.swing.icon.ColourSampleIcon;
+import uk.blankaspect.ui.swing.icon.ColourSampleIcon;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
-import uk.blankaspect.common.swing.spinner.IntegerSpinner;
+import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
+import uk.blankaspect.ui.swing.spinner.IntegerSpinner;
 
-import uk.blankaspect.common.swing.tabbedpane.FTabbedPane;
+import uk.blankaspect.ui.swing.tabbedpane.FTabbedPane;
 
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
-import uk.blankaspect.common.swing.textfield.IntegerValueField;
+import uk.blankaspect.ui.swing.textfield.IntegerValueField;
 
 //----------------------------------------------------------------------
 
 
-// PREFERENCES DIALOG BOX CLASS
+// PREFERENCES DIALOG CLASS
 
 
 class PreferencesDialog

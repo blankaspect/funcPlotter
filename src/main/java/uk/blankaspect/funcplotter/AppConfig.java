@@ -18,7 +18,6 @@ package uk.blankaspect.funcplotter;
 // IMPORTS
 
 
-import java.awt.AWTPermission;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -30,6 +29,10 @@ import java.io.IOException;
 
 import java.lang.reflect.Field;
 
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +40,8 @@ import java.util.Properties;
 
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
+
+import uk.blankaspect.common.cls.ClassUtils;
 
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
@@ -51,15 +56,15 @@ import uk.blankaspect.common.property.PropertySet;
 
 import uk.blankaspect.common.range.IntegerRange;
 
-import uk.blankaspect.common.swing.colour.ColourProperty;
-import uk.blankaspect.common.swing.colour.Colours;
-import uk.blankaspect.common.swing.colour.ColourUtils;
-
-import uk.blankaspect.common.swing.font.FontEx;
-
-import uk.blankaspect.common.swing.text.TextRendering;
-
 import uk.blankaspect.common.ui.progress.IProgressView;
+
+import uk.blankaspect.ui.swing.colour.ColourProperty;
+import uk.blankaspect.ui.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
+
+import uk.blankaspect.ui.swing.font.FontEx;
+
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -666,7 +671,6 @@ class AppConfig
 		private CPMainWindowLocation()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.MAIN_WINDOW_LOCATION));
-			value = new Point();
 		}
 
 		//--------------------------------------------------------------
@@ -693,7 +697,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return ((value == null) ? "" : value.x + ", " + value.y);
+			return (value == null) ? "" : value.x + ", " + value.y;
 		}
 
 		//--------------------------------------------------------------
@@ -2084,12 +2088,11 @@ class AppConfig
 	{
 		File file = null;
 
-		// Get directory of JAR file
-		File jarDirectory = null;
+		// Get location of container of class file of application
+		Path containerLocation = null;
 		try
 		{
-			jarDirectory = new File(AppConfig.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-																									.getParentFile();
+			containerLocation = ClassUtils.getClassFileContainer(AppConfig.class);
 		}
 		catch (Exception e)
 		{
@@ -2098,18 +2101,19 @@ class AppConfig
 
 		// Get pathname of configuration directory from properties file
 		String pathname = null;
-		File propertiesFile = new File(jarDirectory, PROPERTIES_FILENAME);
-		if (propertiesFile.isFile())
+		Path propertiesFile = (containerLocation == null) ? Path.of(PROPERTIES_FILENAME)
+														  : containerLocation.resolveSibling(PROPERTIES_FILENAME);
+		if (Files.isRegularFile(propertiesFile, LinkOption.NOFOLLOW_LINKS))
 		{
 			try
 			{
 				Properties properties = new Properties();
-				properties.loadFromXML(new FileInputStream(propertiesFile));
+				properties.loadFromXML(new FileInputStream(propertiesFile.toFile()));
 				pathname = properties.getProperty(CONFIG_DIR_KEY);
 			}
 			catch (IOException e)
 			{
-				throw new FileException(ErrorId.ERROR_READING_PROPERTIES_FILE, propertiesFile);
+				throw new FileException(ErrorId.ERROR_READING_PROPERTIES_FILE, propertiesFile.toFile());
 			}
 		}
 
@@ -2146,7 +2150,7 @@ class AppConfig
 			}
 		}
 
-		// Set configuration file from pathname of configuration directory
+		// Get location of configuration file from pathname of configuration directory
 		else if (!pathname.isEmpty())
 		{
 			file = new File(PathnameUtils.parsePathname(pathname), CONFIG_FILENAME);
@@ -2162,36 +2166,6 @@ class AppConfig
 ////////////////////////////////////////////////////////////////////////
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
-
-	public void getPermissions()
-	{
-		// Assume permissions
-		permissionAccessClipboard = true;
-
-		// Get security manager
-		SecurityManager securityManager = System.getSecurityManager();
-		if (securityManager == null)
-			return;
-
-		// Check clipboard access
-		try
-		{
-			securityManager.checkPermission(new AWTPermission("accessClipboard"));
-		}
-		catch (SecurityException e)
-		{
-			permissionAccessClipboard = false;
-		}
-	}
-
-	//------------------------------------------------------------------
-
-	public boolean hasPermissionAccessClipboard()
-	{
-		return permissionAccessClipboard;
-	}
-
-	//------------------------------------------------------------------
 
 	public File chooseFile(Component parent)
 	{
@@ -2399,7 +2373,6 @@ class AppConfig
 	private	boolean			fileRead;
 	private	File			selectedFile;
 	private	JFileChooser	fileChooser;
-	private	boolean			permissionAccessClipboard;
 	private	List<Property>	properties;
 
 }

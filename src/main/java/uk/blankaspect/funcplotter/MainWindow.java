@@ -46,15 +46,15 @@ import javax.swing.event.MenuListener;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.menu.FCheckBoxMenuItem;
-import uk.blankaspect.common.swing.menu.FMenu;
-import uk.blankaspect.common.swing.menu.FMenuItem;
+import uk.blankaspect.ui.swing.menu.FCheckBoxMenuItem;
+import uk.blankaspect.ui.swing.menu.FMenu;
+import uk.blankaspect.ui.swing.menu.FMenuItem;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.tabbedpane.TabbedPane;
+import uk.blankaspect.ui.swing.tabbedpane.TabbedPane;
 
-import uk.blankaspect.common.swing.transfer.DataImporter;
+import uk.blankaspect.ui.swing.transfer.DataImporter;
 
 //----------------------------------------------------------------------
 
@@ -68,313 +68,10 @@ class MainWindow
 {
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// MENUS
-
-
-	private enum Menu
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FILE
-		(
-			"File",
-			KeyEvent.VK_F
-		)
-		{
-			protected void update()
-			{
-				updateAppCommands();
-			}
-		},
-
-		EDIT
-		(
-			"Edit",
-			KeyEvent.VK_E
-		)
-		{
-			protected void update()
-			{
-				getMenu().setEnabled(App.INSTANCE.hasDocuments());
-				updateAppCommands();
-				updateDocumentCommands();
-			}
-		},
-
-		VIEW
-		(
-			"View",
-			KeyEvent.VK_V
-		)
-		{
-			protected void update()
-			{
-				getMenu().setEnabled(App.INSTANCE.hasDocuments());
-				updateDocumentCommands();
-			}
-		},
-
-		OPTIONS
-		(
-			"Options",
-			KeyEvent.VK_O
-		)
-		{
-			protected void update()
-			{
-				updateAppCommands();
-			}
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Menu(String text,
-					 int    keyCode)
-		{
-			menu = new FMenu(text, keyCode);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static void updateAppCommands()
-		{
-			App.INSTANCE.updateCommands();
-		}
-
-		//--------------------------------------------------------------
-
-		private static void updateDocumentCommands()
-		{
-			FunctionDocument document = App.INSTANCE.getDocument();
-			if (document == null)
-				FunctionDocument.Command.setAllEnabled(false);
-			else
-				document.updateCommands();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract void update();
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		protected JMenu getMenu()
-		{
-			return menu;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	JMenu	menu;
-
-	}
-
-	//==================================================================
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FILE_TRANSFER_NOT_SUPPORTED
-		("File transfer is not supported."),
-
-		ERROR_TRANSFERRING_DATA
-		("An error occurred while transferring data.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// CLOSE ACTION CLASS
-
-
-	private static class CloseAction
-		extends AbstractAction
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CloseAction()
-		{
-			putValue(Action.ACTION_COMMAND_KEY, "");
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			App.INSTANCE.closeDocument(Integer.parseInt(event.getActionCommand()));
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// FILE TRANSFER HANDLER CLASS
-
-
-	private class FileTransferHandler
-		extends TransferHandler
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public FileTransferHandler()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			AppCommand.IMPORT_FILES.execute();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public boolean canImport(TransferHandler.TransferSupport support)
-		{
-			boolean supported = !support.isDrop() || ((support.getSourceDropActions() & COPY) == COPY);
-			if (supported)
-				supported = DataImporter.isFileList(support.getDataFlavors());
-			if (support.isDrop() && supported)
-				support.setDropAction(COPY);
-			return supported;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public boolean importData(TransferHandler.TransferSupport support)
-		{
-			if (canImport(support))
-			{
-				try
-				{
-					try
-					{
-						List<File> files = DataImporter.getFiles(support.getTransferable());
-						if (!files.isEmpty())
-						{
-							toFront();
-							AppCommand.IMPORT_FILES.putValue(AppCommand.Property.FILES, files);
-							SwingUtilities.invokeLater(this);
-							return true;
-						}
-					}
-					catch (UnsupportedFlavorException e)
-					{
-						throw new AppException(ErrorId.FILE_TRANSFER_NOT_SUPPORTED);
-					}
-					catch (IOException e)
-					{
-						throw new AppException(ErrorId.ERROR_TRANSFERRING_DATA);
-					}
-				}
-				catch (AppException e)
-				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
-				}
-			}
-			return false;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	TabbedPane	tabbedPanel;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -500,8 +197,9 @@ class MainWindow
 
 		// Set location of window
 		AppConfig config = AppConfig.INSTANCE;
-		if (config.isMainWindowLocation())
-			setLocation(GuiUtils.getLocationWithinScreen(this, config.getMainWindowLocation()));
+		setLocation(config.isMainWindowLocation()
+								? GuiUtils.getLocationWithinScreen(this, config.getMainWindowLocation())
+								: GuiUtils.getComponentLocation(this));
 
 		// Update title and menus
 		updateTitleAndMenus();
@@ -516,6 +214,7 @@ class MainWindow
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		if (event.getSource() == tabbedPanel)
@@ -531,6 +230,7 @@ class MainWindow
 //  Instance methods : MenuListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void menuCanceled(MenuEvent event)
 	{
 		// do nothing
@@ -538,6 +238,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void menuDeselected(MenuEvent event)
 	{
 		// do nothing
@@ -545,6 +246,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void menuSelected(MenuEvent event)
 	{
 		Object eventSource = event.getSource();
@@ -561,6 +263,7 @@ class MainWindow
 //  Instance methods : WindowFocusListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void windowGainedFocus(WindowEvent event)
 	{
 		FunctionView view = App.INSTANCE.getView();
@@ -570,6 +273,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void windowLostFocus(WindowEvent event)
 	{
 		FunctionView view = App.INSTANCE.getView();
@@ -662,10 +366,319 @@ class MainWindow
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private	TabbedPane	tabbedPanel;
+
+	// MENUS
+
+
+	private enum Menu
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FILE
+		(
+			"File",
+			KeyEvent.VK_F
+		)
+		{
+			@Override
+			protected void update()
+			{
+				updateAppCommands();
+			}
+		},
+
+		EDIT
+		(
+			"Edit",
+			KeyEvent.VK_E
+		)
+		{
+			@Override
+			protected void update()
+			{
+				getMenu().setEnabled(App.INSTANCE.hasDocuments());
+				updateAppCommands();
+				updateDocumentCommands();
+			}
+		},
+
+		VIEW
+		(
+			"View",
+			KeyEvent.VK_V
+		)
+		{
+			@Override
+			protected void update()
+			{
+				getMenu().setEnabled(App.INSTANCE.hasDocuments());
+				updateDocumentCommands();
+			}
+		},
+
+		OPTIONS
+		(
+			"Options",
+			KeyEvent.VK_O
+		)
+		{
+			@Override
+			protected void update()
+			{
+				updateAppCommands();
+			}
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	JMenu	menu;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Menu(String text,
+					 int    keyCode)
+		{
+			menu = new FMenu(text, keyCode);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		private static void updateAppCommands()
+		{
+			App.INSTANCE.updateCommands();
+		}
+
+		//--------------------------------------------------------------
+
+		private static void updateDocumentCommands()
+		{
+			FunctionDocument document = App.INSTANCE.getDocument();
+			if (document == null)
+				FunctionDocument.Command.setAllEnabled(false);
+			else
+				document.updateCommands();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Abstract methods
+	////////////////////////////////////////////////////////////////////
+
+		protected abstract void update();
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		protected JMenu getMenu()
+		{
+			return menu;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FILE_TRANSFER_NOT_SUPPORTED
+		("File transfer is not supported."),
+
+		ERROR_TRANSFERRING_DATA
+		("An error occurred while transferring data.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLOSE ACTION CLASS
+
+
+	private static class CloseAction
+		extends AbstractAction
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CloseAction()
+		{
+			putValue(Action.ACTION_COMMAND_KEY, "");
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void actionPerformed(ActionEvent event)
+		{
+			App.INSTANCE.closeDocument(Integer.parseInt(event.getActionCommand()));
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// FILE TRANSFER HANDLER CLASS
+
+
+	private class FileTransferHandler
+		extends TransferHandler
+		implements Runnable
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public FileTransferHandler()
+		{
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : Runnable interface
+	////////////////////////////////////////////////////////////////////
+
+		public void run()
+		{
+			AppCommand.IMPORT_FILES.execute();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public boolean canImport(TransferHandler.TransferSupport support)
+		{
+			boolean supported = !support.isDrop() || ((support.getSourceDropActions() & COPY) == COPY);
+			if (supported)
+				supported = DataImporter.isFileList(support.getDataFlavors());
+			if (support.isDrop() && supported)
+				support.setDropAction(COPY);
+			return supported;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public boolean importData(TransferHandler.TransferSupport support)
+		{
+			if (canImport(support))
+			{
+				try
+				{
+					try
+					{
+						List<File> files = DataImporter.getFiles(support.getTransferable());
+						if (!files.isEmpty())
+						{
+							toFront();
+							AppCommand.IMPORT_FILES.putValue(AppCommand.Property.FILES, files);
+							SwingUtilities.invokeLater(this);
+							return true;
+						}
+					}
+					catch (UnsupportedFlavorException e)
+					{
+						throw new AppException(ErrorId.FILE_TRANSFER_NOT_SUPPORTED);
+					}
+					catch (IOException e)
+					{
+						throw new AppException(ErrorId.ERROR_TRANSFERRING_DATA);
+					}
+				}
+				catch (AppException e)
+				{
+					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+				}
+			}
+			return false;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

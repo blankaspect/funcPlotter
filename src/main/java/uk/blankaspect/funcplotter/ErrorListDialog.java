@@ -2,7 +2,7 @@
 
 ErrorListDialog.java
 
-Error list dialog box class.
+Error list dialog class.
 
 \*====================================================================*/
 
@@ -28,14 +28,14 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
-import uk.blankaspect.common.swing.dialog.NonEditableTextPaneDialog;
+import uk.blankaspect.ui.swing.dialog.NonEditableTextPaneDialog;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
 
-// ERROR LIST DIALOG BOX CLASS
+// ERROR LIST DIALOG CLASS
 
 
 class ErrorListDialog

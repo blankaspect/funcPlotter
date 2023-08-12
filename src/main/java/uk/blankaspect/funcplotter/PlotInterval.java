@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 
 import uk.blankaspect.common.range.IntegerRange;
 
-import uk.blankaspect.common.string.StringUtils;
-
 //----------------------------------------------------------------------
 
 
@@ -186,13 +184,13 @@ class PlotInterval
 		StringBuilder buffer = new StringBuilder(MAX_NUM_SIGNIFICANT_DIGITS << 1);
 		if (pointIndex < 0)
 		{
-			buffer.append(StringUtils.createCharArray('0', -pointIndex));
+			buffer.append("0".repeat(-pointIndex));
 			pointIndex = 0;
 		}
 		buffer.append(sigStr);
 		int maxLength = Math.min(pointIndex + numFractionDigits, buffer.length() - 2);
 		if (pointIndex > buffer.length())
-			buffer.append(StringUtils.createCharArray('0', pointIndex - buffer.length()));
+			buffer.append("0".repeat(pointIndex - buffer.length()));
 
 		// Round up value and remove extraneous digits
 		int i = maxLength;
@@ -229,11 +227,11 @@ class PlotInterval
 		// Insert radix point
 		if (pointIndex < 0)
 		{
-			buffer.insert(0, StringUtils.createCharArray('0', -pointIndex));
+			buffer.insert(0, "0".repeat(-pointIndex));
 			pointIndex = 0;
 		}
 		if (pointIndex > buffer.length())
-			buffer.append(StringUtils.createCharArray('0', pointIndex - buffer.length()));
+			buffer.append("0".repeat(pointIndex - buffer.length()));
 		buffer.insert(pointIndex, '.');
 
 		// Strip leading zeros

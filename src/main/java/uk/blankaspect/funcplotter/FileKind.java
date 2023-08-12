@@ -18,7 +18,7 @@ package uk.blankaspect.funcplotter;
 // IMPORTS
 
 
-import java.util.Arrays;
+import java.util.stream.Stream;
 
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.IStringKeyed;
@@ -83,7 +83,7 @@ enum FileKind
 
 	public static FileKind forKey(String key)
 	{
-		return Arrays.stream(values())
+		return Stream.of(values())
 						.filter(value -> value.key.equals(key))
 						.findFirst()
 						.orElse(null);
@@ -93,7 +93,7 @@ enum FileKind
 
 	public static FileKind forDescription(String description)
 	{
-		return Arrays.stream(values())
+		return Stream.of(values())
 						.filter(value -> value.filter.getDescription().equals(description))
 						.findFirst()
 						.orElse(null);
@@ -103,7 +103,7 @@ enum FileKind
 
 	public static FileKind forFilename(String filename)
 	{
-		return Arrays.stream(values())
+		return Stream.of(values())
 						.filter(value -> value.filter.accepts(filename))
 						.findFirst()
 						.orElse(null);

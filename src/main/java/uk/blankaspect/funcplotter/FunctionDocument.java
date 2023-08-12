@@ -66,10 +66,6 @@ import uk.blankaspect.common.misc.TextFile;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.colour.ColourUtils;
-
-import uk.blankaspect.common.swing.image.PngOutputFile;
-
 import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.Comment;
 import uk.blankaspect.common.xml.XmlConstants;
@@ -77,6 +73,10 @@ import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlUtils;
 import uk.blankaspect.common.xml.XmlValidationException;
 import uk.blankaspect.common.xml.XmlWriter;
+
+import uk.blankaspect.ui.swing.colour.ColourUtils;
+
+import uk.blankaspect.ui.swing.image.PngOutputFile;
 
 //----------------------------------------------------------------------
 
@@ -392,7 +392,7 @@ class FunctionDocument
 
 		private Command(String key)
 		{
-			command = new uk.blankaspect.common.swing.action.Command(this);
+			command = new uk.blankaspect.ui.swing.action.Command(this);
 			putValue(Action.ACTION_COMMAND_KEY, key);
 		}
 
@@ -532,7 +532,7 @@ class FunctionDocument
 	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
-		private	uk.blankaspect.common.swing.action.Command	command;
+		private	uk.blankaspect.ui.swing.action.Command	command;
 
 	}
 
@@ -1604,8 +1604,7 @@ class FunctionDocument
 		Command.CLEAR_EDIT_LIST.setEnabled(!editList.isEmpty());
 		Command.ADD_FUNCTION.setEnabled(!isFull());
 		Command.EDIT_FUNCTION.setEnabled(isFunctionSelected);
-		Command.COPY_FUNCTION.setEnabled(AppConfig.INSTANCE.hasPermissionAccessClipboard() &&
-										  isFunctionSelected);
+		Command.COPY_FUNCTION.setEnabled(isFunctionSelected);
 		Command.VIEW_FUNCTION.setEnabled(isFunctionSelected);
 		Command.TOGGLE_HIGHLIGHT_FUNCTION.setEnabled(isFunctionSelected && (getNumFunctions() > 1));
 		Command.TOGGLE_HIGHLIGHT_FUNCTION.setSelected(isFunctionSelected &&

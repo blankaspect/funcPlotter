@@ -2,7 +2,7 @@
 
 CommentDialog.java
 
-Comment dialog box class.
+Comment dialog class.
 
 \*====================================================================*/
 
@@ -44,20 +44,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.textarea.FTextArea;
+import uk.blankaspect.ui.swing.textarea.FTextArea;
 
 //----------------------------------------------------------------------
 
 
-// COMMENT DIALOG BOX CLASS
+// COMMENT DIALOG CLASS
 
 
 class CommentDialog

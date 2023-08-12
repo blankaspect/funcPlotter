@@ -22,7 +22,7 @@ import java.awt.Color;
 
 import uk.blankaspect.common.exception.UnexpectedRuntimeException;
 
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
 //----------------------------------------------------------------------
 

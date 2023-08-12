@@ -2,7 +2,7 @@
 
 FunctionDialog.java
 
-Function dialog box class.
+Function dialog class.
 
 \*====================================================================*/
 
@@ -55,22 +55,23 @@ import uk.blankaspect.common.exception.AppException;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.icon.ColourSampleIcon;
+import uk.blankaspect.ui.swing.icon.ColourSampleIcon;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiConstants;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
 
-// FUNCTION DIALOG BOX CLASS
+// FUNCTION DIALOG CLASS
 
 
 class FunctionDialog
@@ -86,7 +87,7 @@ class FunctionDialog
 	private static final	int		COLOUR_BUTTON_ICON_HEIGHT	= 16;
 	private static final	Insets	COLOUR_BUTTON_MARGINS		= new Insets(2, 2, 2, 2);
 
-	private static final	int	EXPRESSION_FIELD_LENGTH	= 512;
+	private static final	int		EXPRESSION_FIELD_LENGTH	= 512;
 
 	private static final	String	COLOUR_STR			= "Colour";
 	private static final	String	EXPRESSION_STR		= "Expression";
@@ -135,12 +136,12 @@ class FunctionDialog
 	//  Constants
 	////////////////////////////////////////////////////////////////////
 
-		private static final	int	WIDTH	= 18;
-		private static final	int	HEIGHT	= 18;
+		private static final	int		WIDTH	= 18;
+		private static final	int		HEIGHT	= 18;
 
 		private static final	Color	BORDER_COLOUR			= Color.GRAY;
-		private static final	Color	FOCUSED_BORDER_COLOUR1	= Color.BLACK;
-		private static final	Color	FOCUSED_BORDER_COLOUR2	= Color.WHITE;
+		private static final	Color	FOCUSED_BORDER_COLOUR1	= Color.WHITE;
+		private static final	Color	FOCUSED_BORDER_COLOUR2	= Color.BLACK;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -170,27 +171,30 @@ class FunctionDialog
 		protected void paintComponent(Graphics gr)
 		{
 			// Create copy of graphics context
-			gr = gr.create();
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 			// Get dimensions
 			int width = getWidth();
 			int height = getHeight();
 
 			// Fill interior
-			gr.setColor(getForeground());
-			gr.fillRect(2, 2, width - 4, height - 4);
+			gr2d.setColor(getForeground());
+			gr2d.fillRect(2, 2, width - 4, height - 4);
 
 			// Draw border
-			gr.setColor(isFocusOwner() ? FOCUSED_BORDER_COLOUR2 : BORDER_COLOUR);
-			gr.drawRect(1, 1, width - 3, height - 3);
+			gr2d.setColor(isFocusOwner() ? FOCUSED_BORDER_COLOUR1 : BORDER_COLOUR);
+			gr2d.drawRect(1, 1, width - 3, height - 3);
 			if (isFocusOwner())
 			{
-				((Graphics2D)gr).setStroke(GuiUtils.getBasicDash());
-				gr.setColor(FOCUSED_BORDER_COLOUR1);
+				gr2d.setColor(FOCUSED_BORDER_COLOUR1);
+				gr2d.drawRect(0, 0, width - 1, height - 1);
+
+				gr2d.setStroke(GuiConstants.BASIC_DASH);
+				gr2d.setColor(FOCUSED_BORDER_COLOUR2);
 			}
 			else
-				gr.setColor(getBackground());
-			gr.drawRect(0, 0, width - 1, height - 1);
+				gr2d.setColor(getBackground());
+			gr2d.drawRect(0, 0, width - 1, height - 1);
 		}
 
 		//--------------------------------------------------------------
@@ -437,8 +441,6 @@ class FunctionDialog
 		copyButton.setToolTipText(COPY_TOOLTIP_STR);
 		copyButton.setActionCommand(Command.COPY);
 		copyButton.addActionListener(this);
-		if (!AppConfig.INSTANCE.hasPermissionAccessClipboard())
-			copyButton.setEnabled(false);
 		editButtonPanel.add(copyButton);
 
 		// Button: paste
@@ -612,6 +614,7 @@ class FunctionDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		String command = event.getActionCommand();
@@ -645,6 +648,7 @@ class FunctionDialog
 //  Instance methods : FlavourListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void flavorsChanged(FlavorEvent event)
 	{
 		try

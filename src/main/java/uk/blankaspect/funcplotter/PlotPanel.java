@@ -50,18 +50,16 @@ import javax.swing.event.ChangeListener;
 
 import uk.blankaspect.common.range.IntegerRange;
 
-import uk.blankaspect.common.string.StringUtils;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.cursor.CrosshairCursor;
 
-import uk.blankaspect.common.swing.cursor.CrosshairCursor;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
-
-import uk.blankaspect.common.swing.text.TextRendering;
-import uk.blankaspect.common.swing.text.TextUtils;
+import uk.blankaspect.ui.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 
@@ -358,17 +356,14 @@ class PlotPanel
 		this.gridVisible = gridVisible;
 		minusChar = SurrogateMinus.getMinusChar(getFont());
 		FontMetrics fontMetrics = getFontMetrics(getFont());
-		char[] zeros = StringUtils.createCharArray('0', numYScaleDigits);
-		maxYScaleStrWidth = fontMetrics.charsWidth(zeros, 0, zeros.length);
+		maxYScaleStrWidth = fontMetrics.stringWidth("0".repeat(numYScaleDigits));
 		int yScaleWidth = Y_SCALE_LEFT_MARGIN + maxYScaleStrWidth + SCALE_LINE_LENGTH;
-		int xScaleHeight = SCALE_LINE_LENGTH + X_SCALE_TOP_MARGIN + fontMetrics.getAscent() +
-																				fontMetrics.getDescent();
+		int xScaleHeight = SCALE_LINE_LENGTH + X_SCALE_TOP_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent();
 		plotRect = new Rectangle(borderInsets.left + LEFT_MARGIN + yScaleWidth,
 								 borderInsets.top + TOP_MARGIN, plotWidth, plotHeight);
-		panelWidth = borderInsets.left + LEFT_MARGIN + yScaleWidth + plotWidth + maxYScaleStrWidth / 2 +
-																		RIGHT_MARGIN + borderInsets.right;
-		panelHeight = borderInsets.top + TOP_MARGIN + plotHeight + xScaleHeight + BOTTOM_MARGIN +
-																						borderInsets.bottom;
+		panelWidth = borderInsets.left + LEFT_MARGIN + yScaleWidth + plotWidth + maxYScaleStrWidth / 2
+						+ RIGHT_MARGIN + borderInsets.right;
+		panelHeight = borderInsets.top + TOP_MARGIN + plotHeight + xScaleHeight + BOTTOM_MARGIN + borderInsets.bottom;
 		xParams = new PlotParams(document.getXInterval(), plotWidth);
 		yParams = new PlotParams(document.getYInterval(), plotHeight);
 		changeListeners = new ArrayList<>();

@@ -69,31 +69,29 @@ import javax.swing.event.ListSelectionListener;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.string.StringUtils;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.combobox.FComboBox;
 
-import uk.blankaspect.common.swing.combobox.FComboBox;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.list.SingleSelectionList;
 
-import uk.blankaspect.common.swing.list.SingleSelectionList;
+import uk.blankaspect.ui.swing.menu.FCheckBoxMenuItem;
+import uk.blankaspect.ui.swing.menu.FMenu;
+import uk.blankaspect.ui.swing.menu.FMenuItem;
 
-import uk.blankaspect.common.swing.menu.FCheckBoxMenuItem;
-import uk.blankaspect.common.swing.menu.FMenu;
-import uk.blankaspect.common.swing.menu.FMenuItem;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.modifiers.InputModifiers;
 
-import uk.blankaspect.common.swing.modifiers.InputModifiers;
-
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
 
@@ -571,9 +569,8 @@ class FunctionView
 			FontMetrics fontMetrics = getFontMetrics(getFont());
 			charWidth = Math.max(FontUtils.getCharWidth('x', fontMetrics),
 								 FontUtils.getCharWidth('y', fontMetrics));
-			char[] zeros = StringUtils.createCharArray('0', PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS);
-			int maxStrWidth = fontMetrics.stringWidth(convertString(BASE_STR)) +
-														fontMetrics.charsWidth(zeros, 0, zeros.length);
+			int maxStrWidth = fontMetrics.stringWidth(convertString(BASE_STR))
+									+ fontMetrics.stringWidth("0".repeat(PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS));
 			width = LEADING_MARGIN + charWidth + GAP + maxStrWidth + TRAILING_MARGIN;
 			height = TOP_MARGIN + NUM_ROWS * fontMetrics.getHeight() + BOTTOM_MARGIN;
 

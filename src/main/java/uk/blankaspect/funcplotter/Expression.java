@@ -20,10 +20,9 @@ package uk.blankaspect.funcplotter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import uk.blankaspect.common.exception.AppException;
-
-import uk.blankaspect.common.string.StringUtils;
 
 //----------------------------------------------------------------------
 
@@ -1095,8 +1094,7 @@ class Expression
 
 		public String getIndicatorString()
 		{
-			return ((offset == 0) ? INDICATOR_STR
-								  : StringUtils.createCharString(' ', offset) + INDICATOR_STR);
+			return (offset == 0) ? INDICATOR_STR : " ".repeat(offset) + INDICATOR_STR;
 		}
 
 		//--------------------------------------------------------------
@@ -1234,7 +1232,7 @@ class Expression
 			@Override
 			public String toString()
 			{
-				return ((keyword == null) ? INVALID_KEYWORD_STR : keyword.key);
+				return (keyword == null) ? INVALID_KEYWORD_STR : keyword.key;
 			}
 
 			//----------------------------------------------------------
@@ -1283,7 +1281,7 @@ class Expression
 			@Override
 			public String toString()
 			{
-				return ((symbol == null) ? INVALID_SYMBOL_STR : Character.toString(symbol.key));
+				return (symbol == null) ? INVALID_SYMBOL_STR : Character.toString(symbol.key);
 			}
 
 			//----------------------------------------------------------
@@ -1498,7 +1496,7 @@ class Expression
 			@Override
 			public boolean equals(Object obj)
 			{
-				return ((obj instanceof VariableNode) && super.equals(obj));
+				return (obj instanceof VariableNode) && super.equals(obj);
 			}
 
 			//----------------------------------------------------------
@@ -1584,7 +1582,7 @@ class Expression
 				if (obj instanceof UnaryOperationNode)
 				{
 					UnaryOperationNode node = (UnaryOperationNode)obj;
-					return ((unaryOperation == node.unaryOperation) && super.equals(obj));
+					return (unaryOperation == node.unaryOperation) && super.equals(obj);
 				}
 				return false;
 			}
@@ -1670,7 +1668,7 @@ class Expression
 				if (obj instanceof BinaryOperationNode)
 				{
 					BinaryOperationNode node = (BinaryOperationNode)obj;
-					return ((binaryOperation == node.binaryOperation) && super.equals(obj));
+					return (binaryOperation == node.binaryOperation) && super.equals(obj);
 				}
 				return false;
 			}
@@ -1743,33 +1741,11 @@ class Expression
 		@Override
 		public boolean equals(Object obj)
 		{
-			if (!(obj instanceof Node))
-				return false;
+			if (this == obj)
+				return true;
 
-			Node node = (Node)obj;
-			if (leftChild == null)
-			{
-				if (node.leftChild != null)
-					return false;
-			}
-			else
-			{
-				if (!leftChild.equals(node.leftChild))
-					return false;
-			}
-
-			if (rightChild == null)
-			{
-				if (node.rightChild != null)
-					return false;
-			}
-			else
-			{
-				if (!rightChild.equals(node.rightChild))
-					return false;
-			}
-
-			return true;
+			return (obj instanceof Node other) && Objects.equals(leftChild, other.leftChild)
+					&& Objects.equals(rightChild, other.rightChild);
 		}
 
 		//--------------------------------------------------------------
@@ -1777,8 +1753,8 @@ class Expression
 		@Override
 		public int hashCode()
 		{
-			int code = ((leftChild == null) ? 0 : leftChild.hashCode());
-			code = code * 31 + ((rightChild == null) ? 0 : rightChild.hashCode());
+			int code = Objects.hashCode(leftChild);
+			code = code * 31 + Objects.hashCode(rightChild);
 			return code;
 		}
 
@@ -1798,7 +1774,7 @@ class Expression
 
 		protected boolean isEmpty()
 		{
-			return ((leftChild == null) && (rightChild == null));
+			return (leftChild == null) && (rightChild == null);
 		}
 
 		//--------------------------------------------------------------
@@ -1890,7 +1866,7 @@ class Expression
 			else
 				str += " : " + getValueString();
 
-			String indent = StringUtils.createCharString(' ', level * 4);
+			String indent = " ".repeat(level * 4);
 			if (leftChild != null)
 				str += "\n" + indent + "<L> " + leftChild.toNodeString(level + 1);
 			if (rightChild != null)
@@ -2119,7 +2095,6 @@ class Expression
 					break;
 
 				case WHITESPACE:
-				{
 					if (isWhitespace(ch))
 					{
 						++charIndex;
@@ -2129,7 +2104,6 @@ class Expression
 					if (state != LexState.INVALID)
 						offset = charIndex;
 					break;
-				}
 
 				case NUMBER:
 				{
@@ -2178,7 +2152,6 @@ class Expression
 				}
 
 				case ALPHA:
-				{
 					if (isAlpha(ch))
 					{
 						buffer.append(ch);
@@ -2193,13 +2166,11 @@ class Expression
 						offset = charIndex;
 					}
 					break;
-				}
 
 				case SYMBOL:
-				{
 					if (isSymbol(ch))
 					{
-						if (buffer.length() > 0)
+						if (!buffer.isEmpty())
 						{
 							tokens.add(symbolToToken(buffer.toString(), offset));
 							buffer.setLength(0);
@@ -2217,7 +2188,6 @@ class Expression
 						offset = charIndex;
 					}
 					break;
-				}
 
 				case EOL:
 					tokens.add(new Token.EofToken(offset));
@@ -2225,8 +2195,7 @@ class Expression
 					break;
 
 				case INVALID:
-					throw new Expression.Exception(ErrorId.CHARACTER_NOT_ALLOWED, Character.toString(ch),
-												   charIndex);
+					throw new Expression.Exception(ErrorId.CHARACTER_NOT_ALLOWED, Character.toString(ch), charIndex);
 
 				case DONE:
 					// do nothing
@@ -2413,7 +2382,7 @@ class Expression
 	@Override
 	public boolean equals(Object obj)
 	{
-		return ((obj instanceof Expression) && tree.equals(((Expression)obj).tree));
+		return (obj instanceof Expression other) && tree.equals(other.tree);
 	}
 
 	//------------------------------------------------------------------
