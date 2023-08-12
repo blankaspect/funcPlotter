@@ -1,0 +1,55 @@
+/**********************************************************************\
+
+Styles for FuncPlotter manual
+
+\**********************************************************************/
+
+@import url("blankaspect-manual.css");
+
+.p.quotation
+{
+  font-size: 90%;
+  margin-top: 0.6em;
+  margin-left: 2.0em;
+  margin-right: 2.0em;
+}
+
+table.operation
+{
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+}
+table.operation td
+{
+  border: 1px solid #B4B8C8;
+  padding: 0.1em 0.6em;
+}
+table.operation td.col1
+{
+  background-color: #F8F6E0;
+}
+table.operation td code
+{
+  background-color: transparent;
+}
+
+table.simpleOperand
+{
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+}
+table.simpleOperand td
+{
+  border: 1px solid #B4B8C8;
+  padding: 0.1em 0.6em;
+}
+table.simpleOperand td.col1
+{
+  background-color: #F8F6E0;
+}
+table.simpleOperand td code
+{
+  background-color: transparent;
+}
+
+/*--------------------------------------------------------------------*/

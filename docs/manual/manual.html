@@ -1,0 +1,2495 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+   PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html
+   xmlns="http://www.w3.org/1999/xhtml"
+   xml:lang="en">
+
+  <head>
+    <meta
+       http-equiv="content-type"
+       content="application/xhtml+xml;charset=UTF-8"/>
+    <meta
+       content="initial-scale=1"
+       name="viewport"/>
+    <title>FuncPlotter : manual</title>
+    <link
+       href="style/blankaspect-common.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="style/blankaspect-manual.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="style/funcPlotter-manual.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="images/icon-48x48.png"
+       rel="icon"/>
+    <script
+       src="scripts/Toc.js"
+       type="text/javascript">
+    </script>
+    <script
+       src="scripts/init.js"
+       type="text/javascript">
+    </script>
+  </head>
+
+  <body>
+
+    <!-- Title -->
+
+    <div id="title">
+      <div>
+        <img alt="Icon" src="images/icon-48x48.png"/>
+      </div>
+      <div>
+        FuncPlotter : manual
+      </div>
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Table of contents -->
+
+    <div class="section">
+      <h2 id="toc">Table of contents</h2>
+      <div id="tocRoot">
+        <div class="wrap" id="tocPlaceholder">
+          You must have JavaScript enabled in your browser to generate the table of contents.
+        </div>
+      </div>
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Introduction -->
+
+    <div class="section">
+      <h2 id="section1">1&nbsp; Introduction</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        FuncPlotter is a Java application that can display two-dimensional plots of explicit
+        functions in one variable (ie, functions of the form
+        <i>y</i>&nbsp;=&nbsp;<i>f</i>(<i>x</i>), where <i>f</i>(<i>x</i>) is an arbitrary
+        function composed from a set of common mathematical operations).
+      </p>
+
+      <h3 id="section1-1">1.1&nbsp; Features</h3>
+
+      <p class="wrap">
+        FuncPlotter has the following features:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          Up to 20 functions can be plotted simultaneously.  The colour of each plot can be
+          specified.
+        </li>
+        <li class="spaced wrap">
+          FuncPlotter can save a set of up to 20 functions to a file and can load files saved in
+          this way.  The files are saved either as XML or in a simple text format, allowing you
+          to create and to edit files with a text editor.
+        </li>
+        <li class="spaced wrap">
+          Multiple documents (sets of functions) can be open simultaneously in a tabbed window.
+        </li>
+        <li class="spaced wrap">
+          Changes that are made to a document can be undone and redone.
+        </li>
+        <li class="spaced wrap">
+          The <i>x</i> and <i>y</i> coordinates at the mouse cursor are displayed when the mouse
+          cursor is over the plot area.
+        </li>
+        <li class="spaced wrap">
+          Plots can be scrolled by clicking on buttons, rotating the mouse wheel, dragging the
+          mouse or pressing keys.
+        </li>
+        <li class="spaced wrap">
+          You can repeatedly scale a plot (zoom in and out) by a factor that can be
+          independently selected for each of the <i>x</i> and <i>y</i> dimensions.
+        </li>
+        <li class="spaced wrap">
+          Plots can be exported as an image file in PNG format.
+        </li>
+      </ul>
+
+      <h3 id="section1-2">1.2&nbsp; Licence</h3>
+
+      <p class="wrap">
+        FuncPlotter is made available under two licences:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          The contents of the <code>uk.blankaspect.funcplotter</code> package (including
+          resources) may be used under the terms of version 3 of the <a class="external"
+          href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License</a>.
+        </li>
+        <li class="spaced wrap">
+          All other contents of the GitHub <a
+          href="https://github.com/blankaspect/funcPlotter">blankaspect/funcPlotter</a>
+          repository may be used under the terms of the <a class="external"
+          href="https://mit-license.org/">MIT License</a>.
+        </li>
+      </ul>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <div class="section">
+      <h2 id="section2">2&nbsp; Building and running the application</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        This section assumes that you have some experience of building and running a Java
+        application.
+      </p>
+
+      <h3 id="section2-1">2.1&nbsp; Building the application</h3>
+
+      <p class="wrap">
+        A Java Development Kit (JDK) that supports Java 17, such as <a class="external"
+        href="https://adoptium.net/">Eclipse Temurin from Adoptium</a>, is required to build
+        FuncPlotter.
+      </p>
+      <p class="wrap">
+        The <code>src</code> directory of the distribution contains all the source code and
+        resources that constitute the application; there are no external dependencies.  The
+        directory conforms to the Maven standard directory layout: the source code is in
+        <code>src/main/java</code> and the resources are in <code>src/main/resources</code>.
+      </p>
+      <p class="wrap">
+        The supplied Kotlin-DSL-based <a class="external" href="https://gradle.org/">Gradle</a>
+        build script, <code>build.gradle.kts</code>, modifies the <code>compileJava</code> and
+        <code>jar</code> tasks (provided by the <code>java</code> plug-in) to compile the
+        application and to create an executable JAR file for it.
+      </p>
+
+      <h3 id="section2-2">2.2&nbsp; Running the application</h3>
+
+      <p class="wrap">
+        The supplied Kotlin-DSL-based Gradle build script, <code>build.gradle.kts</code>,
+        defines two tasks that may be used to run FuncPlotter:
+      </p>
+      <dl class="basic">
+        <dt>runMain</dt>
+        <dd class="wrap">
+          Runs the main class from the class files that were generated by the
+          <code>compileJava</code> task.
+        </dd>
+        <dt>runJar</dt>
+        <dd class="wrap">
+          Runs the executable JAR that was generated by the <code>jar</code> task.
+        </dd>
+      </dl>
+      <p class="wrap">
+        Both tasks extend the <code>JavaExec</code> task.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Configuration -->
+
+    <div class="section">
+      <h2 id="section3">3&nbsp; Configuration</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        When it starts up, FuncPlotter is configured with <i>configuration properties</i> that
+        are read from two sources: the <a href="#section3-1">command line</a> of the Java
+        launcher and a <a href="#section3-2">configuration file</a> whose location may be
+        explicitly specified.  If the same property is specified on the command line and in a
+        configuration file, the value from the configuration file takes precedence.
+      </p>
+      <p class="wrap">
+        The recommended method of setting the properties in a configuration file is with the <a
+        class="command" href="#section5-4-1">Options &gt; Preferences</a> command.  For
+        command-line properties, which must be edited manually, the form of the property values
+        is given in an <a href="#sectionB">appendix</a>, and it can also be inferred by
+        generating a configuration file with the desired values and inspecting the contents of
+        the file.
+      </p>
+
+      <h3 id="section3-1">3.1&nbsp; Command-line properties</h3>
+
+      <p class="wrap">
+        When FuncPlotter is run, configuration properties may be passed to the <code>java</code>
+        launcher on the command line as system properties; eg,
+        <code>-Dapp.general.mainWindowLocation=&quot;100, 0&quot;</code>.  FuncPlotter&apos;s
+        command-line configuration properties all have the prefix <code>app.</code> . A list of
+        all the properties that are recognised by FuncPlotter is given in an <a
+        href="#sectionB">appendix</a>.
+      </p>
+      <p class="wrap">
+        System properties can be added to the <a href="#section2-2">two supplied Gradle
+        tasks</a>, <code>runMain</code> and <code>runJar</code>, with the
+        <code>systemProperties(Map&lt;String, ?&gt;)</code> method.
+      </p>
+      <p class="wrap">
+        One particular property, <span class="configProperty">app.configDir</span>, is used to
+        specify the directory that contains a configuration file, as <a
+        href="#section3-2-1">described below</a>.
+      </p>
+
+      <h3 id="section3-2">3.2&nbsp; Configuration file</h3>
+
+      <p class="wrap">
+        The configuration file is named <code>funcPlotter-config.xml</code>.  FuncPlotter
+        doesn&apos;t require a configuration file: it uses a default value for any configuration
+        property that is missing from the source(s) of configuration.  Similarly, if it finds a
+        property value to be invalid, FuncPlotter will display a message to this effect and use
+        the default value of the property.  If the configuration file contains a property that
+        was specified on the command line, the value from the configuration file is used.
+      </p>
+      <p class="wrap">
+        If the configuration has changed when you exit the application normally (ie, using the
+        <span class="command">File &gt; Exit</span> command or an equivalent), FuncPlotter will
+        save its configuration to a configuration file.  If a configuration file was read on
+        startup, it will overwrite that file; otherwise, it will write a configuration file to
+        the default directory described above, unless the value of the <span
+        class="configProperty">app.configDir</span> property was an empty string.
+      </p>
+      <p class="wrap">
+        A configuration file can be written explicitly with the <span class="command">Save
+        configuration</span> command within the <span class="component">Preferences</span>
+        dialog.
+      </p>
+
+      <h4 id="section3-2-1">3.2.1&nbsp; Location of the configuration file</h4>
+      <p class="wrap">
+        When it starts up, FuncPlotter is informed of the location of the configuration file
+        with the <span class="configProperty">app.configDir</span> property.  The value of the
+        property may contain <a href="#sectionA">special constructs</a> for system properties,
+        environment variables and the user&apos;s home directory.
+      </p>
+      <p class="noBottomMargin wrap">
+        The <span class="configProperty">app.configDir</span> property may be set in two ways:
+      </p>
+      <ul class="continuationList">
+        <li class="wrap">
+          on the command line that runs the <code>java</code> launcher, or
+        </li>
+        <li class="wrap">
+          in a file named <code>funcPlotter-properties.xml</code> that resides in the same
+          directory as the <code>funcPlotter.jar</code> JAR file.
+        </li>
+      </ul>
+      <p class="wrap">
+        The <code>funcPlotter-properties.xml</code> file is a legacy from the time when
+        FuncPlotter was distributed as a JAR file with an installer; the properties file was
+        written by the installer.  If you create a properties file, it should have the following
+        form, with the example pathname replaced by the actual pathname:
+      </p>
+      <pre class="codeFragment">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
+&lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
+&lt;properties&gt;
+&lt;entry key=&quot;app.configDir&quot;&gt;/home/slothrop/.blankaspect/funcPlotter&lt;/entry&gt;
+&lt;/properties&gt;</pre>
+
+      <p class="wrap">
+        If the <span class="configProperty">app.configDir</span> property is set both on the
+        command line and in the properties file, the value in the properties file takes
+        precedence.
+      </p>
+
+      <p class="wrap">
+        The existence and value of the <span class="configProperty">app.configDir</span>
+        property determines the locations that are searched for a configuration file:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          If the <span class="configProperty">app.configDir</span> property exists and the
+          property value is an empty string, FuncPlotter will start without a configuration
+          file.  No configuration file will be written when the application exits.
+        </li>
+        <li class="spaced wrap">
+          If the <span class="configProperty">app.configDir</span> property exists and the
+          property value is not empty, FuncPlotter will look for a configuration file in the
+          directory specified by the property.  An error message is displayed if a configuration
+          file is not found in the specified directory.
+        </li>
+        <li class="spaced">
+          <div class="wrap">
+            If the <span class="configProperty">app.configDir</span> property does not exist,
+            FuncPlotter will look for a configuration file at two other locations:
+          </div>
+          <ol class="list">
+            <li class="spaced">
+              <div><i>The current working directory</i></div>
+              <div class="wrap">
+                The current working directory, which is denoted by the environment variable
+                <code>$PWD</code> on Linux/UNIX systems, depends on the system and the way in
+                which FuncPlotter was run.
+              </div>
+            </li>
+            <li class="spaced" id="defaultDirectory">
+              <div><i>The default directory</i></div>
+              <div class="wrap">
+                On Linux/UNIX systems, the default directory is
+                <code>$HOME/.blankaspect/funcPlotter</code>, where <code>$HOME</code> is the
+                environment variable that denotes the user&apos;s home directory.  On Windows
+                systems, the default directory is
+                <code>%APPDATA%\blankaspect\funcPlotter</code>, where <code>%APPDATA%</code> is
+                an environment variable.
+              </div>
+            </li>
+          </ol>
+        </li>
+      </ul>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- The display -->
+
+    <div class="section">
+      <h2 id="section4">4&nbsp; The display</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <h3 id="section4-1">4.1&nbsp; Document windows</h3>
+
+      <p class="wrap">
+        FuncPlotter uses a tabbed document interface to display multiple documents.  This kind
+        of interface has a single tabbed window in which only one document &mdash; referred to
+        as the <i>current document</i> &mdash; is visible at any one time.  You can select a
+        document by clicking on its tab, or you can select a document from the alphabetically
+        ordered list that is displayed by clicking on the down-arrow button at the right of the
+        tab bar.  You can move between documents by pressing Ctrl+PageUp and Ctrl+PageDown.
+      </p>
+      <p class="wrap">
+        You can copy <i>x</i> and <i>y</i> intervals between documents using the command <a
+        class="command" href="#section5-2-5">Edit &gt; Copy intervals to other documents</a>.
+      </p>
+      <p class="wrap">
+        The size of the main window cannot be changed directly, but it can be changed indirectly
+        by modifying the <a href="#cp-plot-size">dimensions of the plot</a> and the <a
+        href="#cp-function-listSize">dimensions of the list of functions</a>.  Changes to these
+        properties will not take effect until the next time that FuncPlotter is run.  Some of
+        the other configuration properties (eg, the fonts) may also affect the size of the main
+        window.
+      </p>
+
+      <h3 id="section4-2">4.2&nbsp; Plot panel</h3>
+
+      <p class="wrap">
+        FuncPlotter&apos;s display consists of a main window divided into several panels.  On
+        the left side of the main window is the plot panel, which contains plots of the current
+        set of functions.  By default, the functions are drawn over a grid of horizontal and
+        vertical lines, but the grid can be <a href="#section5-3-1">hidden from view</a>.  The
+        scales of the horizontal dimension (the <i>x</i> scale) and the vertical dimension (the
+        <i>y</i> scale) are always linear.
+      </p>
+      <p class="wrap">
+        Like the other numeric values that are displayed by FuncPlotter, the scale markings are
+        subject to rounding.  The most important consequence of rounding is that, while the
+        displayed value of the scale marking is always the nearest value (after rounding) for
+        the <i>x</i> or <i>y</i> pixel coordinate of the scale marking, there may be another
+        pixel coordinate that is nearer to the displayed value of the scale marking.  If, as a
+        result of rounding, two or more consecutive scale markings have the same value, the
+        duplicate values are not displayed.  The text of an <i>x</i>-scale marking is either
+        omitted or truncated according to the <a class="configProperty"
+        href="#cp-plot-truncateXScaleText">plot.truncateXScaleText</a> configuration property if
+        it would overlap the text of the previous marking.  The text of a <i>y</i>-scale marking
+        is truncated if it is too wide to be displayed in full.  If the text of a scale marking
+        is truncated or omitted, the full text is displayed when the mouse cursor is moved over
+        the region of the truncated or omitted text.
+      </p>
+      <p class="noBottomMargin wrap">
+        In addition, the following <a href="#section5-4-1-c">aspects of the plot panel</a> are
+        configurable:
+      </p>
+      <ul class="continuationList">
+        <li>the width and height of the plot,</li>
+        <li>whether the grid is visible or hidden by default,</li>
+        <li>the colours of the elements of the panel.</li>
+      </ul>
+
+      <p class="wrap">
+        Although the plot panel has no scroll bars, the plot can be scrolled by four methods:
+      </p>
+      <ol class="list">
+        <li class="spaced wrap">
+          <i>Click on the scroll buttons in the scroll/zoom panel.</i>
+        </li>
+        <li class="spaced">
+          <div class="wrap">
+            <i>Rotate the mouse wheel when the mouse cursor is over the plot panel.</i>
+          </div>
+          <div class="wrap">
+            The normal (forwards&ndash;backwards) rotation of the mouse wheel scrolls the plot
+            in the vertical direction.  If the Ctrl key is pressed while the mouse wheel is
+            rotated, the plot is scrolled in the horizontal direction.
+          </div>
+        </li>
+        <li class="spaced wrap">
+          <i>Hold down the left mouse button and drag the mouse.</i>
+        </li>
+        <li class="spaced">
+          <div class="wrap">
+            <i>Press the arrow keys when the plot panel has keyboard focus.</i>
+          </div>
+          <div class="wrap">
+            If the plot panel has focus, its border is two pixels wide, in the colour denoted by
+            the <a class="configProperty" href="#cp-plot-colour">plot.colour.focusedBorder</a>
+            configuration property; otherwise, its border is grey and one pixel wide.
+          </div>
+        </li>
+      </ol>
+
+      <p class="wrap">
+        The unit of scrolling is half a grid division in each direction.
+      </p>
+      <p class="wrap">
+        To maintain consistency between actual and displayed interval values when the plot panel
+        is scrolled or zoomed, the actual <i>x</i> and <i>y</i> intervals are updated to values
+        that are as close as possible to the intervals that are displayed in the interval fields
+        (see below).  The <a class="configProperty"
+        href="#cp-plot-numFractionDigits">plot.numFractionDigits</a> configuration property
+        determines the granularity of an interval and affects the ability to scroll or to zoom:
+        the more fraction digits, the further you are able to zoom in.  As you zoom in, the
+        scrolling increment (half a grid division) approaches the difference between distinct
+        values in the interval.  Near the limit, scrolling behaviour becomes irregular, and the
+        ability to scroll eventually disappears.
+      </p>
+
+      <h4 id="section4-2-1">4.2.1&nbsp; How functions are plotted</h4>
+      <p class="wrap">
+        FuncPlotter plots a function <i>y</i>&nbsp;=&nbsp;<i>f</i>(<i>x</i>) by evaluating
+        <i>y</i> for the values of <i>x</i> that correspond to pixel divisions on the current
+        <i>x</i> interval, and drawing line segments between successive points,
+        (<i>x<sub>n</sub></i>,&nbsp;<i>y<sub>n</sub></i>) and
+        (<i>x</i><sub><i>n</i>+1</sub>,&nbsp;<i>y</i><sub><i>n</i>+1</sub>).
+      </p>
+      <p class="wrap">
+        FuncPlotter uses the mathematical operations and methods of the Java language to
+        evaluate <i>f</i>(<i>x</i>).  The Java operations and methods, which are based on the
+        IEEE 754 standard, sometimes result in an infinity (positive or negative) or a
+        <i>Not-a-Number</i> (NaN) value.  For example, division of a finite number by zero
+        results in a signed infinity, whereas taking the natural logarithm of a negative number
+        with the method <code>java.lang.Math.log()</code> results in NaN.  When evaluating an
+        expression, an NaN that appears as an intermediate result is transmitted to the final
+        result.  If the value of <i>y<sub>n</sub></i>&nbsp;=&nbsp;<i>f</i>(<i>x<sub>n</sub></i>)
+        is an NaN, FuncPlotter does not draw a line segment between
+        (<i>x<sub>n&minus;1</sub></i>,&nbsp;<i>y<sub>n&minus;1</sub></i>) and
+        (<i>x<sub>n</sub></i>,&nbsp;<i>y<sub>n</sub></i>) or between
+        (<i>x<sub>n</sub></i>,&nbsp;<i>y<sub>n</sub></i>) and
+        (<i>x</i><sub><i>n</i>+1</sub>,&nbsp;<i>y</i><sub><i>n</i>+1</sub>).  This behaviour is
+        usually what you would expect; for instance, the plot of the function
+        <i>y</i>&nbsp;=&nbsp;ln&nbsp;<i>x</i> is confined to the right of the <i>y</i> axis.
+      </p>
+      <p class="wrap">
+        Expressions for <i>f</i>(<i>x</i>) that involve operations such as <code>acos</code> or
+        <code>sqrt</code> are plotted only for the principal values of <i>f</i>(<i>x</i>) that
+        are returned by the underlying Java methods.  (In the case of
+        <i>y</i>&nbsp;=&nbsp;acos&nbsp;<i>x</i>, <i>y</i> is confined to the range [0, &pi;],
+        whereas for <i>y</i>&nbsp;=&nbsp;sqrt&nbsp;<i>x</i>, <i>y</i> is confined to the
+        positive root of <i>x</i>.)
+      </p>
+
+      <h4 id="section4-2-2">4.2.2&nbsp; Problems inherent in the method of plotting functions</h4>
+      <p class="wrap">
+        Two significant problems in the way in which FuncPlotter plots functions have come to
+        light so far.  These problems are not bugs but artifacts &mdash; unwanted consequences
+        of the design of the software.  The <a href="#section4-2-1">join-the-dots approach</a>
+        works adequately for most functions, but periodic functions and functions with an
+        infinite discontinuity each have a problem associated with them.
+      </p>
+      <p class="wrap">
+        When plotting periodic functions, FuncPlotter exhibits the problem of <i>aliasing</i>,
+        which occurs when the sample period &mdash; the difference between successive <i>x</i>
+        values at which the function is evaluated &mdash; is greater than or equal to twice the
+        period of the function.  This effect can be observed by plotting a simple periodic
+        function, such as <i>y</i>&nbsp;=&nbsp;sin&nbsp;<i>x</i>, and repeatedly reducing the
+        magnification.  The problem of aliasing could be mitigated by oversampling, but it would
+        still occur eventually, and the oversampling would increase the computational burden of
+        plotting a function.
+      </p>
+      <p class="wrap">
+        Functions that have an infinite discontinuity &mdash; eg,
+        <i>y</i>&nbsp;=&nbsp;(<i>x</i>&nbsp;+&nbsp;1)&nbsp;/&nbsp;(<i>x</i>&nbsp;&minus;&nbsp;1),
+        which has a vertical asymptote at <i>x</i>&nbsp;=&nbsp;1 &mdash; suffer from a
+        &quot;cropped tail&quot;: the plot of the function stops some way short of its
+        (unattainable) goal of positive or negative infinity.  If <i>x<sub>d</sub></i> is a
+        value of <i>x</i> in the <i>x</i> interval of the plot at which there is an infinite
+        discontinuity, {<i>x<sub>n</sub></i>} is the set of values of <i>x</i> for which
+        <i>f</i>(<i>x</i>) is evaluated by FuncPlotter when plotting
+        <i>y</i>&nbsp;=&nbsp;<i>f</i>(<i>x</i>), and <i>x<sub>nd</sub></i> is the member of
+        {<i>x<sub>n</sub></i>} that is nearest to <i>x<sub>d</sub></i>, then the &quot;cropped
+        tail&quot; artifact occurs when <i>f</i>(<i>x<sub>nd</sub></i>) lies within the <i>y</i>
+        interval of the plot or when <i>f</i>(<i>x<sub>nd</sub></i>) is NaN.  The severity of
+        the problem is determined by how close <i>x<sub>nd</sub></i> is to <i>x<sub>d</sub></i>;
+        hence, the problem is sensitive to changes in the <i>x</i> interval.  (For instance, a
+        &quot;tail&quot; may appear and disappear as a plot is scrolled horizontally.)  Like the
+        problem of aliasing, the problem of infinite discontinuities could be mitigated by
+        oversampling.
+      </p>
+      <p class="wrap">
+        Functions that are periodic <i>and</i> have infinite discontinuities (eg,
+        <i>y</i>&nbsp;=&nbsp;sec&nbsp;<i>x</i>) don&apos;t look too good when drawn by
+        FuncPlotter at low magnification.
+      </p>
+
+      <h3 id="section4-3">4.3&nbsp; Function panel</h3>
+
+      <p class="wrap">
+        At the top right of the display is a panel containing a list of the functions that
+        comprise the current document, and a group of buttons that relate to the list of
+        functions.
+      </p>
+      <p class="wrap">
+        Each row of the function list contains an expression for <i>f</i>(<i>x</i>) next to a
+        sample of the colour in which the function is plotted; details of the syntax and
+        semantics of expressions are given in the <a href="#section7">section on
+        expressions</a>.  An expression is truncated with an ellipsis if it is too long to fit
+        within the width of the function list.  If an expression is truncated, the full
+        expression can be displayed in a pop-up window by holding down the Ctrl key and pressing
+        the left mouse button while the mouse cursor is over the expression.
+      </p>
+      <p class="wrap">
+        If the function is hidden with the <a class="command" href="#section5-5-4-2">Hide</a>
+        command, the colour sample is absent.  If the function is obscured because another
+        function has been highlighted with the <a class="command"
+        href="#section5-5-4-1">Highlight</a> command, the colour-sample box is empty (ie, only
+        the border of the box is drawn.)  The colour of each function can be edited.  The <a
+        href="#cp-function-colour">default function colours</a> are configurable.
+      </p>
+      <p class="wrap">
+        Functions are plotted in reverse order from the order in which they appear in the list.
+        This means that the function at the top of the list will be drawn on top of all the
+        functions that are below it in the list.  The position of a function in the list can be
+        changed by dragging the function up or down the list with the mouse, or by pressing
+        Ctrl+Shift+Up or Ctrl+Shift+Down when the list has keyboard focus.  The order of
+        functions in the list can be reversed with the <a class="command"
+        href="#section5-2-4">Edit &gt; Reverse order of functions</a> command.
+      </p>
+      <p class="wrap">
+        Only one function in the list can be selected at a time.  Double-clicking on a function
+        in the list will bring up an <a class="component" href="#section4-7">Edit function</a>
+        dialog for that function.
+      </p>
+      <p class="wrap">
+        The size of the list of functions &mdash; the number of columns and rows in the viewable
+        region of the list &mdash; is specified as a configuration property, <a
+        class="configProperty" href="#cp-function-listSize">function.listSize</a>.
+      </p>
+      <p class="wrap">
+        Immediately below the list of functions is a group of buttons that can be used to issue
+        <a href="#section5-5">function-related commands</a>.
+      </p>
+
+      <h3 id="section4-4">4.4&nbsp; Mouse cursor coordinates</h3>
+
+      <p class="wrap">
+        Below the function panel is a panel containing a single field labelled <span
+        class="component">Cursor</span>.  When the mouse cursor is over the plot panel, this
+        field displays the <i>x</i> and <i>y</i> coordinates at the mouse cursor.  To conserve
+        horizontal space, the coordinates are displayed in two rows.  The coordinates are
+        formatted according to the scheme for <a href="#section7">numeric values</a>.
+      </p>
+
+      <h3 id="section4-5">4.5&nbsp; Controls</h3>
+
+      <p class="wrap">
+        Below the cursor panel is a panel in which the <i>x</i> and <i>y</i> intervals of the
+        plot panel are displayed.  The intervals, which are set implicitly by scrolling and
+        zooming the plot panel, can also be set explicitly by entering values in the interval
+        fields.  To update an interval after editing a value in an interval field, press the
+        Return key while one of the interval fields has keyboard focus (ie, the text cursor is
+        within an interval field).  The minimum and maximum values of the endpoints of both the
+        <i>x</i> and <i>y</i> intervals are 1.0E&minus;100 (10<sup>&minus;100</sup>) and 1.0E100
+        (10<sup>100</sup>) respectively.
+      </p>
+      <p class="wrap">
+        Below the intervals panel is a panel containing scroll buttons, zoom buttons and
+        drop-down lists for selecting the zoom factor.  The arrow buttons scroll the plot in the
+        direction of the arrow; the circle button centres the plot around the origin, (0, 0).
+        The zoom buttons for each dimension have a zoom factor associated with them, which can
+        be selected from a list of preset values using the drop-down list beside each pair of
+        zoom buttons.
+      </p>
+
+      <h3 id="section4-6">4.6&nbsp; Minus sign</h3>
+
+      <p class="wrap">
+        In components of the main window and the <a href="#section4-7">function dialog</a> that
+        is displayed in response to the <a class="command" href="#section5-5-1">Add</a> and <a
+        class="command" href="#section5-5-2">Edit</a> function commands, a minus sign in
+        numerical values and expressions is displayed with (in order of preference) a minus sign
+        (U+2212) or en dash (U+2013) character if one of those characters can be displayed in
+        the component&apos;s font.  If neither character can be displayed, a hyphen-minus
+        (U+002D) character is used.
+      </p>
+
+      <h3 id="section4-7">4.7&nbsp; Function dialog</h3>
+
+      <p class="wrap">
+        The <a class="command" href="#section5-5-1">Add</a> and <a class="command"
+        href="#section5-5-2">Edit</a> function commands bring up a dialog box in which you can
+        edit the expression for <i>f</i>(<i>x</i>) and select the colour in which the function
+        is plotted.
+      </p>
+      <p class="wrap">
+        In the dialog, the colour-selection button invokes a colour-selection dialog.  If the
+        function list is not empty, the colours of the current functions are displayed in small
+        buttons beside the colour selection button, to allow you to set a function&apos;s colour
+        to the same colour as another function.
+      </p>
+      <p class="wrap">
+        The <span class="command">Copy</span>, <span class="command">Paste</span> and <span
+        class="command">Clear</span> commands perform copy, paste and delete operations on the
+        <em>entire contents</em> of the expression field.  The <span class="command">Copy</span>
+        command copies the contents of the <span class="component">Expression</span> field to
+        the clipboard; the <span class="command">Paste</span> command replaces the contents of
+        the <span class="component">Expression</span> field with text from the clipboard; the
+        <span class="command">Clear</span> command deletes the contents of the <span
+        class="component">Expression</span> field.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Commands -->
+
+    <div class="section">
+      <h2 id="section5">5&nbsp; Commands</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <h3 id="section5-1">5.1&nbsp; <span class="component">File</span> menu</h3>
+
+      <p class="wrap">
+        The commands in the <span class="component">File</span> menu are mostly standard and
+        self-explanatory, but note the following:
+      </p>
+      <ul class="list">
+        <li class="spaced">
+          <p class="wrap">
+            The <span class="command">Open file</span> command brings up a file-selection dialog
+            in which you can choose the file that you want to open.  FuncPlotter determines the
+            <a href="#section8">document format</a> &mdash; XML or text &mdash; by examining the
+            first few bytes of the file.
+          </p>
+          <p class="wrap">
+            The reporting of errors in a file differs according to the file&apos;s format: files
+            in text format receive more detailed error reporting because it is assumed that they
+            may have been edited manually.  (Files in XML format are assumed to have been
+            written by FuncPlotter.)
+          </p>
+          <p class="wrap">
+            If a document in text format contains errors, a dialog box is displayed in which the
+            errors are listed.  (Documents that are saved by FuncPlotter should be free from
+            errors, but there may be errors in a document that has been edited manually.)  The
+            first line of the error list is the pathname of the file that contains the errors;
+            the remaining lines list the first 20 errors in the file, each prefaced by a line
+            number.  If the error is a syntax error in an expression, the line number is
+            followed by a number in square brackets that denotes the position (ie, the character
+            index) of the error in the expression.
+          </p>
+        </li>
+
+        <li class="spaced">
+          <p class="wrap">
+            The <span class="command">Revert file</span> command is enabled when the current
+            file has changed since it was last opened or saved.  If you select the <span
+            class="command">Revert file</span> command, the current file will be read again from
+            the file system, replacing the modified file in FuncPlotter&apos;s buffer.
+          </p>
+        </li>
+
+        <li class="spaced">
+          <p class="wrap">
+            When you save a document with the <span class="command">Save file</span> command,
+            the document is written in the same format in which it was previously saved.  If you
+            save a <em>new</em> document with the <span class="command">Save file</span>
+            command, or if you save a document with the <span class="command">Save file
+            as</span> command, a file-selection dialog is displayed in which you can choose not
+            only the file to which you want to save the document but also the <a
+            href="#section8">document format</a> &mdash; XML or text.  The document format is
+            determined by the file type that you select in the file-selection dialog, and not by
+            the filename suffix that you specify.  (For example, if you select a file named
+            <code>a.txt</code> and the file type &quot;XML files&quot;, the file is written in
+            XML format.)  If you select a file whose name has no suffix, the suffix
+            corresponding to the file type (<code>.xml</code> or <code>.txt</code>) is
+            automatically appended to the filename.  If the file type in the file-selection
+            dialog is &quot;All files&quot;, the <a href="#cp-general-defaultFileType">default
+            file type</a> is assumed.
+          </p>
+
+          <p class="wrap">
+            If the <a class="configProperty"
+            href="#cp-general-saveFunctionColours">general.saveFunctionColours</a> configuration
+            property is set to <code>Ask</code>, you will be asked whether you want to save the
+            function colours in the document each time you select either the <span
+            class="command">Save file</span> or the <span class="command">Save file as</span>
+            command.
+          </p>
+        </li>
+
+        <li class="spaced">
+          <p class="wrap">
+            The <span class="command">Export image file</span> command writes an image file of
+            the current plot panel in Portable Network Graphics (PNG) format.  The command is
+            enabled when a document is open and the implementation of Java supports the PNG
+            image format.  The colour resolution of the image is 24 bits per pixel.  The PNG
+            format offers a high level of compression for the sort of images that are exported
+            by FuncPlotter.
+          </p>
+          <p class="wrap">
+            In the exported image, the margin of the plot, which includes the scale markings, is
+            drawn in the colour denoted by the <a class="configProperty"
+            href="#cp-plot-colour">plot.colour.imageMargin</a> configuration property.
+          </p>
+        </li>
+      </ul>
+
+      <h3 id="section5-2">5.2&nbsp; <span class="component">Edit</span> menu</h3>
+
+      <h4 id="section5-2-1">5.2.1&nbsp; <span class="command">Undo</span>/<span class="command">Redo</span></h4>
+      <p class="wrap">
+        The edits that you make to a document &mdash; the changes that you make to a
+        document&apos;s functions, intervals or comment &mdash; can be undone and redone.  The
+        edits to a document are stored in a list called the document&apos;s <i>history</i>.  The
+        size of this list is limited by the <a class="configProperty"
+        href="#cp-general-maxEditListLength">general.maxEditListLength</a> configuration
+        property.  The following edits are stored in a document&apos;s history:
+      </p>
+      <ul class="list">
+        <li>adding or deleting a function,</li>
+        <li>modifying a function, including its colour,</li>
+        <li>changing the position of a function in the function list,</li>
+        <li>scrolling or dragging the plot,</li>
+        <li>zooming the plot,</li>
+        <li>modifying the <i>x</i> or <i>y</i> intervals explicitly,</li>
+        <li>modifying the document&apos;s comment.</li>
+      </ul>
+      <p class="wrap">
+        Changes to an interval in one dimension (eg, scrolling or zooming) are merged if they
+        occur within 0.5 seconds of each other.
+      </p>
+      <p class="wrap">
+        The <span class="command">Undo</span> command reverses the last change to the current
+        document.
+      </p>
+      <p class="wrap">
+        If an edit is undone with the <span class="command">Undo</span> command, it can
+        subsequently be restored with the <span class="command">Redo</span> command provided
+        that no other edits have been made since it was undone.  If <a class="configProperty"
+        href="#cp-general-clearEditListOnSave">general.clearEditListOnSave</a> configuration
+        property is <code>true</code>, the history of edits is cleared when a document is saved.
+      </p>
+
+      <h4 id="section5-2-2">5.2.2&nbsp; <span class="command">Clear edit history</span></h4>
+      <p class="wrap">
+        The <span class="command">Clear edit history</span> command clears the history of edits
+        to the current document.  The command may be used to make more memory available if a
+        &quot;Not enough memory&quot; error occurs.
+      </p>
+
+      <h4 id="section5-2-3">5.2.3&nbsp; <span class="command">Comment</span></h4>
+      <p class="wrap">
+        A document may contain a single <i>document comment</i>, which is saved with the
+        document.  The <span class="command">Comment</span> command brings up a dialog box in
+        which the document comment can be viewed and edited.  Any leading and trailing space is
+        removed from text that is entered in the dialog.
+      </p>
+      <p class="wrap">
+        For documents that are saved in XML format, the document comment is distinct from XML
+        comments, which are not preserved in a document that is opened and subsequently written
+        by FuncPlotter.  For documents that are saved in text format, a document comment uses
+        the general convention for comments in that format, but in a particular way; see <a
+        href="#section8-2">Text format</a> for details.
+      </p>
+
+      <h4 id="section5-2-4">5.2.4&nbsp; <span class="command">Reverse order of functions</span></h4>
+      <p class="wrap">
+        This command reverses the order of the functions in the function list of the current
+        document.
+      </p>
+
+      <h4 id="section5-2-5">5.2.5&nbsp; <span class="command">Copy intervals to other documents</span></h4>
+      <p class="wrap">
+        The <span class="command">Copy intervals to other documents</span> command is enabled
+        only when more than one document is open.  The purpose of this command is to copy the
+        <i>x</i> and <i>y</i> intervals of the current document to some or all of the other open
+        documents.  A dialog box is displayed in which the target documents &mdash; the
+        documents whose intervals you wish to set to those of the current document &mdash; can
+        be selected.
+      </p>
+
+      <h3 id="section5-3">5.3&nbsp; <span class="component">View</span> menu</h3>
+
+      <h4 id="section5-3-1">5.3.1&nbsp; <span class="command">Grid</span></h4>
+      <p class="wrap">
+        The Grid option controls whether a grid is drawn in the plot panel.  The command to
+        toggle the grid also appears in the pop-up menu.
+      </p>
+
+      <h3 id="section5-4">5.4&nbsp; <span class="component">Options</span> menu</h3>
+
+      <h4 id="section5-4-1">5.4.1&nbsp; <span class="command">Preferences</span></h4>
+      <p class="wrap">
+        The <span class="command">Preferences</span> command brings up a tabbed dialog box in
+        which the configuration properties of FuncPlotter can be edited.  The configuration
+        properties are global; that is, they apply to all documents.  The properties on the
+        various tabbed pages are described below.
+      </p>
+      <p class="noBottomMargin wrap">
+        Some of the configuration properties in the <span class="component">Preferences</span>
+        dialog are edited with a <i>spinner</i> &mdash; a graphical component that consists of a
+        text field adjacent to a pair of small buttons.  The value in the text field may be
+        edited manually, or it may be incremented and decremented by one of the following
+        methods:
+      </p>
+      <ul class="continuationList">
+        <li class="wrap">
+          clicking on the small up/down buttons;
+        </li>
+        <li class="wrap">
+          pressing the up/down arrow keys;
+        </li>
+        <li class="wrap">
+          rotating the mouse wheel with the mouse cursor over the spinner when the text field
+          has keyboard focus (ie, the caret is displayed in the field).
+        </li>
+      </ul>
+      <p class="wrap">
+        Using the last two methods, the amount by which the value is incremented or decremented
+        can be modified by holding down the Ctrl, Shift or Ctrl+Shift keys, which correspond
+        respectively to increments of 10, 100 and 1000.
+      </p>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section5-4-1-a">General</div>
+        </div>
+
+        <div>
+          <div id="cp-general-defaultFileType">
+            <dl>
+              <dt>Default file type</dt>
+              <dd class="wrap">
+                The value of this property is used when the type of a document &mdash; XML or
+                text &mdash; is unknown (ie, when opening a document or saving a new document):
+                the file type in the file-selection dialog box is set to the default value.  The
+                file type may be changed in the file-selection dialog box each time a document
+                is saved.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>XML</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-newDocumentOnStartup">
+            <dl>
+              <dt>New document on startup</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, a new (ie, empty) document will be displayed
+                when FuncPlotter starts up.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-saveFunctionColours">
+            <dl>
+              <dt>Save function colours in document</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, the colour of each function will be included in
+                the function definition when you save a document.  If you select
+                <code>No</code>, the colour of each function will be omitted from the function
+                definition when you save a document, and the functions will be assigned their
+                default colours when the document is opened.  If you select <code>Ask</code>,
+                you will be asked whether you want to save the function colours each time you
+                save the document.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-showUnixPathnames">
+            <dl>
+              <dt>Display UNIX-style pathnames</dt>
+              <dd>
+                <div class="wrap">
+                  If you select <code>Yes</code>, pathnames are displayed in a reduced
+                  &quot;UNIX style&quot; in some parts of the GUI.  A pathname is converted from
+                  its platform-specific form in two steps:
+                </div>
+                <ol class="noTopMargin">
+                  <li class="wrap">
+                    If the pathname starts with the user&apos;s home directory, the latter is
+                    replaced by <code>~</code>.
+                  </li>
+                  <li class="wrap">
+                    The file-separator character (<code>\</code> on Windows systems) is replaced
+                    by <code>/</code>.
+                  </li>
+                </ol>
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-selectTextOnFocusGained">
+            <dl>
+              <dt>Select text when focus is gained</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, all the text in a text field will be
+                automatically selected when the field gains keyboard focus, regardless of how
+                the focus is transferred.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-mainWindowLocation">
+            <dl>
+              <dt>Save location of main window</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, the location of the main window on the screen
+                will be saved to the configuration file when you exit the application.  The next
+                time that FuncPlotter is run, its main window will be positioned at the
+                previously saved location.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-maxEditListLength">
+            <dl>
+              <dt>Maximum size of edit history</dt>
+              <dd class="wrap">
+                This is the maximum number of edits that can be stored in a document&apos;s
+                history for use by the <span class="command">Edit &gt; Undo</span> and <span
+                class="command">Edit &gt; Redo</span> commands.  The history of edits can be
+                explicitly cleared with the <a class="command" href="#section5-2-2">Edit &gt;
+                Clear edit history</a> command.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 200.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-clearEditListOnSave">
+            <dl>
+              <dt>Clear edit history on save</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, a document&apos;s history of edits (see <a
+                href="#section5-2-1"><span class="command">Edit &gt; Undo</span>/<span
+                class="command">Redo</span></a>) is cleared when the document is saved.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section5-4-1-b">Appearance</div>
+        </div>
+
+        <div>
+          <div id="cp-appearance-lookAndFeel">
+            <dl>
+              <dt>Look-and-feel</dt>
+              <dd class="wrap">
+                The look-and-feel (LAF) can be selected from a list of the LAFs that are
+                available on the current system.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is the cross-platform LAF, currently called Metal.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-textAntialiasing">
+            <dl>
+              <dt>Text antialiasing</dt>
+              <dd class="wrap">
+                This determines the kind of antialiasing that is performed when text is drawn in
+                custom or partially customised user-interface components (eg, in drop-down
+                lists).  Note that antialiasing is only a hint in Java; the implementation is
+                not required to perform the chosen antialiasing.
+              </dd>
+              <dd class="spaceAbove wrap">
+                This property has no effect on the antialiasing of text in standard UI
+                components, such as labels and menus, which is determined by the Java
+                implementation and the desktop setting for text antialiasing (often referred to
+                as &quot;font smoothing&quot;).  You can override the desktop setting with the
+                unsupported system property <code><a class="external"
+                href="https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#aaFonts">awt.useSystemAAFontSettings</a></code>.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The text antialiasing property can have the following values:
+              </dd>
+              <dd>
+                <dl class="inner1">
+                  <dt class="noBold">Default</dt>
+                  <dd class="wrap">
+                    The desktop setting for text antialiasing (font smoothing) is used, if the
+                    Java implementation recognises one; otherwise, no antialiasing is performed.
+                  </dd>
+
+                  <dt>None</dt>
+                  <dd class="wrap">
+                    No antialiasing is performed.
+                  </dd>
+
+                  <dt>Standard</dt>
+                  <dd class="wrap">
+                    This selects pixel-oriented antialiasing rather than subpixel antialiasing.
+                    It is suitable for non-LCD displays.
+                  </dd>
+
+                  <dt>Subpixel, horizontal RGB</dt>
+                  <dt>Subpixel, horizontal BGR</dt>
+                  <dt>Subpixel, vertical RGB</dt>
+                  <dt>Subpixel, vertical BGR</dt>
+                  <dd class="wrap">
+                    These four options are intended to optimise the rendering of text for LCD
+                    displays using subpixel antialiasing with subpixels in the chosen
+                    arrangement.  Selecting an option that does not correspond to the actual
+                    arrangement of subpixels in your LCD display may result in blurred text.
+                    The most common arrangement of subpixels is horizontal RGB.
+                  </dd>
+                </dl>
+              </dd>
+              <dd class="wrap">
+                The default value is <code>Default</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section5-4-1-c">Plot</div>
+        </div>
+
+        <div>
+          <div id="cp-plot-size">
+            <dl>
+              <dt>Plot size</dt>
+              <dd class="wrap">
+                These are the dimensions of the plot (width &times; height) in pixels.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The range of each dimension is 128 to 2048; the default dimensions are 480
+                &times; 480.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-plot-showGrid">
+            <dl>
+              <dt>Show grid</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, a grid is displayed by default in the plot
+                panel.  (The <i>x</i> and <i>y</i> axes are always displayed.)  The grid can be
+                toggled on and off for each document using the <a class="command"
+                href="#section5-3-1">View &gt; Grid</a> command, which is also available from
+                the pop-up menu.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-plot-numFractionDigits">
+            <dl>
+              <dt>Maximum number of fraction digits</dt>
+              <dd class="wrap">
+                This is the maximum number digits in the fractional part of displayed numeric
+                values &mdash; scale markings, cursor coordinates and the endpoints of <i>x</i>
+                and <i>y</i> intervals.  Values that have more than the maximum number of digits
+                in the fractional part are rounded away from zero; that is, the digit
+                immediately before any discarded digits is incremented if the first discarded
+                digit is greater than or equal to 5.  Thus, for example, if the maximum number
+                of fractional digits were 3, the value &minus;3.6385 would be rounded to
+                &minus;3.639, and 0.4475 would be rounded to 0.448.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The range of the value is 1 to 12; the default value is 5.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-plot-numYScaleDigits">
+            <dl>
+              <dt>Number of <i>y</i>-scale digits</dt>
+              <dd class="wrap">
+                This property determines the width of the left margin of the plot in which the
+                <i>y</i> scale is displayed.  The width allowed for the <i>y</i>-scale text is
+                the total width of the number of <code>0</code> (zero) characters specified by
+                this property.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The range of the value is 4 to 20; the default value is 8.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-plot-fixedPointExponentRange">
+            <dl>
+              <dt>Fixed-point exponent range</dt>
+              <dd class="wrap">
+                Numeric values &mdash; scale markings, cursor coordinates and the endpoints of
+                <i>x</i> and <i>y</i> intervals &mdash; whose exponent lies between the
+                (inclusive) bounds of this property are displayed in fixed-point format (eg,
+                &minus;0.0123 and 279936.45).  Values whose exponent lies outside the bounds are
+                displayed in scientific notation (eg, &minus;1.23E&minus;4 and 2.799364E7).
+              </dd>
+              <dd class="spaceAbove wrap">
+                The range of each bound is &minus;12 to 12; the default bounds are &minus;3 and
+                6.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-plot-normaliseScientificNotation">
+            <dl>
+              <dt>Normalise scientific notation</dt>
+              <dd class="wrap">
+                This property determines whether numeric values &mdash; scale markings, cursor
+                coordinates and interval endpoints &mdash; are normalised or denormalised when
+                they are displayed in scientific notation.
+              </dd>
+              <dd class="spaceAbove wrap">
+                If you select <code>Yes</code>, numeric values that are displayed in scientific
+                notation (ie, values whose exponent lies outside the fixed-point exponent range)
+                are normalised: the radix point and exponent are adjusted so that there is only
+                one digit in the range 1..9 before the radix point.
+              </dd>
+              <dd class="spaceAbove wrap">
+                If you select <code>No</code>, numeric values that are displayed in scientific
+                notation are denormalised: the values are displayed with a fixed exponent, which
+                is the exponent of the minimum of the absolute endpoints of the interval.  For
+                example, if the <i>x</i> interval were [&minus;5.0E8, 1.25E9], all <i>x</i>
+                values would be displayed with the exponent 8.  (The upper endpoint would be
+                displayed as 12.5E8.)
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-plot-truncateXScaleText">
+            <dl>
+              <dt>Truncate <i>x</i>-scale text</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, the text of an <i>x</i>-scale marking of the
+                plot is truncated if it would overlap the text of the previous marking.  If you
+                select <code>No</code>, the text of an <i>x</i>-scale marking is omitted if it
+                is too wide.  In either case, the full text is displayed when the mouse cursor
+                is moved over the region of the truncated or omitted text.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-plot-colour">
+            <dl>
+              <dt>Plot colours</dt>
+              <dd class="wrap">
+                These are the colours of various elements of the plot panel.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section5-4-1-d">Function</div>
+        </div>
+
+        <div>
+          <div id="cp-function-directory">
+            <dl>
+              <dt>Document directory</dt>
+              <dd class="wrap">
+                This is the directory that is initially displayed by the file-selection dialog
+                when opening or saving a document.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is the directory denoted by the Java system property
+                <code>user.home</code>.  If your system supports it, you can drag and drop a
+                directory object (eg, from a file browser) on to the <span
+                class="component">Directory</span> field, or copy a directory object from a file
+                browser to the clipboard, and paste it into the field.  The pathname specified
+                in the <span class="component">Directory</span> field can contain <a
+                href="#sectionA">special constructs</a> for system properties, environment
+                variables and the user&apos;s home directory.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-function-listSize">
+            <dl>
+              <dt>Function list size</dt>
+              <dd class="wrap">
+                These are the dimensions of the viewable region of the list of functions
+                (columns &times; rows).  The width of a column is the width of a <code>0</code>
+                (zero) in the main font.  If the number of viewable rows is less than the
+                maximum (20), the list has a vertical scroll bar.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The range of the number of columns is 8 to 80; the default value is 32.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The range of the number of rows is 1 to 20; the default value is 12.
+              </dd>
+           </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-function-obscuredColour">
+            <dl>
+              <dt>Obscured colour</dt>
+              <dd class="wrap">
+                This is the colour that is used to plot the functions that are obscured when a
+                function is highlighted with the <a class="command"
+                href="#section5-5-4-1">Highlight</a> function command.  If the colour is enabled
+                with the <span class="component">Obscured colour</span> check box, a highlighted
+                function is emphasised by plotting the other functions in a document in the
+                colour set with the button adjacent to the check box.  If the colour is
+                disabled, functions are obscured by hiding their plots.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-function-colour">
+            <dl>
+              <dt>Default function colours</dt>
+              <dd class="wrap">
+                These are the default colours of functions in the function list.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section5-4-1-e">Fonts</div>
+        </div>
+
+        <div>
+          <div id="cp-font">
+            <dl>
+              <dd class="wrap">
+                These are the fonts that are used in FuncPlotter&apos;s display.  The Plot font
+                is the font that is used for the scale markings of the plot panel.  Remember
+                that font names may be platform-dependent, so that a configuration that
+                specifies font names may not work across platforms.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>main</i> font is used for various components including labels (static
+                text), menus, buttons and list boxes.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>text field</i> font is used for text fields, spinners and some other text
+                components.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>combo box</i> font is used for drop-down lists and related components.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>plot</i> font is used for the text in the plot panel.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default values of all the font properties except for the size of the plot
+                font (10-point) are those of the default fonts for the platform and
+                look-and-feel.  A default font size is specified by leaving the <span
+                class="component">Size</span> field empty (the minimum position on the spinner).
+                A default font is used if no font name is specified in FuncPlotter&apos;s
+                configuration or if the named font is not available.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <p class="wrap">
+        Some of the configuration properties will take effect when the <span
+        class="component">Preferences</span> dialog is accepted (by closing it with <i>OK</i>);
+        other properties (eg, the look-and-feel and fonts) will not take effect until the next
+        time that FuncPlotter is run.
+      </p>
+      <p class="wrap">
+        The <a href="#section3-2">configuration file</a> is normally saved automatically when
+        FuncPlotter exits, if the configuration has changed.  The <span class="command">Save
+        configuration</span> command in the <span class="component">Preferences</span> dialog
+        can be used to save a configuration file explicitly.
+      </p>
+
+      <h4 id="section5-4-2">5.4.2&nbsp; <span class="command">Show full pathnames</span></h4>
+      <p class="wrap">
+        The <span class="command">Show full pathnames</span> option controls whether the full
+        pathname of the current document or only its filename is displayed in the title bar of
+        the main window.
+      </p>
+
+      <h3 id="section5-5">5.5&nbsp; Function-related commands</h3>
+
+      <p class="wrap">
+        The function panel, below the list of functions, contains six buttons.  The buttons
+        issue commands that relate to the list of functions.  The commands are also available
+        from a pop-up menu, which is activated in a system-dependent manner.  (For example, on
+        Windows systems, the pop-up menu is displayed when the right mouse button is released.)
+      </p>
+
+      <h4 id="section5-5-1">5.5.1&nbsp; <span class="command">Add</span></h4>
+      <p class="wrap">
+        This command brings up a <a href="#section4-7">dialog box</a> in which a new function
+        can be defined.  The new function is added to the end of the function list.
+      </p>
+
+      <h4 id="section5-5-2">5.5.2&nbsp; <span class="command">Edit</span></h4>
+      <p class="wrap">
+        This command brings up a <a href="#section4-7">dialog box</a> in which the selected
+        function can be edited.  When the function list has keyboard focus, this command can be
+        issued by pressing the Return key.
+      </p>
+
+      <h4 id="section5-5-3">5.5.3&nbsp; <span class="command">Copy</span></h4>
+      <p class="wrap">
+        This command copies the expression of the currently selected function to the system
+        clipboard.  When the function list has keyboard focus, this command can be issued by
+        pressing Ctrl+C.
+      </p>
+
+      <h4 id="section5-5-4">5.5.4&nbsp; <span class="command">View</span></h4>
+      <p class="wrap">
+        This command brings up a small menu containing two check-box items: <span
+        class="command">Highlight</span> and <span class="command">Hide</span>.
+      </p>
+
+      <h5 id="section5-5-4-1">5.5.4.1&nbsp; <span class="command">Highlight</span></h5>
+      <p class="wrap">
+        This command toggles the highlighting of the selected function.  The highlighting leaves
+        the plot of the selected function unchanged but obscures the plots of all the other
+        functions in the document.  The way in which the plots are obscured depends on the <a
+        class="configProperty" href="#cp-function-obscuredColour">function.obscuredColour</a>
+        configuration property: if the obscured colour is enabled, the plots are drawn in that
+        colour, otherwise the plots are hidden.  Only one function can be highlighted at a time;
+        highlighting a function while another function is highlighted will switch off the
+        highlighting of the first function.  The command is enabled only if the document
+        contains more than one function.  It can also be issued by pressing Ctrl+Space when the
+        function list has keyboard focus.
+      </p>
+
+      <h5 id="section5-5-4-2">5.5.4.2&nbsp; <span class="command">Hide</span></h5>
+      <p class="wrap">
+        This command toggles the visibility of the plot of the selected function.  It operates
+        independently of any <a href="#section5-5-4-1">highlighting</a>.
+      </p>
+
+      <h4 id="section5-5-5">5.5.5&nbsp; <span class="command">Delete</span></h4>
+      <p class="wrap">
+        This command deletes the selected function.  When the function list has keyboard focus,
+        the selected function can be deleted by pressing Delete, which requires that you confirm
+        the deletion, or Shift+Delete, which deletes the function immediately.
+      </p>
+
+      <h4 id="section5-5-6">5.5.6&nbsp; <span class="command">Clear</span></h4>
+      <p class="wrap">
+        This command deletes all functions from the list.
+      </p>
+
+      <h3 id="section5-6">5.6&nbsp; Opening files with drag-and-drop</h3>
+
+      <p class="wrap">
+        If your system supports the feature, you can open files by dragging them and dropping
+        them onto the area of FuncPlotter&apos;s main window below the menu bar.  This is
+        equivalent to opening the files with the <span class="command">File &gt; Open
+        file</span> command.  Multiple files can be opened in this way, subject to the
+        constraint that a maximum of 64 documents can be open simultaneously in FuncPlotter.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Numeric values -->
+
+    <div class="section">
+      <h2 id="section6">6&nbsp; Numeric values</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        FuncPlotter uses the <code>double</code> floating-point type of the Java language for
+        the numbers that are involved in evaluating and plotting functions.  The Java
+        <code>double</code> type is based on the double-precision (64-bit) floating-point format
+        of the IEEE 754 standard, which has 53 bits of precision in the significand.  This
+        precision is adequate for the purpose for which FuncPlotter is intended, and operations
+        on <code>double</code>-type numbers are relatively fast on processors with a
+        floating-point unit that implements the IEEE 754 double-precision format.
+      </p>
+      <p class="wrap">
+        Even with the precision of a Java <code>double</code>, many of the numeric values that
+        are displayed by FuncPlotter will be approximations.  (Remember that the binary
+        representation of decimal fractions is usually inexact: the decimal fraction 0.1, for
+        example, cannot be represented by a binary fraction of finite length just as the
+        fraction <small><sup>1</sup>/<sub>3</sub></small> cannot be represented by a decimal
+        fraction of finite length.)
+      </p>
+      <p class="noBottomMargin wrap">
+        Real numbers &mdash; or, more correctly, approximations to real numbers &mdash; appear
+        in three places in FuncPlotter&apos;s display:
+      </p>
+      <ul class="continuationList">
+        <li class="wrap">
+          the scale markings of the plot,
+        </li>
+        <li class="wrap">
+          the coordinates of the pixel of the plot panel under the mouse cursor,
+        </li>
+        <li class="wrap">
+          the lower and upper endpoints of the <i>x</i> and <i>y</i> intervals.
+        </li>
+      </ul>
+      <p class="wrap">
+        For consistency, all three uses are subject to the same constraints and are displayed in
+        the same format, which can be controlled to a limited extent by configuration
+        properties.
+      </p>
+      <p class="wrap">
+        The maximum precision (aka the number of &quot;significant figures&quot;) of displayed
+        numbers is limited to 12 digits.
+      </p>
+      <p class="wrap">
+        The maximum number of fraction digits (aka &quot;decimal places&quot;) in displayed
+        numbers is determined by the <a class="configProperty"
+        href="#cp-plot-numFractionDigits">plot.numFractionDigits</a> configuration property.
+      </p>
+      <p class="wrap">
+        Numbers are displayed in one of two formats:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          <i>fixed-point format</i> (eg, 23.456), in which the radix point is placed before the
+          first fraction digit;
+        </li>
+        <li class="spaced wrap">
+          <i>scientific notation</i> (eg, 2.345E&minus;6), in which the <i>significand</i> (the
+          number before the <code>E</code>) is multiplied by 10 raised to the power of the
+          <i>exponent</i> (the integer after the <code>E</code>).  If the first digit of the
+          significand is in the range <code>1</code>..<code>9</code> and is followed immediately
+          by the radix point, the number is said to be <i>normalised</i>.  Thus, 6.24E&minus;4
+          is normalised; 0.773E8 and 52.08E&minus;6 are denormalised.
+        </li>
+      </ul>
+
+      <p class="wrap">
+        The format &mdash; fixed-point format or scientific notation &mdash; is determined by
+        the exponent of the number and the <a class="configProperty"
+        href="#cp-plot-fixedPointExponentRange">plot.fixedPointExponentRange</a> configuration
+        property: if the exponent of the number lies within the inclusive fixed-point exponent
+        range, the number is displayed in fixed-point format.  (The exponent that is used in
+        this determination is the exponent of the number in scientific notation, normalised or
+        denormalised according to the <a class="configProperty"
+        href="#cp-plot-normaliseScientificNotation">plot.normaliseScientificNotation</a>
+        configuration property.)
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Expressions -->
+
+    <div class="section">
+      <h2 id="section7">7&nbsp; Expressions</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        An expression consists of operands and operations, optionally separated by spaces.
+        Subexpressions can be placed within parentheses, <code>(</code> and <code>)</code>, to
+        override the precedence of operations or to make an expression easier to read.
+      </p>
+
+      <h3 id="section7-1">7.1&nbsp; Operands</h3>
+
+      <p class="wrap">
+        Simple operands are of three types:
+      </p>
+      <table class="simpleOperand">
+        <tr>
+          <td class="col1">
+            variable
+          </td>
+          <td>
+            <code>x</code>
+          </td>
+          <td>
+            The independent variable.
+          </td>
+        </tr>
+        <tr>
+          <td class="col1" colspan="1" rowspan="2">
+            symbolic&nbsp;constant
+          </td>
+          <td>
+            <code>e</code>
+          </td>
+          <td>
+            The base of natural logarithms.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>pi</code>
+          </td>
+          <td>
+            The ratio of the circumference of a circle to its diameter, &pi;.
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            numeric&nbsp;constant
+          </td>
+          <td class="wrap" colspan="2">
+            A string that is a valid representation of a <em>decimal</em> number in the
+            approximate range 10<sup>&minus;308</sup> to 10<sup>308</sup>, and composed only of
+            the digits <code>0</code>..<code>9</code> and the characters <code>+</code>,
+            <code>&minus;</code>, <code>.</code>, <code>E</code>, <code>e</code>.  Numbers can
+            be in exponential form; for example, 1.602 &times; 10<sup>&minus;19</sup> would be
+            1.602E&minus;19 or 1.602e&minus;19.
+          </td>
+        </tr>
+      </table>
+
+      <h3 id="section7-2">7.2&nbsp; Operations</h3>
+
+      <p class="wrap">
+        There are two types of operation: unary and binary.  Unary operations take one operand;
+        binary operations take two operands.
+      </p>
+
+      <h4 id="section7-2-1">7.2.1&nbsp; Unary operations</h4>
+      <p class="wrap">
+        Unary operations use <i>prefix</i> notation: they always appear before the operand in
+        expressions, and they are right-associative.  As well as unary <code>+</code> and
+        <code>&minus;</code>, the unary operations include several common mathematical
+        functions.  Because the unary operations have a higher precedence than binary operations
+        when evaluating expressions, there is no need to enclose a simple operand of a
+        mathematical function in parentheses.  For example, the expression
+        <i>sin<sup>2</sup>x</i> can be written <code>sin x^2</code>, though
+        <code>sin(x)^2</code> and <code>(sin x)^2</code> are less ambiguous equivalents.
+      </p>
+
+      <table class="operation">
+        <tr>
+          <th>
+            Operation
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td class="col1">
+            +
+          </td>
+          <td>
+            Unary plus
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            &minus;
+          </td>
+          <td>
+            Unary minus
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            abs
+          </td>
+          <td>
+            Absolute value
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            acos
+          </td>
+          <td>
+            Inverse cosine, in the range [0, &pi;]
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            acosh
+          </td>
+          <td>
+            Inverse hyperbolic cosine, in the range [0, &infin;]
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            acot
+          </td>
+          <td>
+            Inverse cotangent, in the range [&minus;&pi;/2, &pi;/2]
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            acsc
+          </td>
+          <td>
+            Inverse cosecant, in the range [&minus;&pi;/2, &pi;/2]
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            asec
+          </td>
+          <td>
+            Inverse secant, in the range [0, &pi;]
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            asin
+          </td>
+          <td>
+            Inverse sine, in the range [&minus;&pi;/2, &pi;/2]
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            asinh
+          </td>
+          <td>
+            Inverse hyperbolic sine
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            atan
+          </td>
+          <td>
+            Inverse tangent, in the range ]&minus;&pi;/2, &pi;/2[
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            atanh
+          </td>
+          <td>
+            Inverse hyperbolic tangent
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            ceil
+          </td>
+          <td>
+            Smallest integer value that is greater than or equal to the operand
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            cos
+          </td>
+          <td>
+            Cosine
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            cosh
+          </td>
+          <td>
+            Hyperbolic cosine
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            cot
+          </td>
+          <td>
+            Cotangent
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            csc
+          </td>
+          <td>
+            Cosecant
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            exp
+          </td>
+          <td>
+            e (base of natural logarithms) raised to the power of the operand
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            floor
+          </td>
+          <td>
+            Largest integer value that is less than or equal to the operand
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            lg
+          </td>
+          <td>
+            Logarithm, base 10
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            ln
+          </td>
+          <td>
+            Logarithm, base e (ie, natural logarithm)
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            round
+          </td>
+          <td>
+            Closest integer to the operand (1/2 is rounded up)
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            sec
+          </td>
+          <td>
+            Secant
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            sin
+          </td>
+          <td>
+            Sine
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            sinh
+          </td>
+          <td>
+            Hyperbolic sine
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            sqrt
+          </td>
+          <td>
+            Positive square root
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            tan
+          </td>
+          <td>
+            Tangent
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            tanh
+          </td>
+          <td>
+            Hyperbolic tangent
+          </td>
+        </tr>
+      </table>
+
+      <h4 id="section7-2-2">7.2.2&nbsp; Binary operations</h4>
+      <p class="wrap">
+        Binary operations use <i>infix</i> notation: they always appear between their operands
+        in expressions, and they are left-associative (eg,
+        1&nbsp;&minus;&nbsp;<i>x</i>&nbsp;&minus;&nbsp;ln&nbsp;<i>x</i> is evaluated as
+        (1&nbsp;&minus;&nbsp;<i>x</i>)&nbsp;&minus;&nbsp;ln&nbsp;<i>x</i>).  The binary
+        operations are the common arithmetic operations along with two types of remainder
+        operation and the exponentiation (&quot;raised to the power of&quot;) operation.
+        Different precedence levels exist within the set of binary operations.
+      </p>
+
+      <table class="operation">
+        <tr>
+          <th>
+            Operation
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td class="col1">
+            +
+          </td>
+          <td>
+            Addition
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            &minus;
+          </td>
+          <td>
+            Subtraction
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            *
+          </td>
+          <td>
+            Multiplication
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            /
+          </td>
+          <td>
+            Division
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            %
+          </td>
+          <td>
+            Remainder (see below)
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            \
+          </td>
+          <td>
+            IEEE 754 remainder (see below)
+          </td>
+        </tr>
+        <tr>
+          <td class="col1">
+            ^
+          </td>
+          <td>
+            <i>operand1</i> raised to the power of <i>operand2</i>
+          </td>
+        </tr>
+      </table>
+
+      <p class="wrap">
+        The remainder operation, <code>%</code>, is implemented in FuncPlotter by means of the
+        floating-point <code>%</code> operation of the Java language.  The operation, which is
+        analogous to the integer remainder operation, is defined by the <a class="external"
+        href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.17.3"><i>Java
+        language specification (Java SE 8 edition)</i></a> thus:
+      </p>
+      <p class="quotation wrap">
+        [W]here neither an infinity, nor a zero, nor NaN is involved, the floating-point
+        remainder <i>r</i> from the division of a dividend <i>n</i> by a divisor <i>d</i> is
+        defined by the mathematical relation
+        <i>r</i>&nbsp;=&nbsp;<i>n</i>&nbsp;&minus;&nbsp;(<i>d</i>&nbsp;&middot;&nbsp;<i>q</i>)
+        where <i>q</i> is an integer that is negative only if <i>n/d</i> is negative and
+        positive only if <i>n/d</i> is positive, and whose magnitude is as large as possible
+        without exceeding the magnitude of the true mathematical quotient of <i>n</i> and
+        <i>d</i>.
+      </p>
+      <p class="wrap">
+        The IEEE 754 remainder operation, <code>\</code>, performs a remainder operation
+        according to the IEEE 754 standard.  It is implemented in FuncPlotter by means of the
+        <code>java.lang.Math.IEEEremainder()</code> method.  The <a class="external"
+        href="https://docs.oracle.com/javase/7/docs/api/java/lang/Math.html#IEEEremainder(double,%20double)">Java
+        API documentation</a> describes the operation thus (with variables and operations
+        renamed to be consistent with the definition of <code>%</code> above):
+      </p>
+      <p class="quotation wrap">
+        The remainder value is mathematically equal to
+        <i>n</i>&nbsp;&minus;&nbsp;(<i>d</i>&nbsp;&middot;&nbsp;<i>q</i>), where <i>q</i> is the
+        mathematical integer closest to the exact mathematical value of the quotient
+        <i>n</i>/<i>d</i>, and if two mathematical integers are equally close to
+        <i>n</i>/<i>d</i>, then <i>q</i> is the integer that is even.
+      </p>
+      <p class="wrap">
+        The <a class="external"
+        href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.17.3"><i>Java
+        language specification (Java SE 8 edition)</i></a> explains the difference between the
+        two remainder operations.
+      </p>
+
+      <h4 id="section7-2-3">7.2.3&nbsp; Operation precedence</h4>
+      <p class="wrap">
+        The following table lists the precedence of operations in an expression, with precedence
+        decreasing from the top to the bottom of the table.  Operations on the same row have
+        equal precedence.  Parentheses override operation precedence.
+      </p>
+
+      <table class="operation">
+        <tr>
+          <td>
+            Unary operations
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>^</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>* / % \</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>+ &minus;</code>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Document formats -->
+
+    <div class="section">
+      <h2 id="section8">8&nbsp; Document formats</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        FuncPlotter supports two document formats, referred to as <i>XML</i> and <i>text</i>,
+        although they are both text (as opposed to binary) formats.  A document&apos;s format is
+        also referred to as its <i>file type</i>.  Files of both types are expected to be
+        encoded as UTF-8.  When a file is opened in FuncPlotter, the file type is determined by
+        examining the first five bytes of the file: if they are the UTF-8 character sequence
+        <code>&lt;?xml</code>, the file is parsed as XML; otherwise, it is parsed as though it
+        were in text format.
+      </p>
+
+      <p class="wrap">
+        If you don&apos;t intend to edit a document manually, it is recommended that you save it
+        in XML format.
+      </p>
+
+      <h3 id="section8-1">8.1&nbsp; XML format</h3>
+
+      <p class="wrap">
+        The XML format was introduced in version 1.2 in order to provide a standard,
+        interoperable format for FuncPlotter&apos;s documents.  Although it is possible to edit
+        XML documents manually, it is assumed that such documents were written by FuncPlotter,
+        so the reporting of any errors that are encountered on opening a document in XML format
+        is less detailed than the reporting of errors in a document in text format.
+      </p>
+
+      <p class="wrap">
+        The structure of the XML format is simple: the <i>x</i> and <i>y</i> intervals are
+        optional attributes of the <code>&lt;functionList&gt;</code> root element, and the
+        function definitions are contained in zero or more <code>&lt;function&gt;</code>
+        elements that are children of the root element.  Each <code>&lt;function&gt;</code>
+        element has an <code>expression</code> attribute (required) and a <code>colour</code>
+        attribute (optional) whose forms correspond to the equivalent parts of a function
+        definition in documents in text format &mdash; see below.  The root element may contain
+        a single <code>&lt;comment&gt;</code> element for the <a href="#section5-2-3">document
+        comment</a>.
+      </p>
+
+      <p class="wrap">
+        The DTD of documents in XML format can be found in the file
+        <code>functionList.dtd</code>, which is included in the FuncPlotter distribution.  The
+        DTD is provided only for reference; it is not used by FuncPlotter.  Documents written by
+        FuncPlotter in XML format do not contain a document type declaration.
+      </p>
+
+      <h3 id="section8-2">8.2&nbsp; Text format</h3>
+
+      <p class="wrap">
+        The original document format, now referred to as <i>text format</i>, was designed to
+        make it easy to create and edit sets of functions with a text editor.  A document
+        consists of a series of statements.  There are two types of statement: an interval
+        definition and a function definition.  Each statement must be on a separate line.  Blank
+        lines are ignored.  A document must contain no more than 20 function definitions.
+      </p>
+      <p class="wrap">
+        If a line contains a <code>#</code> character, any text from the <code>#</code> to the
+        end of the line is ignored.  This can be used to include comments in a document.  There
+        are two types of comment:
+      </p>
+      <ol class="list">
+        <li class="wrap">
+          All comments that precede interval definitions and function definitions are merged
+          into a single <i>document comment</i>, which can be <a href="#section5-2-3">edited</a>
+          from within FuncPlotter and will be saved with the document.  The number of spaces
+          between the <code>#</code> and the first non-space character of the first line of a
+          document comment is taken to be the indent for the comment as a whole.  Leading spaces
+          up to the size of the indent are removed from subsequent lines of the comment.
+        </li>
+        <li class="wrap">
+          Comments that appear after the first interval definition or function definition are
+          termed <i>line comments</i>.  They must be included in a file by hand, and they are
+          not preserved when FuncPlotter saves the document.  Line comments should therefore be
+          used only to annotate documents that will not be subsequently saved by FuncPlotter.
+        </li>
+      </ol>
+      <p class="wrap">
+        An interval definition must begin with an interval identifier: the <code>@</code>
+        character followed by <code>x</code> or <code>y</code> (lower or upper case).  The
+        interval identifier is followed by the comma-separated lower and upper endpoints of the
+        interval.  Whitespace is allowed on either side of the endpoint values.  For example,
+        the line
+      </p>
+      <div class="example monospace">
+        @x&nbsp;-4.5,&nbsp;3.2
+      </div>
+      <p class="wrap">
+        denotes an <i>x</i> interval of [-4.5, 3.2].
+      </p>
+      <p class="wrap">
+        An interval definition in a document is subject to the constraints described in the <a
+        href="#section6">section on numeric values</a>.  For example, if the <a
+        class="configProperty" href="#cp-plot-numFractionDigits">plot.numFractionDigits</a>
+        configuration property has the value 3 and a document contains an interval of [0.4521,
+        0.4523], the endpoints of the interval will be deemed to be equal (ie, both are rounded
+        to 0.452), which will result in an error when the document is opened.
+      </p>
+      <p class="wrap">
+        A function definition consists of two parts: an expression (required), followed by a
+        colour definition (optional).  The <a href="#section7">expression</a> is an expression
+        for <i>f</i>(<i>x</i>) as it would be entered in the <span class="component">Add
+        function</span> or <span class="component">Edit function</span> dialog.  If a colour is
+        specified in the function definition, it consists either of the RGB components of the
+        colour in the range 0..255, separated by commas, or of a <code>#</code> followed by six
+        hexadecimal-digit characters (HTML notation).  The colour definition is separated from
+        the expression by a semi-colon.  If the colour definition is absent, the <a
+        href="#cp-function-colour">default colour</a> for that function is used instead.  For
+        example, the line
+      </p>
+      <div class="example monospace">
+        2*x^2&nbsp;&minus;&nbsp;3*x&nbsp;+&nbsp;1;&nbsp;144,&nbsp;0,&nbsp;0
+      </div>
+      <p class="wrap">
+        denotes the function
+        <i>y</i>&nbsp;=&nbsp;2<i>x</i><sup>2</sup>&nbsp;&minus;&nbsp;3<i>x</i>&nbsp;+&nbsp;1, to
+        be drawn in dark red, while the line
+      </p>
+      <div class="example monospace">
+        exp( 2*x )&nbsp;&minus;&nbsp;3*x
+      </div>
+      <p class="wrap">
+        denotes the function
+        <i>y</i>&nbsp;=&nbsp;e<sup>2<i>x</i></sup>&nbsp;&minus;&nbsp;3<i>x</i>, to be drawn in
+        the default colour for the function at that particular index.
+      </p>
+      <p class="wrap">
+        When you save a document with the <span class="command">File &gt; Save file</span> or
+        <span class="command">File &gt; Save file as</span> commands, you are given the option
+        of saving the colour definition with each of the function definitions in the document
+        according to the policy outlined in the description of the <a href="#section5-1"><span
+        class="command">Save file</span> and <span class="command">Save file as</span>
+        commands</a>.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Special constructs in pathnames -->
+
+    <div class="section">
+      <h2 id="sectionA">Appendix A:&nbsp; Special constructs in pathnames</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        Where indicated elsewhere in this document, pathname properties in FuncPlotter can
+        contain special constructs for system properties, environment variables and the
+        user&apos;s home directory.  The special constructs are expanded when the pathname is
+        used.
+      </p>
+
+      <dl class="basic">
+        <dt>System properties and environment variables</dt>
+        <dd class="wrap">
+          Java system properties (eg, the user&apos;s home directory, <code>user.home</code>)
+          and environment variables (eg, <code>PATH</code>) are referenced by enclosing them
+          between <code>${</code> and <code>}</code>; that is, they must have the form
+          <code>${&lt;<i>name</i>&gt;}</code>.  A Java system property takes precedence over an
+          environment variable with the same name.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${user.home}/projects</code>
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${HOME}/projects</code>
+        </dd>
+        <dd class="wrap">
+          A Java system property can be specified by prefixing <code>sys.</code> to it.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${sys.user.home}/projects</code>
+        </dd>
+        <dd class="wrap">
+          An environment variable can be specified by prefixing <code>env.</code> to it.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${env.HOME}/projects</code>
+        </dd>
+
+        <dt>User&apos;s home directory</dt>
+        <dd class="wrap">
+          A leading <code>~</code> in a pathname is expanded into the user&apos;s home directory
+          using the <code>user.home</code> system property, which is usually equivalent to the
+          environment variable <code>$HOME</code> on Linux/UNIX systems or
+          <code>%USERPROFILE%</code> on Windows systems.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>~/projects</code>
+        </dd>
+      </dl>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Configuration properties -->
+
+    <div class="section">
+      <h2 id="sectionB">Appendix B:&nbsp; Configuration properties</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        The table below lists the configuration properties of FuncPlotter.  Apart from the <span
+        class="configProperty">app.configDir</span> property, which, for obvious reasons, cannot
+        be used within a configuration file, all properties can be used in the two configuration
+        locations: command-line properties and configuration file
+      </p>
+      <p class="wrap">
+        When used in a <code>-D</code> command-line property, <code>app.</code> must be prefixed
+        to the property key (eg, <span
+        class="configProperty">app.general.mainWindowLocation</span>).
+      </p>
+      <p class="wrap">
+        The <i>&lt;index&gt;</i> of an indexed property key (eg, <span
+        class="configProperty">function.colour</span>) is a three-digit decimal-string
+        representation of the zero-based index of the property (eg, the colour of the third
+        function is <span class="configProperty">function.colour.002</span>).
+      </p>
+      <p class="wrap">
+        Any commas (<code>,</code>) or backslash characters (<code>\</code>) in the name of a
+        font must be escaped by prefixing a <code>\</code> character to them.
+      </p>
+      <p class="noBottomMargin wrap">
+        In the table below, the initial character of an italicised component of a property value
+        denotes its data type according to the following convention:
+      </p>
+
+      <table class="dataType">
+        <tr>
+          <td><i>c</i></td>
+          <td class="wrap">
+            colour: either <i>r</i>, <i>g</i>, <i>b</i> (decimal) or #<i>rrggbb</i> (hex)
+          </td>
+        </tr>
+        <tr>
+          <td><i>f</i></td>
+          <td>floating-point number</td>
+        </tr>
+        <tr>
+          <td><i>i</i></td>
+          <td>integer</td>
+        </tr>
+        <tr>
+          <td><i>p</i></td>
+          <td>
+            platform-specific pathname, which may contain <a href="#sectionA">special
+            constructs</a>
+          </td>
+        </tr>
+        <tr>
+          <td><i>s</i></td>
+          <td>string</td>
+        </tr>
+      </table>
+
+      <table class="configProperties">
+        <tr>
+          <th>Property key</th>
+          <th>Property value</th>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">configDir</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">appearance.lookAndFeel</td>
+          <td class="propertyValue"><i>sName</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textAntialiasing</td>
+          <td class="propertyValue">
+            default | none | normal | subpixelHRgb | subpixelHBgr | subpixelVRgb | subpixelVBgr
+          </td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">font.comboBox</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.main</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.plot</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.textField</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">function.colour.<i>&lt;index&gt;</i></td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">function.directory</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">function.listSize</td>
+          <td class="propertyValue">
+            <i>iNumColumns</i>, <i>iNumRows</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">function.obscuredColour</td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">general.clearEditListOnSave</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.defaultFileType</td>
+          <td class="propertyValue">xml | text</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.mainWindowLocation</td>
+          <td class="propertyValue">
+            <i>iX</i>, <i>iY</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.maxEditListLength</td>
+          <td class="propertyValue">
+            <i>iLength</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.newDocumentOnStartup</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.saveFunctionColours</td>
+          <td class="propertyValue">no | yes | ask</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.selectTextOnFocusGained</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.showFullPathnames</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.showUnixPathnames</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">plot.colour.axis</td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.colour.background</td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.colour.focusedBorder</td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.colour.grid</td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.colour.imageMargin</td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.colour.scale</td>
+          <td class="propertyValue">
+            <i>cColour</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.fixedPointExponentRange</td>
+          <td class="propertyValue">
+            <i>iLowerBound</i>, <i>iUpperBound</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.normaliseScientificNotation</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.numFractionDigits</td>
+          <td class="propertyValue"><i>iNumDigits</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.numYScaleDigits</td>
+          <td class="propertyValue"><i>iNumDigits</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.showGrid</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.size</td>
+          <td class="propertyValue">
+            <i>iWidth</i>, <i>iHeight</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">plot.truncateXScaleText</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Footer -->
+
+    <div id="lastModified">
+      <div>
+        <div>
+          Last modified: 2023-08-12
+        </div>
+        <div class="image">
+          <a class="hideHover" href="http://validator.w3.org/check?uri=referer">
+            <img alt="XHTML 1.1" src="images/valid-xhtml11-blue.png"/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
