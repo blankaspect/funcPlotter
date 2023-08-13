@@ -163,7 +163,7 @@
         FuncPlotter.
       </p>
       <p class="wrap">
-        The <code>src</code> directory of the distribution contains all the source code and
+        The <code>src</code> directory of the repository contains all the source code and
         resources that constitute the application; there are no external dependencies.  The
         directory conforms to the Maven standard directory layout: the source code is in
         <code>src/main/java</code> and the resources are in <code>src/main/resources</code>.
@@ -1956,40 +1956,19 @@
       <p class="wrap">
         The remainder operation, <code>%</code>, is implemented in FuncPlotter by means of the
         floating-point <code>%</code> operation of the Java language.  The operation, which is
-        analogous to the integer remainder operation, is defined by the <a class="external"
-        href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.17.3"><i>Java
-        language specification (Java SE 8 edition)</i></a> thus:
-      </p>
-      <p class="quotation wrap">
-        [W]here neither an infinity, nor a zero, nor NaN is involved, the floating-point
-        remainder <i>r</i> from the division of a dividend <i>n</i> by a divisor <i>d</i> is
-        defined by the mathematical relation
-        <i>r</i>&nbsp;=&nbsp;<i>n</i>&nbsp;&minus;&nbsp;(<i>d</i>&nbsp;&middot;&nbsp;<i>q</i>)
-        where <i>q</i> is an integer that is negative only if <i>n/d</i> is negative and
-        positive only if <i>n/d</i> is positive, and whose magnitude is as large as possible
-        without exceeding the magnitude of the true mathematical quotient of <i>n</i> and
-        <i>d</i>.
+        analogous to the integer remainder operation, is defined in <a class="external"
+        href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.17.3">section
+        15.17.3 of the <i>Java language specification</i></a>.
       </p>
       <p class="wrap">
         The IEEE 754 remainder operation, <code>\</code>, performs a remainder operation
-        according to the IEEE 754 standard.  It is implemented in FuncPlotter by means of the
-        <code>java.lang.Math.IEEEremainder()</code> method.  The <a class="external"
-        href="https://docs.oracle.com/javase/7/docs/api/java/lang/Math.html#IEEEremainder(double,%20double)">Java
-        API documentation</a> describes the operation thus (with variables and operations
-        renamed to be consistent with the definition of <code>%</code> above):
-      </p>
-      <p class="quotation wrap">
-        The remainder value is mathematically equal to
-        <i>n</i>&nbsp;&minus;&nbsp;(<i>d</i>&nbsp;&middot;&nbsp;<i>q</i>), where <i>q</i> is the
-        mathematical integer closest to the exact mathematical value of the quotient
-        <i>n</i>/<i>d</i>, and if two mathematical integers are equally close to
-        <i>n</i>/<i>d</i>, then <i>q</i> is the integer that is even.
+        according to the IEEE 754 standard.  It is implemented in FuncPlotter by means of <a
+        class="external"
+        href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html#IEEEremainder(double,double)"><code>java.lang.Math.IEEEremainder(&hellip;)</code></a>.
       </p>
       <p class="wrap">
-        The <a class="external"
-        href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.17.3"><i>Java
-        language specification (Java SE 8 edition)</i></a> explains the difference between the
-        two remainder operations.
+        The <i>Java language specification</i> explains the difference between the two remainder
+        operations.
       </p>
 
       <h4 id="section7-2-3">7.2.3&nbsp; Operation precedence</h4>
@@ -2072,10 +2051,11 @@
       </p>
 
       <p class="wrap">
-        The DTD of documents in XML format can be found in the file
-        <code>functionList.dtd</code>, which is included in the FuncPlotter distribution.  The
-        DTD is provided only for reference; it is not used by FuncPlotter.  Documents written by
-        FuncPlotter in XML format do not contain a document type declaration.
+        The DTD of documents in XML format can be found in <a
+        href="https://github.com/blankaspect/funcPlotter/blob/master/dtd/functionList.dtd">a
+        file</a> in the FuncPlotter repository.  The DTD is provided only for reference; it is
+        not used by FuncPlotter.  Documents written by FuncPlotter in XML format do not contain
+        a document type declaration.
       </p>
 
       <h3 id="section8-2">8.2&nbsp; Text format</h3>
@@ -2481,7 +2461,7 @@
     <div id="lastModified">
       <div>
         <div>
-          Last modified: 2023-08-12
+          Last modified: 2023-08-13
         </div>
         <div class="image">
           <a class="hideHover" href="http://validator.w3.org/check?uri=referer">
