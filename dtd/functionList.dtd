@@ -1,0 +1,28 @@
+<!--
+========================================================================
+Function list DTD
+Application: FuncPlotter
+
+This DTD is for reference only: FuncPlotter does not validate its
+documents against a DTD.
+========================================================================
+-->
+
+<!ELEMENT functionList ( comment?, function* )>
+<!ATTLIST functionList
+    xmlns     CDATA   #FIXED    "http://ns.blankaspect.uk/funcPlotter-1"
+    version   NMTOKEN #REQUIRED
+    xInterval CDATA   #IMPLIED
+    yInterval CDATA   #IMPLIED
+>
+
+<!ELEMENT comment ( #PCDATA )>
+<!ATTLIST comment
+    indent NMTOKEN #IMPLIED
+>
+
+<!ELEMENT function EMPTY>
+<!ATTLIST function
+    expression CDATA #REQUIRED
+    colour     CDATA #IMPLIED
+>
