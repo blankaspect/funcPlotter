@@ -156,7 +156,7 @@ class SurrogateMinus
 				}
 				catch (AppException e)
 				{
-					JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(this, e, FuncPlotterApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		}

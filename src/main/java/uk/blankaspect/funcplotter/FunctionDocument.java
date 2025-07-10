@@ -56,7 +56,8 @@ import org.w3c.dom.NodeList;
 
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
-import uk.blankaspect.common.exception.ValueOutOfBoundsException;
+
+import uk.blankaspect.common.exception2.ValueOutOfBoundsException;
 
 import uk.blankaspect.common.list.IListModel;
 
@@ -503,7 +504,7 @@ class FunctionDocument
 
 		public void actionPerformed(ActionEvent event)
 		{
-			FunctionDocument document = App.INSTANCE.getDocument();
+			FunctionDocument document = FuncPlotterApp.INSTANCE.getDocument();
 			if (document != null)
 				document.executeCommand(this);
 		}
@@ -560,13 +561,13 @@ class FunctionDocument
 		("An error occurred when writing the file."),
 
 		INVALID_DOCUMENT
-		("The file is not a valid " + App.SHORT_NAME + " document."),
+		("The file is not a valid " + FuncPlotterApp.SHORT_NAME + " document."),
 
 		UNEXPECTED_DOCUMENT_FORMAT
 		("The document does not have the expected format."),
 
 		UNSUPPORTED_DOCUMENT_VERSION
-		("The version of the document (%1) is not supported by this version of " + App.SHORT_NAME + "."),
+		("The version of the document (%1) is not supported by this version of " + FuncPlotterApp.SHORT_NAME + "."),
 
 		NO_ATTRIBUTE
 		("The required attribute is missing."),
@@ -1257,7 +1258,7 @@ class FunctionDocument
 
 	private static MainWindow getWindow()
 	{
-		return App.INSTANCE.getMainWindow();
+		return FuncPlotterApp.INSTANCE.getMainWindow();
 	}
 
 	//------------------------------------------------------------------
@@ -1585,7 +1586,7 @@ class FunctionDocument
 		}
 		catch (AppException e)
 		{
-			App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+			FuncPlotterApp.INSTANCE.showErrorMessage(FuncPlotterApp.SHORT_NAME, e);
 		}
 	}
 
@@ -1754,7 +1755,7 @@ class FunctionDocument
 		}
 		catch (AppException e)
 		{
-			App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+			FuncPlotterApp.INSTANCE.showErrorMessage(FuncPlotterApp.SHORT_NAME, e);
 		}
 
 		// Add edit to undo list
@@ -1768,7 +1769,7 @@ class FunctionDocument
 		MainWindow mainWindow = getWindow();
 		if (mainWindow != null)
 		{
-			App.INSTANCE.updateTabText(this);
+			FuncPlotterApp.INSTANCE.updateTabText(this);
 			mainWindow.updateTitleAndMenus();
 		}
 
@@ -1780,7 +1781,7 @@ class FunctionDocument
 
 	private FunctionView getView()
 	{
-		return App.INSTANCE.getView(this);
+		return FuncPlotterApp.INSTANCE.getView(this);
 	}
 
 	//------------------------------------------------------------------
@@ -2174,7 +2175,7 @@ class FunctionDocument
 					}
 
 					// Strip leading and trailing spaces and control chars
-					line = line.trim();
+					line = line.strip();
 
 					// Set next state according to kind of statement
 					if (line.isEmpty())
@@ -2260,7 +2261,7 @@ class FunctionDocument
 		BigDecimal lowerEndpoint = null;
 		try
 		{
-			String epStr = strs.get(0).trim();
+			String epStr = strs.get(0).strip();
 			lowerEndpoint = new BigDecimal(epStr);
 			double value = lowerEndpoint.doubleValue();
 			if ((value < PlotInterval.MIN_VALUE) || (value > PlotInterval.MAX_VALUE))
@@ -2277,7 +2278,7 @@ class FunctionDocument
 		BigDecimal upperEndpoint = null;
 		try
 		{
-			String epStr = strs.get(1).trim();
+			String epStr = strs.get(1).strip();
 			upperEndpoint = new BigDecimal(epStr);
 			double value = upperEndpoint.doubleValue();
 			if ((value < PlotInterval.MIN_VALUE) || (value > PlotInterval.MAX_VALUE))
@@ -2314,7 +2315,7 @@ class FunctionDocument
 		{
 			try
 			{
-				colour = ColourUtils.parseColour(functionParts[1].trim());
+				colour = ColourUtils.parseColour(functionParts[1].strip());
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -2385,7 +2386,7 @@ class FunctionDocument
 
 	private StringBuilder getText(boolean includeColours)
 	{
-		String lineSeparator = SystemUtils.getLineSeparator();
+		String lineSeparator = SystemUtils.lineSeparator();
 		StringBuilder buffer = new StringBuilder(1024);
 
 		// Document comment
@@ -2525,7 +2526,7 @@ class FunctionDocument
 	private Edit onClearEditList()
 	{
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.CLEAR_STR);
-		if (JOptionPane.showOptionDialog(getWindow(), CLEAR_EDIT_LIST_STR, App.SHORT_NAME,
+		if (JOptionPane.showOptionDialog(getWindow(), CLEAR_EDIT_LIST_STR, FuncPlotterApp.SHORT_NAME,
 										 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 										 optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION)
 		{
@@ -2675,7 +2676,7 @@ class FunctionDocument
 		Edit edit = null;
 		String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
 		if (JOptionPane.showOptionDialog(getWindow(), DELETE_MESSAGE_STR,
-										 App.SHORT_NAME + " : " + DELETE_FUNCTION_STR,
+										 FuncPlotterApp.SHORT_NAME + " : " + DELETE_FUNCTION_STR,
 										 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 										 optionStrs, optionStrs[0]) == JOptionPane.OK_OPTION)
 			edit = onDeleteFunction();
@@ -2690,7 +2691,7 @@ class FunctionDocument
 		String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
 		if (hasFunctions() &&
 			 (JOptionPane.showOptionDialog(getWindow(), DELETE_ALL_MESSAGE_STR,
-										   App.SHORT_NAME + " : " + DELETE_ALL_FUNCTIONS_STR,
+										   FuncPlotterApp.SHORT_NAME + " : " + DELETE_ALL_FUNCTIONS_STR,
 										   JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 										   null, optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION))
 		{

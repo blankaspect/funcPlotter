@@ -46,10 +46,10 @@ interface AppConstants
 	String	CLEAR_STR			= "Clear";
 	String	ALREADY_EXISTS_STR	= "\nThe file already exists.\nDo you want to replace it?";
 
-	// Filename suffixes
-	String	PNG_FILE_SUFFIX		= ".png";
-	String	TEXT_FILE_SUFFIX	= ".txt";
-	String	XML_FILE_SUFFIX		= ".xml";
+	// Filename extensions
+	String	PNG_FILENAME_EXTENSION	= ".png";
+	String	TEXT_FILENAME_EXTENSION	= ".txt";
+	String	XML_FILENAME_EXTENSION	= ".xml";
 
 	// File-filter descriptions
 	String	PNG_FILES_STR	= "PNG files";

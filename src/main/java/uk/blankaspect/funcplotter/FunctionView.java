@@ -306,7 +306,7 @@ class FunctionView
 			// Initialise instance variables
 			minusChar = SurrogateMinus.getMinusChar(getFont());
 
-			// Set component attributes
+			// Set properties
 			int height = Math.max(getFontMetrics(getFont()).getHeight(), ICON_HEIGHT);
 			setRowHeight(2 * DEFAULT_VERTICAL_MARGIN + height);
 			setExtraWidth(ICON_MARGIN + ICON_WIDTH);
@@ -1174,12 +1174,12 @@ class FunctionView
 		Color scrollZoomBackgroundColour = ColourUtils.scaleBrightness(getBackground(), 0.95f);
 		scrollPanel.setBackground(scrollZoomBackgroundColour);
 
-		scrollPanel.add(GuiUtils.createFiller());
+		scrollPanel.add(GuiUtils.spacer());
 
 		// Button: scroll up
 		scrollPanel.add(new ScrollButton(FunctionDocument.Command.SCROLL_UP));
 
-		scrollPanel.add(GuiUtils.createFiller());
+		scrollPanel.add(GuiUtils.spacer());
 
 		// Button: scroll left
 		scrollPanel.add(new ScrollButton(FunctionDocument.Command.SCROLL_LEFT));
@@ -1190,7 +1190,7 @@ class FunctionView
 		// Button: scroll right
 		scrollPanel.add(new ScrollButton(FunctionDocument.Command.SCROLL_RIGHT));
 
-		scrollPanel.add(GuiUtils.createFiller());
+		scrollPanel.add(GuiUtils.spacer());
 
 		// Button: scroll down
 		scrollPanel.add(new ScrollButton(FunctionDocument.Command.SCROLL_DOWN));
@@ -1540,7 +1540,7 @@ class FunctionView
 		}
 		catch (AppException e)
 		{
-			App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+			FuncPlotterApp.INSTANCE.showErrorMessage(FuncPlotterApp.SHORT_NAME, e);
 		}
 	}
 

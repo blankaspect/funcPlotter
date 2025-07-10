@@ -20,7 +20,7 @@ package uk.blankaspect.funcplotter;
 
 import java.awt.Color;
 
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 import uk.blankaspect.ui.swing.colour.ColourUtils;
 
@@ -103,12 +103,10 @@ class Function
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof Function)
-		{
-			Function function = (Function)obj;
-			return (colour.equals(function.colour) && expression.equals(function.expression));
-		}
-		return false;
+		if (this == obj)
+			return true;
+
+		return (obj instanceof Function other) && colour.equals(other.colour) && expression.equals(other.expression);
 	}
 
 	//------------------------------------------------------------------
@@ -116,7 +114,7 @@ class Function
 	@Override
 	public int hashCode()
 	{
-		return (colour.hashCode() * 31 + expression.hashCode());
+		return 31 * colour.hashCode() + expression.hashCode();
 	}
 
 	//------------------------------------------------------------------

@@ -20,7 +20,6 @@ package uk.blankaspect.funcplotter;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -59,6 +58,8 @@ import uk.blankaspect.common.misc.NoYesAsk;
 import uk.blankaspect.common.range.IntegerRange;
 
 import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.tuple.StringPair;
 
 import uk.blankaspect.ui.swing.action.KeyAction;
 
@@ -682,9 +683,8 @@ class PreferencesDialog
 
 	private PreferencesDialog(Window owner)
 	{
-
 		// Call superclass constructor
-		super(owner, TITLE_STR, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -821,7 +821,7 @@ class PreferencesDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -831,7 +831,6 @@ class PreferencesDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -1051,7 +1050,7 @@ class PreferencesDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, FuncPlotterApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 		if (accepted)
 			onClose();
@@ -1070,7 +1069,7 @@ class PreferencesDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, FuncPlotterApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -2112,12 +2111,10 @@ class PreferencesDialog
 		listSizePanel = new DimensionsSpinnerPanel(config.getFunctionListSize().width,
 												   FunctionView.MIN_FUNCTION_LIST_NUM_COLUMNS,
 												   FunctionView.MAX_FUNCTION_LIST_NUM_COLUMNS,
-												   LIST_WIDTH_FIELD_LENGTH,
-												   config.getFunctionListSize().height,
+												   LIST_WIDTH_FIELD_LENGTH, config.getFunctionListSize().height,
 												   FunctionView.MIN_FUNCTION_LIST_NUM_ROWS,
 												   FunctionView.MAX_FUNCTION_LIST_NUM_ROWS,
-												   LIST_HEIGHT_FIELD_LENGTH,
-												   new String[] { COLUMNS_STR, ROWS_STR });
+												   LIST_HEIGHT_FIELD_LENGTH, StringPair.of(COLUMNS_STR, ROWS_STR));
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;

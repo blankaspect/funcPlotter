@@ -266,7 +266,7 @@ class MainWindow
 	@Override
 	public void windowGainedFocus(WindowEvent event)
 	{
-		FunctionView view = App.INSTANCE.getView();
+		FunctionView view = FuncPlotterApp.INSTANCE.getView();
 		if (view != null)
 			view.showMouseCursorCoords(true);
 	}
@@ -276,7 +276,7 @@ class MainWindow
 	@Override
 	public void windowLostFocus(WindowEvent event)
 	{
-		FunctionView view = App.INSTANCE.getView();
+		FunctionView view = FuncPlotterApp.INSTANCE.getView();
 		if (view != null)
 			view.showMouseCursorCoords(false);
 	}
@@ -349,10 +349,10 @@ class MainWindow
 
 	private void updateTitle()
 	{
-		FunctionDocument document = App.INSTANCE.getDocument();
+		FunctionDocument document = FuncPlotterApp.INSTANCE.getDocument();
 		boolean fullPathname = AppConfig.INSTANCE.isShowFullPathnames();
-		setTitle((document == null) ? App.LONG_NAME + " " + App.INSTANCE.getVersionString()
-									: App.SHORT_NAME + " - " + document.getTitleString(fullPathname));
+		setTitle((document == null) ? FuncPlotterApp.LONG_NAME + " " + FuncPlotterApp.INSTANCE.getVersionString()
+									: FuncPlotterApp.SHORT_NAME + " - " + document.getTitleString(fullPathname));
 	}
 
 	//------------------------------------------------------------------
@@ -402,7 +402,7 @@ class MainWindow
 			@Override
 			protected void update()
 			{
-				getMenu().setEnabled(App.INSTANCE.hasDocuments());
+				getMenu().setEnabled(FuncPlotterApp.INSTANCE.hasDocuments());
 				updateAppCommands();
 				updateDocumentCommands();
 			}
@@ -417,7 +417,7 @@ class MainWindow
 			@Override
 			protected void update()
 			{
-				getMenu().setEnabled(App.INSTANCE.hasDocuments());
+				getMenu().setEnabled(FuncPlotterApp.INSTANCE.hasDocuments());
 				updateDocumentCommands();
 			}
 		},
@@ -459,14 +459,14 @@ class MainWindow
 
 		private static void updateAppCommands()
 		{
-			App.INSTANCE.updateCommands();
+			FuncPlotterApp.INSTANCE.updateCommands();
 		}
 
 		//--------------------------------------------------------------
 
 		private static void updateDocumentCommands()
 		{
-			FunctionDocument document = App.INSTANCE.getDocument();
+			FunctionDocument document = FuncPlotterApp.INSTANCE.getDocument();
 			if (document == null)
 				FunctionDocument.Command.setAllEnabled(false);
 			else
@@ -579,7 +579,7 @@ class MainWindow
 		@Override
 		public void actionPerformed(ActionEvent event)
 		{
-			App.INSTANCE.closeDocument(Integer.parseInt(event.getActionCommand()));
+			FuncPlotterApp.INSTANCE.closeDocument(Integer.parseInt(event.getActionCommand()));
 		}
 
 		//--------------------------------------------------------------
@@ -668,7 +668,7 @@ class MainWindow
 				}
 				catch (AppException e)
 				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+					FuncPlotterApp.INSTANCE.showErrorMessage(FuncPlotterApp.SHORT_NAME, e);
 				}
 			}
 			return false;

@@ -2,7 +2,7 @@
 
 ErrorListDialog.java
 
-Error list dialog class.
+Error-list dialog class.
 
 \*====================================================================*/
 
@@ -35,7 +35,7 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 //----------------------------------------------------------------------
 
 
-// ERROR LIST DIALOG CLASS
+// ERROR-LIST DIALOG CLASS
 
 
 class ErrorListDialog
@@ -46,14 +46,66 @@ class ErrorListDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	MAX_NUM_ERRORS	= FunctionDocument.MAX_NUM_FUNCTIONS;
+	private static final	int		MAX_NUM_ERRORS	= FunctionDocument.MAX_NUM_FUNCTIONS;
 
-	private static final	int	NUM_COLUMNS	= 72;
-	private static final	int	NUM_ROWS	= MAX_NUM_ERRORS + 1;
+	private static final	int		NUM_COLUMNS	= 72;
+	private static final	int		NUM_ROWS	= MAX_NUM_ERRORS + 1;
 
 	private static final	String	FIRST_ERRORS_STR	= " : First " + MAX_NUM_ERRORS + " errors";
 
 	private static final	String	KEY	= ErrorListDialog.class.getCanonicalName();
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private ErrorListDialog(Window owner,
+							String title)
+	{
+		// Call superclass constructor
+		super(owner, title, KEY, NUM_COLUMNS, NUM_ROWS);
+
+		// Add styles
+		for (SpanStyle spanStyle : SpanStyle.values())
+			spanStyle.apply(addStyle(spanStyle.key, getDefaultStyle()));
+		for (ParagraphStyle paragraphStyle : ParagraphStyle.values())
+			paragraphStyle.apply(addStyle(paragraphStyle.key, getDefaultStyle()));
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class methods
+////////////////////////////////////////////////////////////////////////
+
+	public static void showDialog(Component    parent,
+								  String       title,
+								  String       pathname,
+								  List<String> errorStrs)
+	{
+		if (errorStrs.size() > MAX_NUM_ERRORS)
+			title += FIRST_ERRORS_STR;
+
+		ErrorListDialog dialog = new ErrorListDialog(GuiUtils.getWindow(parent), title);
+		Paragraph paragraph = new Paragraph(ParagraphStyle.PATHNAME.key);
+		paragraph.add(new Span(pathname, SpanStyle.PATHNAME.key));
+		dialog.append(paragraph);
+
+		int numErrors = Math.min(errorStrs.size(), MAX_NUM_ERRORS);
+		for (int i = 0; i < numErrors; i++)
+		{
+			paragraph = new Paragraph(StyleContext.DEFAULT_STYLE);
+			String[] strs = errorStrs.get(i).split(": ", 2);
+			paragraph.add(new Span(strs[0] + ": ", SpanStyle.LINE_NUMBER.key));
+			paragraph.add(new Span(strs[1], SpanStyle.ERROR.key));
+			dialog.append(paragraph);
+		}
+
+		dialog.setCaretToStart();
+		dialog.setVisible(true);
+	}
+
+	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
 //  Enumerated types
@@ -115,6 +167,13 @@ class ErrorListDialog
 		private static final	String	PREFIX	= "span.";
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	key;
+		private	Color	colour;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -145,13 +204,6 @@ class ErrorListDialog
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	key;
-		private	Color	colour;
 
 	}
 
@@ -185,6 +237,12 @@ class ErrorListDialog
 		private static final	String	PREFIX	= "paragraph.";
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	key;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -203,67 +261,9 @@ class ErrorListDialog
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	key;
-
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private ErrorListDialog(Window owner,
-							String titleStr)
-	{
-		// Call superclass constructor
-		super(owner, titleStr, KEY, NUM_COLUMNS, NUM_ROWS);
-
-		// Add styles
-		for (SpanStyle spanStyle : SpanStyle.values())
-			spanStyle.apply(addStyle(spanStyle.key, getDefaultStyle()));
-		for (ParagraphStyle paragraphStyle : ParagraphStyle.values())
-			paragraphStyle.apply(addStyle(paragraphStyle.key, getDefaultStyle()));
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class methods
-////////////////////////////////////////////////////////////////////////
-
-	public static void showDialog(Component    parent,
-								  String       titleStr,
-								  String       pathname,
-								  List<String> errorStrs)
-	{
-		if (errorStrs.size() > MAX_NUM_ERRORS)
-			titleStr += FIRST_ERRORS_STR;
-
-		ErrorListDialog dialog = new ErrorListDialog(GuiUtils.getWindow(parent), titleStr);
-		Paragraph paragraph = new Paragraph(ParagraphStyle.PATHNAME.key);
-		paragraph.add(new Span(pathname, SpanStyle.PATHNAME.key));
-		dialog.append(paragraph);
-
-		int numErrors = Math.min(errorStrs.size(), MAX_NUM_ERRORS);
-		for (int i = 0; i < numErrors; i++)
-		{
-			paragraph = new Paragraph(StyleContext.DEFAULT_STYLE);
-			String[] strs = errorStrs.get(i).split(": ", 2);
-			paragraph.add(new Span(strs[0] + ": ", SpanStyle.LINE_NUMBER.key));
-			paragraph.add(new Span(strs[1], SpanStyle.ERROR.key));
-			dialog.append(paragraph);
-		}
-
-		dialog.setCaretToStart();
-		dialog.setVisible(true);
-	}
-
-	//------------------------------------------------------------------
 
 }
 

@@ -19,7 +19,6 @@ package uk.blankaspect.funcplotter;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -82,16 +81,28 @@ class CommentDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Point	location;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	JTextArea	commentArea;
+	private	boolean		accepted;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
 	private CommentDialog(Window owner,
-						  String titleStr,
+						  String title,
 						  String text)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -103,15 +114,13 @@ class CommentDialog
 		commentArea = new FTextArea(text);
 
 		// Scroll pane: comment
-		JScrollPane commentAreaScrollPane = new JScrollPane(commentArea,
-															JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+		JScrollPane commentAreaScrollPane = new JScrollPane(commentArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 															JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		FontMetrics fontMetrics = commentArea.getFontMetrics(commentArea.getFont());
 		int width = TEXT_AREA_NUM_COLUMNS * FontUtils.getCharWidth('0', fontMetrics);
 		int height = TEXT_AREA_NUM_ROWS * fontMetrics.getHeight();
 		commentAreaScrollPane.getViewport().setPreferredSize(new Dimension(width, height));
-		GuiUtils.setViewportBorder(commentAreaScrollPane, TEXT_AREA_VERTICAL_MARGIN,
-								   TEXT_AREA_HORIZONTAL_MARGIN);
+		GuiUtils.setViewportBorder(commentAreaScrollPane, TEXT_AREA_VERTICAL_MARGIN, TEXT_AREA_HORIZONTAL_MARGIN);
 
 
 		//----  Button panel
@@ -195,7 +204,7 @@ class CommentDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -209,7 +218,6 @@ class CommentDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -219,10 +227,10 @@ class CommentDialog
 ////////////////////////////////////////////////////////////////////////
 
 	public static String showDialog(Component parent,
-									String    titleStr,
+									String    title,
 									String    text)
 	{
-		return new CommentDialog(GuiUtils.getWindow(parent), titleStr, text).getComment();
+		return new CommentDialog(GuiUtils.getWindow(parent), title, text).getComment();
 	}
 
 	//------------------------------------------------------------------
@@ -250,7 +258,7 @@ class CommentDialog
 
 	private String getComment()
 	{
-		return (accepted ? commentArea.getText().trim() : null);
+		return (accepted ? commentArea.getText().strip() : null);
 	}
 
 	//------------------------------------------------------------------
@@ -271,19 +279,6 @@ class CommentDialog
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Point	location;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	JTextArea	commentArea;
-	private	boolean		accepted;
 
 }
 

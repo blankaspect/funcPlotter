@@ -75,9 +75,9 @@ public enum NoYesAsk
 	public static NoYesAsk forKey(String key)
 	{
 		return Stream.of(values())
-						.filter(value -> Stream.of(value.keys).anyMatch(key0 -> key0.equals(key)))
-						.findFirst()
-						.orElse(null);
+				.filter(value -> Stream.of(value.keys).anyMatch(key0 -> key0.equals(key)))
+				.findFirst()
+				.orElse(null);
 	}
 
 	//------------------------------------------------------------------

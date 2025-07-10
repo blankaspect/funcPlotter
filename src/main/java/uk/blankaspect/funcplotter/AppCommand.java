@@ -224,7 +224,7 @@ enum AppCommand
 
 	public void actionPerformed(ActionEvent event)
 	{
-		App.INSTANCE.executeCommand(this);
+		FuncPlotterApp.INSTANCE.executeCommand(this);
 	}
 
 	//------------------------------------------------------------------

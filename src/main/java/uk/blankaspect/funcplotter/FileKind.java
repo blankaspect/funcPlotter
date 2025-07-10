@@ -41,7 +41,7 @@ enum FileKind
 	(
 		"xml",
 		"XML",
-		AppConstants.XML_FILE_SUFFIX,
+		AppConstants.XML_FILENAME_EXTENSION,
 		AppConstants.XML_FILES_STR
 	),
 
@@ -49,7 +49,7 @@ enum FileKind
 	(
 		"text",
 		"Text",
-		AppConstants.TEXT_FILE_SUFFIX,
+		AppConstants.TEXT_FILENAME_EXTENSION,
 		AppConstants.TEXT_FILES_STR
 	);
 
@@ -84,9 +84,9 @@ enum FileKind
 	public static FileKind forKey(String key)
 	{
 		return Stream.of(values())
-						.filter(value -> value.key.equals(key))
-						.findFirst()
-						.orElse(null);
+				.filter(value -> value.key.equals(key))
+				.findFirst()
+				.orElse(null);
 	}
 
 	//------------------------------------------------------------------
@@ -94,9 +94,9 @@ enum FileKind
 	public static FileKind forDescription(String description)
 	{
 		return Stream.of(values())
-						.filter(value -> value.filter.getDescription().equals(description))
-						.findFirst()
-						.orElse(null);
+				.filter(value -> value.filter.getDescription().equals(description))
+				.findFirst()
+				.orElse(null);
 	}
 
 	//------------------------------------------------------------------
@@ -104,9 +104,9 @@ enum FileKind
 	public static FileKind forFilename(String filename)
 	{
 		return Stream.of(values())
-						.filter(value -> value.filter.accepts(filename))
-						.findFirst()
-						.orElse(null);
+				.filter(value -> value.filter.accepts(filename))
+				.findFirst()
+				.orElse(null);
 	}
 
 	//------------------------------------------------------------------

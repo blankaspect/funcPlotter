@@ -1403,12 +1403,10 @@ class Expression
 			@Override
 			public boolean equals(Object obj)
 			{
-				if (obj instanceof ConstantNode)
-				{
-					ConstantNode node = (ConstantNode)obj;
-					return ((value == node.value) && super.equals(obj));
-				}
-				return false;
+				if (this == obj)
+					return true;
+
+				return (obj instanceof ConstantNode other) && (value == other.value) && super.equals(other);
 			}
 
 			//----------------------------------------------------------
@@ -1417,7 +1415,7 @@ class Expression
 			public int hashCode()
 			{
 				long bits = Double.doubleToLongBits(value);
-				return super.hashCode() * 31 + ((int)bits ^ (int)(bits >> 32));
+				return 31 * super.hashCode() + ((int)bits ^ (int)(bits >> 32));
 			}
 
 			//----------------------------------------------------------
@@ -1496,15 +1494,10 @@ class Expression
 			@Override
 			public boolean equals(Object obj)
 			{
-				return (obj instanceof VariableNode) && super.equals(obj);
-			}
+				if (this == obj)
+					return true;
 
-			//----------------------------------------------------------
-
-			@Override
-			public int hashCode()
-			{
-				return super.hashCode();
+				return (obj instanceof VariableNode other) && super.equals(other);
 			}
 
 			//----------------------------------------------------------
@@ -1579,12 +1572,11 @@ class Expression
 			@Override
 			public boolean equals(Object obj)
 			{
-				if (obj instanceof UnaryOperationNode)
-				{
-					UnaryOperationNode node = (UnaryOperationNode)obj;
-					return (unaryOperation == node.unaryOperation) && super.equals(obj);
-				}
-				return false;
+				if (this == obj)
+					return true;
+
+				return (obj instanceof UnaryOperationNode other) && (unaryOperation == other.unaryOperation)
+						&& super.equals(other);
 			}
 
 			//----------------------------------------------------------
@@ -1592,7 +1584,7 @@ class Expression
 			@Override
 			public int hashCode()
 			{
-				return (super.hashCode() * 31 + unaryOperation.ordinal());
+				return 31 * super.hashCode() + unaryOperation.ordinal();
 			}
 
 			//----------------------------------------------------------
@@ -1665,12 +1657,11 @@ class Expression
 			@Override
 			public boolean equals(Object obj)
 			{
-				if (obj instanceof BinaryOperationNode)
-				{
-					BinaryOperationNode node = (BinaryOperationNode)obj;
-					return (binaryOperation == node.binaryOperation) && super.equals(obj);
-				}
-				return false;
+				if (this == obj)
+					return true;
+
+				return (obj instanceof BinaryOperationNode other) && (binaryOperation == other.binaryOperation)
+						&& super.equals(other);
 			}
 
 			//----------------------------------------------------------
@@ -1678,7 +1669,7 @@ class Expression
 			@Override
 			public int hashCode()
 			{
-				return (super.hashCode() * 31 + binaryOperation.ordinal());
+				return 31 * super.hashCode() + binaryOperation.ordinal();
 			}
 
 			//----------------------------------------------------------
@@ -1754,7 +1745,7 @@ class Expression
 		public int hashCode()
 		{
 			int code = Objects.hashCode(leftChild);
-			code = code * 31 + Objects.hashCode(rightChild);
+			code = 31 * code + Objects.hashCode(rightChild);
 			return code;
 		}
 
@@ -2382,6 +2373,9 @@ class Expression
 	@Override
 	public boolean equals(Object obj)
 	{
+		if (this == obj)
+			return true;
+
 		return (obj instanceof Expression other) && tree.equals(other.tree);
 	}
 

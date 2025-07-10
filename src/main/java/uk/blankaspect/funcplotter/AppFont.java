@@ -24,6 +24,7 @@ import java.awt.Font;
 import uk.blankaspect.common.misc.IStringKeyed;
 
 import uk.blankaspect.ui.swing.font.FontEx;
+import uk.blankaspect.ui.swing.font.FontStyle;
 import uk.blankaspect.ui.swing.font.FontUtils;
 
 //----------------------------------------------------------------------
@@ -61,19 +62,52 @@ public enum AppFont
 	PLOT
 	(
 		"plot",
-		"Plot"
+		"Plot",
+		null,
+		null,
+		10
 	);
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	String	key;
+	private	String	text;
+	private	FontEx	fontEx;
+
+////////////////////////////////////////////////////////////////////////
+//  Static initialiser
+////////////////////////////////////////////////////////////////////////
+
+	static
+	{
+		FontUtils.setAppFontClass(AppFont.class);
+	}
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private AppFont(String key,
-					String text)
+	private AppFont(
+		String	key,
+		String	text)
+	{
+		this(key, text, null, null, 0);
+	}
+
+	//------------------------------------------------------------------
+
+	private AppFont(
+		String		key,
+		String		text,
+		String		name,
+		FontStyle	style,
+		int			size)
 	{
 		this.key = key;
 		this.text = text;
-		fontEx = new FontEx();
+		fontEx = new FontEx(name, style, size);
 	}
 
 	//------------------------------------------------------------------
@@ -165,23 +199,6 @@ public enum AppFont
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
-
-	static
-	{
-		FontUtils.setAppFontClass(AppFont.class);
-	}
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	String	key;
-	private	String	text;
-	private	FontEx	fontEx;
 
 }
 

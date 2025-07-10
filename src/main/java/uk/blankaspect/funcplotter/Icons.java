@@ -33,15 +33,33 @@ public class Icons
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	ImageIcon	ARROW_LEFT	= new ImageIcon(ImageData.ARROW_LEFT);
-	public static final	ImageIcon	ARROW_RIGHT	= new ImageIcon(ImageData.ARROW_RIGHT);
-	public static final	ImageIcon	ARROW_UP	= new ImageIcon(ImageData.ARROW_UP);
-	public static final	ImageIcon	ARROW_DOWN	= new ImageIcon(ImageData.ARROW_DOWN);
-	public static final	ImageIcon	ORIGIN		= new ImageIcon(ImageData.ORIGIN);
-	public static final	ImageIcon	ZOOM_IN		= new ImageIcon(ImageData.ZOOM_IN);
-	public static final	ImageIcon	ZOOM_OUT	= new ImageIcon(ImageData.ZOOM_OUT);
+	public static final	ImageIcon	ARROW_LEFT	= new ImageIcon(ImgData.ARROW_LEFT);
+	public static final	ImageIcon	ARROW_RIGHT	= new ImageIcon(ImgData.ARROW_RIGHT);
+	public static final	ImageIcon	ARROW_UP	= new ImageIcon(ImgData.ARROW_UP);
+	public static final	ImageIcon	ARROW_DOWN	= new ImageIcon(ImgData.ARROW_DOWN);
+	public static final	ImageIcon	ORIGIN		= new ImageIcon(ImgData.ORIGIN);
+	public static final	ImageIcon	ZOOM_IN		= new ImageIcon(ImgData.ZOOM_IN);
+	public static final	ImageIcon	ZOOM_OUT	= new ImageIcon(ImgData.ZOOM_OUT);
 
-	private interface ImageData
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private Icons()
+	{
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Image data
+////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * PNG image data.
+	 */
+
+	private interface ImgData
 	{
 		byte[]	ARROW_LEFT	=
 		{
@@ -275,15 +293,7 @@ public class Icons
 		};
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private Icons()
-	{
-	}
-
-	//------------------------------------------------------------------
+	//==================================================================
 
 }
 

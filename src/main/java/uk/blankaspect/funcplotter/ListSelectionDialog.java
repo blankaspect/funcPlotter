@@ -19,7 +19,6 @@ package uk.blankaspect.funcplotter;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -70,8 +69,8 @@ class ListSelectionDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	LIST_NUM_ROWS		= 16;
-	private static final	int	LIST_NUM_COLUMNS	= 72;
+	private static final	int		LIST_NUM_ROWS		= 16;
+	private static final	int		LIST_NUM_COLUMNS	= 72;
 
 	private static final	String	SELECT_ALL_STR				= "Select all";
 	private static final	String	DESELECT_ALL_STR			= "Deselect all";
@@ -98,17 +97,32 @@ class ListSelectionDialog
 	};
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Point	location;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	boolean					accepted;
+	private	SelectionList<String>	list;
+	private	JButton					selectAllButton;
+	private	JButton					deselectAllButton;
+	private	JButton					okButton;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
 	private ListSelectionDialog(Window   owner,
-								String   titleStr,
+								String   title,
 								String   listLabelStr,
 								String[] listStrs)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -288,7 +302,7 @@ class ListSelectionDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -298,7 +312,6 @@ class ListSelectionDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -308,12 +321,11 @@ class ListSelectionDialog
 ////////////////////////////////////////////////////////////////////////
 
 	public static int[] showDialog(Component parent,
-								   String    titleStr,
+								   String    title,
 								   String    listLabelStr,
 								   String[]  listStrs)
 	{
-		return new ListSelectionDialog(GuiUtils.getWindow(parent), titleStr, listLabelStr,
-									   listStrs).getSelections();
+		return new ListSelectionDialog(GuiUtils.getWindow(parent), title, listLabelStr, listStrs).getSelections();
 	}
 
 	//------------------------------------------------------------------
@@ -408,22 +420,6 @@ class ListSelectionDialog
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Point	location;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	boolean					accepted;
-	private	SelectionList<String>	list;
-	private	JButton					selectAllButton;
-	private	JButton					deselectAllButton;
-	private	JButton					okButton;
 
 }
 

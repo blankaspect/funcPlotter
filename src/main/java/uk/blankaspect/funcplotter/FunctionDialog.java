@@ -20,7 +20,6 @@ package uk.blankaspect.funcplotter;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -121,183 +120,32 @@ class FunctionDialog
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Point	location;
 
-	// COLOUR BUTTON CLASS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
-
-	private static class ColourButton
-		extends JButton
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int		WIDTH	= 18;
-		private static final	int		HEIGHT	= 18;
-
-		private static final	Color	BORDER_COLOUR			= Color.GRAY;
-		private static final	Color	FOCUSED_BORDER_COLOUR1	= Color.WHITE;
-		private static final	Color	FOCUSED_BORDER_COLOUR2	= Color.BLACK;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ColourButton(Color colour)
-		{
-			setBorder(null);
-			setForeground(colour);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(WIDTH, HEIGHT);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
-
-			// Get dimensions
-			int width = getWidth();
-			int height = getHeight();
-
-			// Fill interior
-			gr2d.setColor(getForeground());
-			gr2d.fillRect(2, 2, width - 4, height - 4);
-
-			// Draw border
-			gr2d.setColor(isFocusOwner() ? FOCUSED_BORDER_COLOUR1 : BORDER_COLOUR);
-			gr2d.drawRect(1, 1, width - 3, height - 3);
-			if (isFocusOwner())
-			{
-				gr2d.setColor(FOCUSED_BORDER_COLOUR1);
-				gr2d.drawRect(0, 0, width - 1, height - 1);
-
-				gr2d.setStroke(GuiConstants.BASIC_DASH);
-				gr2d.setColor(FOCUSED_BORDER_COLOUR2);
-			}
-			else
-				gr2d.setColor(getBackground());
-			gr2d.drawRect(0, 0, width - 1, height - 1);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// EXPRESSION FIELD CLASS
-
-
-	private static class ExpressionField
-		extends SurrogateMinus.Field
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	NUM_COLUMNS	= 80;
-
-		private static final	String	VALID_CHARS	= " %()*+./\\^";
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public ExpressionField(int maxLength)
-		{
-			super(maxLength, NUM_COLUMNS);
-		}
-
-		//--------------------------------------------------------------
-
-		public ExpressionField(int    maxLength,
-							   String text)
-		{
-			this(maxLength);
-			setText(text);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected int getColumnWidth()
-		{
-			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected String translateInsertString(String str,
-											   int    offset)
-		{
-			return super.translateInsertString(str, offset).toLowerCase();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected boolean acceptCharacter(char ch,
-										  int  index)
-		{
-			return (((ch >= '0') && (ch <= '9')) || ((ch >= 'a') && (ch <= 'z')) ||
-					 isMinusCharacter(ch) || (VALID_CHARS.indexOf(ch) >= 0));
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public Expression getExpression()
-			throws Expression.Exception
-		{
-			return new Expression(getText());
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	ExpressionField	expressionField;
+	private	JButton			colourButton;
+	private	ColourButton[]	functionColourButtons;
+	private	JButton			pasteButton;
+	private	boolean			accepted;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
 	private FunctionDialog(Window owner,
-						   String titleStr,
+						   String title,
 						   Color  colour,
 						   String expression)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -331,8 +179,7 @@ class FunctionDialog
 		// Button: colour
 		JPanel colourPanel = new JPanel(gridBag);
 
-		colourButton = new JButton(new ColourSampleIcon(COLOUR_BUTTON_ICON_WIDTH,
-														COLOUR_BUTTON_ICON_HEIGHT));
+		colourButton = new JButton(new ColourSampleIcon(COLOUR_BUTTON_ICON_WIDTH, COLOUR_BUTTON_ICON_HEIGHT));
 		colourButton.setMargin(COLOUR_BUTTON_MARGINS);
 		colourButton.setForeground(colour);
 		colourButton.setActionCommand(Command.CHOOSE_COLOUR);
@@ -355,7 +202,7 @@ class FunctionDialog
 
 		// Buttons: function colour
 		int numFunctions = 0;
-		FunctionDocument document = App.INSTANCE.getDocument();
+		FunctionDocument document = FuncPlotterApp.INSTANCE.getDocument();
 		if (document != null)
 			numFunctions = document.getNumFunctions();
 		if (numFunctions > 0)
@@ -578,7 +425,7 @@ class FunctionDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -591,7 +438,6 @@ class FunctionDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -601,11 +447,11 @@ class FunctionDialog
 ////////////////////////////////////////////////////////////////////////
 
 	public static FunctionDialog showDialog(Component parent,
-											String    titleStr,
+											String    title,
 											Color     colour,
 											String    expression)
 	{
-		return new FunctionDialog(GuiUtils.getWindow(parent), titleStr, colour, expression);
+		return new FunctionDialog(GuiUtils.getWindow(parent), title, colour, expression);
 	}
 
 	//------------------------------------------------------------------
@@ -623,8 +469,7 @@ class FunctionDialog
 			onChooseColour();
 
 		else if (command.startsWith(Command.SET_TO_FUNCTION_COLOUR))
-			onSetToFunctionColour(StringUtils.removePrefix(command,
-														   Command.SET_TO_FUNCTION_COLOUR));
+			onSetToFunctionColour(StringUtils.removePrefix(command, Command.SET_TO_FUNCTION_COLOUR));
 
 		else if (command.equals(Command.COPY))
 			onCopy();
@@ -653,8 +498,7 @@ class FunctionDialog
 	{
 		try
 		{
-			pasteButton.setEnabled(getToolkit().getSystemClipboard().
-														isDataFlavorAvailable(DataFlavor.stringFlavor));
+			pasteButton.setEnabled(getToolkit().getSystemClipboard().isDataFlavorAvailable(DataFlavor.stringFlavor));
 		}
 		catch (Exception e)
 		{
@@ -739,7 +583,7 @@ class FunctionDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, FuncPlotterApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -753,7 +597,7 @@ class FunctionDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, FuncPlotterApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -776,7 +620,7 @@ class FunctionDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME + " : " + SYNTAX_ERROR_STR,
+			JOptionPane.showMessageDialog(this, e, FuncPlotterApp.SHORT_NAME + " : " + SYNTAX_ERROR_STR,
 										  JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -801,20 +645,170 @@ class FunctionDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
 
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
+	// COLOUR BUTTON CLASS
 
-	private	ExpressionField	expressionField;
-	private	JButton			colourButton;
-	private	ColourButton[]	functionColourButtons;
-	private	JButton			pasteButton;
-	private	boolean			accepted;
+
+	private static class ColourButton
+		extends JButton
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		WIDTH	= 18;
+		private static final	int		HEIGHT	= 18;
+
+		private static final	Color	BORDER_COLOUR			= Color.GRAY;
+		private static final	Color	FOCUSED_BORDER_COLOUR1	= Color.WHITE;
+		private static final	Color	FOCUSED_BORDER_COLOUR2	= Color.BLACK;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ColourButton(Color colour)
+		{
+			setBorder(null);
+			setForeground(colour);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(WIDTH, HEIGHT);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+			// Get dimensions
+			int width = getWidth();
+			int height = getHeight();
+
+			// Fill interior
+			gr2d.setColor(getForeground());
+			gr2d.fillRect(2, 2, width - 4, height - 4);
+
+			// Draw border
+			gr2d.setColor(isFocusOwner() ? FOCUSED_BORDER_COLOUR1 : BORDER_COLOUR);
+			gr2d.drawRect(1, 1, width - 3, height - 3);
+			if (isFocusOwner())
+			{
+				gr2d.setColor(FOCUSED_BORDER_COLOUR1);
+				gr2d.drawRect(0, 0, width - 1, height - 1);
+
+				gr2d.setStroke(GuiConstants.BASIC_DASH);
+				gr2d.setColor(FOCUSED_BORDER_COLOUR2);
+			}
+			else
+				gr2d.setColor(getBackground());
+			gr2d.drawRect(0, 0, width - 1, height - 1);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// EXPRESSION FIELD CLASS
+
+
+	private static class ExpressionField
+		extends SurrogateMinus.Field
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		NUM_COLUMNS	= 80;
+
+		private static final	String	VALID_CHARS	= " %()*+./\\^";
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public ExpressionField(int maxLength)
+		{
+			super(maxLength, NUM_COLUMNS);
+		}
+
+		//--------------------------------------------------------------
+
+		public ExpressionField(int    maxLength,
+							   String text)
+		{
+			this(maxLength);
+			setText(text);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected int getColumnWidth()
+		{
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected String translateInsertString(String str,
+											   int    offset)
+		{
+			return super.translateInsertString(str, offset).toLowerCase();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected boolean acceptCharacter(char ch,
+										  int  index)
+		{
+			return (((ch >= '0') && (ch <= '9')) || ((ch >= 'a') && (ch <= 'z')) ||
+					 isMinusCharacter(ch) || (VALID_CHARS.indexOf(ch) >= 0));
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public Expression getExpression()
+			throws Expression.Exception
+		{
+			return new Expression(getText());
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 
