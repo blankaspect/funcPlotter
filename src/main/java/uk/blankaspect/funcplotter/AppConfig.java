@@ -47,7 +47,6 @@ import uk.blankaspect.common.exception.FileException;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.NoYesAsk;
 
 import uk.blankaspect.common.property.Property;
@@ -60,6 +59,8 @@ import uk.blankaspect.common.ui.progress.IProgressView;
 import uk.blankaspect.ui.swing.colour.ColourProperty;
 import uk.blankaspect.ui.swing.colour.Colours;
 import uk.blankaspect.ui.swing.colour.ColourUtils;
+
+import uk.blankaspect.ui.swing.filechooser.FileChooserUtils;
 
 import uk.blankaspect.ui.swing.font.FontEx;
 
@@ -296,8 +297,7 @@ class AppConfig
 			fileChooser = new JFileChooser();
 			fileChooser.setDialogTitle(SAVE_CONFIGURATION_FILE_STR);
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.XML_FILES_STR,
-															   AppConstants.XML_FILENAME_EXTENSION));
+			FileChooserUtils.setFilter(fileChooser, AppConstants.XML_FILE_FILTER);
 			selectedFile = file;
 		}
 
@@ -680,9 +680,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public FileKind getDefaultFileKind()
 	{
@@ -698,9 +698,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPDefaultFileKind	cpDefaultFileKind	= new CPDefaultFileKind();
 
@@ -730,9 +730,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isNewDocumentOnStartup()
 	{
@@ -748,9 +748,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPNewDocumentOnStartup	cpNewDocumentOnStartup	= new CPNewDocumentOnStartup();
 
@@ -780,9 +780,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public NoYesAsk getSaveFunctionColours()
 	{
@@ -798,9 +798,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPSaveFunctionColours	cpSaveFunctionColours	= new CPSaveFunctionColours();
 
@@ -830,9 +830,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isShowUnixPathnames()
 	{
@@ -862,9 +862,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPShowUnixPathnames	cpShowUnixPathnames	= new CPShowUnixPathnames();
 
@@ -894,9 +894,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isSelectTextOnFocusGained()
 	{
@@ -912,9 +912,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPSelectTextOnFocusGained	cpSelectTextOnFocusGained	= new CPSelectTextOnFocusGained();
 
@@ -944,9 +944,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isShowFullPathnames()
 	{
@@ -962,9 +962,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPShowFullPathnames	cpShowFullPathnames	= new CPShowFullPathnames();
 
@@ -1020,9 +1020,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isMainWindowLocation()
 	{
@@ -1045,9 +1045,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPMainWindowLocation	cpMainWindowLocation	= new CPMainWindowLocation();
 
@@ -1078,9 +1078,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public int getMaxEditListLength()
 	{
@@ -1096,9 +1096,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPMaxEditListLength	cpMaxEditListLength	= new CPMaxEditListLength();
 
@@ -1128,9 +1128,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isClearEditListOnSave()
 	{
@@ -1146,9 +1146,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPClearEditListOnSave	cpClearEditListOnSave	= new CPClearEditListOnSave();
 
@@ -1186,9 +1186,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public String getLookAndFeel()
 	{
@@ -1204,9 +1204,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPLookAndFeel	cpLookAndFeel	= new CPLookAndFeel();
 
@@ -1236,9 +1236,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public TextRendering.Antialiasing getTextAntialiasing()
 	{
@@ -1254,9 +1254,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPTextAntialiasing	cpTextAntialiasing	= new CPTextAntialiasing();
 
@@ -1304,7 +1304,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return (value.width + ", " + value.height);
+			return value.width + ", " + value.height;
 		}
 
 		//--------------------------------------------------------------
@@ -1313,9 +1313,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Dimension getPlotSize()
 	{
@@ -1331,9 +1331,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPPlotSize	cpPlotSize	= new CPPlotSize();
 
@@ -1363,9 +1363,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isShowGrid()
 	{
@@ -1381,9 +1381,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPShowGrid	cpShowGrid	= new CPShowGrid();
 
@@ -1413,9 +1413,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public int getNumFractionDigits()
 	{
@@ -1431,9 +1431,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPNumFractionDigits	cpNumFractionDigits	= new CPNumFractionDigits();
 
@@ -1464,9 +1464,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public int getNumYScaleDigits()
 	{
@@ -1482,9 +1482,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPNumYScaleDigits	cpNumYScaleDigits	= new CPNumYScaleDigits();
 
@@ -1541,9 +1541,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public IntegerRange getFixedPointExponentRange()
 	{
@@ -1559,9 +1559,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPFixedPointExponentRange	cpFixedPointExponentRange	= new CPFixedPointExponentRange();
 
@@ -1591,9 +1591,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isNormaliseScientificNotation()
 	{
@@ -1609,9 +1609,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPNormaliseScientificNotation	cpNormaliseScientificNotation	= new CPNormaliseScientificNotation();
 
@@ -1641,9 +1641,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isTruncateXScaleText()
 	{
@@ -1659,9 +1659,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPTruncateXScaleText	cpTruncateXScaleText	= new CPTruncateXScaleText();
 
@@ -1691,9 +1691,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getPlotColourFocusedBorder()
 	{
@@ -1709,9 +1709,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPPlotColourFocusedBorder	cpPlotColourFocusedBorder	= new CPPlotColourFocusedBorder();
 
@@ -1741,9 +1741,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getPlotColourImageMargin()
 	{
@@ -1759,9 +1759,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPPlotColourImageMargin	cpPlotColourImageMargin	= new CPPlotColourImageMargin();
 
@@ -1791,9 +1791,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getPlotColourBackground()
 	{
@@ -1809,9 +1809,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPPlotColourBackground	cpPlotColourBackground	= new CPPlotColourBackground();
 
@@ -1841,9 +1841,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getPlotColourGrid()
 	{
@@ -1859,9 +1859,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPPlotColourGrid	cpPlotColourGrid	= new CPPlotColourGrid();
 
@@ -1891,9 +1891,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getPlotColourAxis()
 	{
@@ -1909,9 +1909,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPPlotColourAxis	cpPlotColourAxis	= new CPPlotColourAxis();
 
@@ -1941,9 +1941,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getPlotColourScale()
 	{
@@ -1959,9 +1959,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPPlotColourScale	cpPlotColourScale	= new CPPlotColourScale();
 
@@ -1991,9 +1991,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public String getFunctionPathname()
 	{
@@ -2016,9 +2016,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPFunctionPathname	cpFunctionPathname	= new CPFunctionPathname();
 
@@ -2068,7 +2068,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return (value.width + ", " + value.height);
+			return value.width + ", " + value.height;
 		}
 
 		//--------------------------------------------------------------
@@ -2077,9 +2077,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Dimension getFunctionListSize()
 	{
@@ -2095,9 +2095,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPFunctionListSize	cpFunctionListSize	= new CPFunctionListSize();
 
@@ -2138,7 +2138,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return ((value == null) ? null : ColourUtils.colourToRgbString(value));
+			return (value == null) ? null : ColourUtils.colourToRgbString(value);
 		}
 
 		//--------------------------------------------------------------
@@ -2149,7 +2149,7 @@ class AppConfig
 
 		private Color getColour()
 		{
-			return ((value == null) ? DEFAULT_FUNCTION_OBSCURED_COLOUR : value);
+			return (value == null) ? DEFAULT_FUNCTION_OBSCURED_COLOUR : value;
 		}
 
 		//--------------------------------------------------------------
@@ -2158,9 +2158,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public boolean isFunctionObscuredColour()
 	{
@@ -2183,9 +2183,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPFunctionObscuredColour	cpFunctionObscuredColour	= new CPFunctionObscuredColour();
 
@@ -2249,9 +2249,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public Color getFunctionColour(int index)
 	{
@@ -2268,9 +2268,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPFunctionColours	cpFunctionColours	= new CPFunctionColours();
 
@@ -2335,9 +2335,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance methods : associated methods in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance methods : associated methods in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	public FontEx getFont(int index)
 	{
@@ -2354,9 +2354,9 @@ class AppConfig
 
 	//------------------------------------------------------------------
 
-//--////////////////////////////////////////////////////////////////////
-//--//  Instance variables : associated variables in enclosing class
-//--////////////////////////////////////////////////////////////////////
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+//  Instance variables : associated variables in enclosing class
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	private	CPFonts	cpFonts	= new CPFonts();
 

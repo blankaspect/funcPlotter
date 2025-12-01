@@ -93,6 +93,8 @@ import uk.blankaspect.ui.swing.text.TextRendering;
 
 import uk.blankaspect.ui.swing.textfield.IntegerValueField;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -202,480 +204,60 @@ class PreferencesDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// TABS
-
-
-	private enum Tab
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		GENERAL
-		(
-			"General"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelGeneral();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesGeneral();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesGeneral();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		APPEARANCE
-		(
-			"Appearance"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelAppearance();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesAppearance();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesAppearance();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		PLOT
-		(
-			"Plot"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelPlot();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesPlot();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesPlot();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		FUNCTION
-		(
-			"Function"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelFunction();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesFunction();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesFunction();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		FONTS
-		(
-			"Fonts"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelFonts();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesFonts();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesFonts();
-			}
-
-			//----------------------------------------------------------
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Tab(String text)
-		{
-			this.text = text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract JPanel createPanel(PreferencesDialog dialog);
-
-		//--------------------------------------------------------------
-
-		protected abstract void validatePreferences(PreferencesDialog dialog)
-			throws AppException;
-
-		//--------------------------------------------------------------
-
-		protected abstract void setPreferences(PreferencesDialog dialog);
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-
-	}
-
-	//==================================================================
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		DIRECTORY_DOES_NOT_EXIST
-		("The directory does not exist."),
-
-		NOT_A_DIRECTORY
-		("The pathname does not denote a directory."),
-
-		DIRECTORY_ACCESS_NOT_PERMITTED
-		("Access to the directory was not permitted."),
-
-		FIXED_POINT_BOUNDS_OUT_OF_ORDER
-		("The upper bound of the fixed-point exponent range is less than the lower bound.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	Point	location;
+	private static	int		tabIndex;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
+	// Main panel
+	private	boolean									accepted;
+	private	JTabbedPane								tabbedPanel;
 
-	// COLOUR BUTTON CLASS
+	// General panel
+	private	FComboBox<FileKind>						defaultFileKindComboBox;
+	private	BooleanComboBox							newDocOnStartupComboBox;
+	private	FComboBox<NoYesAsk>						saveFunctionColoursComboBox;
+	private	BooleanComboBox							showUnixPathnamesComboBox;
+	private	BooleanComboBox							selectTextOnFocusGainedComboBox;
+	private	BooleanComboBox							saveMainWindowLocationComboBox;
+	private	FIntegerSpinner							maxEditListLengthSpinner;
+	private	BooleanComboBox							clearEditListOnSaveComboBox;
 
+	// Appearance panel
+	private	FComboBox<String>						lookAndFeelComboBox;
+	private	FComboBox<TextRendering.Antialiasing>	textAntialiasingComboBox;
 
-	private static class ColourButton
-		extends JButton
-	{
+	// Plot panel
+	private	DimensionsSpinnerPanel					plotSizePanel;
+	private	BooleanComboBox							showGridComboBox;
+	private	FIntegerSpinner							numFractionDigitsSpinner;
+	private	FIntegerSpinner							numYScaleDigitsSpinner;
+	private	FIntegerSpinner							fixedPointLowerBoundSpinner;
+	private	FIntegerSpinner							fixedPointUpperBoundSpinner;
+	private	BooleanComboBox							normaliseSciNotationComboBox;
+	private	BooleanComboBox							truncateXScaleTextComboBox;
+	private	JButton									plotColourFocusedBorderButton;
+	private	JButton									plotColourImageMarginButton;
+	private	JButton									plotColourBackgroundButton;
+	private	JButton									plotColourGridButton;
+	private	JButton									plotColourAxisButton;
+	private	JButton									plotColourScaleMarkingsButton;
 
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
+	// Function panel
+	private	FPathnameField							directoryField;
+	private	JFileChooser							directoryFileChooser;
+	private	DimensionsSpinnerPanel					listSizePanel;
+	private	JCheckBox								functionObscuredColourCheckBox;
+	private	JButton									functionObscuredColourButton;
+	private	JButton[]								functionColourButtons;
 
-		private static final	int		ICON_WIDTH	= 40;
-		private static final	int		ICON_HEIGHT	= 16;
-		private static final	Insets	MARGINS		= new Insets(2, 2, 2, 2);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ColourButton(Color colour)
-		{
-			super(new ColourSampleIcon(ICON_WIDTH, ICON_HEIGHT));
-			setMargin(MARGINS);
-			setForeground(colour);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// COLOUR BUTTON PANEL CLASS
-
-
-	private static class ColourButtonPanel
-		extends JPanel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ColourButtonPanel(int     index,
-								  JButton button)
-		{
-			// Set layout
-			GridBagLayout gridBag = new GridBagLayout();
-			GridBagConstraints gbc = new GridBagConstraints();
-			setLayout(gridBag);
-
-			// Label
-			JLabel label = new FLabel(Integer.toString(index));
-
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.gridwidth = 1;
-			gbc.gridheight = 1;
-			gbc.weightx = 1.0;
-			gbc.weighty = 0.0;
-			gbc.anchor = GridBagConstraints.LINE_END;
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.insets = new Insets(0, 0, 0, 4);
-			gridBag.setConstraints(label, gbc);
-			add(label);
-
-			// Button
-			gbc.gridx = 1;
-			gbc.gridy = 0;
-			gbc.gridwidth = 1;
-			gbc.gridheight = 1;
-			gbc.weightx = 0.0;
-			gbc.weighty = 0.0;
-			gbc.anchor = GridBagConstraints.LINE_START;
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.insets = new Insets(0, 0, 0, 0);
-			gridBag.setConstraints(button, gbc);
-			add(button);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// FONT PANEL CLASS
-
-
-	private static class FontPanel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	MIN_SIZE	= 0;
-		private static final	int	MAX_SIZE	= 99;
-
-		private static final	int	SIZE_FIELD_LENGTH	= 2;
-
-		private static final	String	DEFAULT_FONT_STR	= "<default font>";
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SIZE SPINNER CLASS
-
-
-		private static class SizeSpinner
-			extends IntegerSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private SizeSpinner(int value)
-			{
-				super(value, MIN_SIZE, MAX_SIZE, SIZE_FIELD_LENGTH);
-				AppFont.TEXT_FIELD.apply(this);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			/**
-			 * @throws NumberFormatException
-			 */
-
-			@Override
-			protected int getEditorValue()
-			{
-				IntegerValueField field = (IntegerValueField)getEditor();
-				return (field.isEmpty() ? 0 : field.getValue());
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setEditorValue(int value)
-			{
-				IntegerValueField field = (IntegerValueField)getEditor();
-				if (value == 0)
-					field.setText(null);
-				else
-					field.setValue(value);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FontPanel(FontEx   font,
-						  String[] fontNames)
-		{
-			nameComboBox = new FComboBox<>();
-			nameComboBox.addItem(DEFAULT_FONT_STR);
-			for (String fontName : fontNames)
-				nameComboBox.addItem(fontName);
-			nameComboBox.setSelectedIndex(Utils.indexOf(font.getName(), fontNames) + 1);
-
-			styleComboBox = new FComboBox<>(FontStyle.values());
-			styleComboBox.setSelectedValue(font.getStyle());
-
-			sizeSpinner = new SizeSpinner(font.getSize());
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public FontEx getFont()
-		{
-			String name = (nameComboBox.getSelectedIndex() <= 0) ? null : nameComboBox.getSelectedValue();
-			return new FontEx(name, styleComboBox.getSelectedValue(), sizeSpinner.getIntValue());
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	FComboBox<String>		nameComboBox;
-		private	FComboBox<FontStyle>	styleComboBox;
-		private	SizeSpinner				sizeSpinner;
-
-	}
-
-	//==================================================================
+	// Fonts panel
+	private	FontPanel[]								fontPanels;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -805,11 +387,22 @@ class PreferencesDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -850,49 +443,31 @@ class PreferencesDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		String command = event.getActionCommand();
 
-		if (command.equals(Command.CHOOSE_PLOT_COLOUR_FOCUSED_BORDER))
-			onChoosePlotColourFocusedBorder();
-
-		else if (command.equals(Command.CHOOSE_PLOT_COLOUR_IMAGE_MARGIN))
-			onChoosePlotColourImageMargin();
-
-		else if (command.equals(Command.CHOOSE_PLOT_COLOUR_BACKGROUND))
-			onChoosePlotColourBackground();
-
-		else if (command.equals(Command.CHOOSE_PLOT_COLOUR_GRID))
-			onChoosePlotColourGrid();
-
-		else if (command.equals(Command.CHOOSE_PLOT_COLOUR_AXIS))
-			onChoosePlotColourAxis();
-
-		else if (command.equals(Command.CHOOSE_PLOT_COLOUR_SCALE))
-			onChoosePlotColourScale();
-
-		else if (command.equals(Command.CHOOSE_FUNCTION_DIRECTORY))
-			onChooseFunctionDirectory();
-
-		else if (command.equals(Command.TOGGLE_FUNCTION_OBSCURED_COLOUR))
-			onToggleFunctionObscuredColour();
-
-		else if (command.equals(Command.CHOOSE_FUNCTION_OBSCURED_COLOUR))
-			onChooseFunctionObscuredColour();
-
-		else if (command.startsWith(Command.CHOOSE_FUNCTION_COLOUR))
-			onChooseFunctionColour(StringUtils.removePrefix(command,
-															Command.CHOOSE_FUNCTION_COLOUR));
-
-		else if (command.equals(Command.SAVE_CONFIGURATION))
-			onSaveConfiguration();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		if (command.startsWith(Command.CHOOSE_FUNCTION_COLOUR))
+			onChooseFunctionColour(StringUtils.removePrefix(command, Command.CHOOSE_FUNCTION_COLOUR));
+		else
+		{
+			switch (command)
+			{
+				case Command.CHOOSE_PLOT_COLOUR_FOCUSED_BORDER -> onChoosePlotColourFocusedBorder();
+				case Command.CHOOSE_PLOT_COLOUR_IMAGE_MARGIN   -> onChoosePlotColourImageMargin();
+				case Command.CHOOSE_PLOT_COLOUR_BACKGROUND     -> onChoosePlotColourBackground();
+				case Command.CHOOSE_PLOT_COLOUR_GRID           -> onChoosePlotColourGrid();
+				case Command.CHOOSE_PLOT_COLOUR_AXIS           -> onChoosePlotColourAxis();
+				case Command.CHOOSE_PLOT_COLOUR_SCALE          -> onChoosePlotColourScale();
+				case Command.CHOOSE_FUNCTION_DIRECTORY         -> onChooseFunctionDirectory();
+				case Command.TOGGLE_FUNCTION_OBSCURED_COLOUR   -> onToggleFunctionObscuredColour();
+				case Command.CHOOSE_FUNCTION_OBSCURED_COLOUR   -> onChooseFunctionObscuredColour();
+				case Command.SAVE_CONFIGURATION                -> onSaveConfiguration();
+				case Command.ACCEPT                            -> onAccept();
+				case Command.CLOSE                             -> onClose();
+			}
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -1035,16 +610,14 @@ class PreferencesDialog
 			{
 				String[] optionStrs = Utils.getOptionStrings(AppConstants.REPLACE_STR);
 				if (!file.exists() ||
-					 (JOptionPane.showOptionDialog(this, Utils.getPathname(file) +
-																			AppConstants.ALREADY_EXISTS_STR,
+					 (JOptionPane.showOptionDialog(this, Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
 												   SAVE_CONFIG_FILE_STR, JOptionPane.OK_CANCEL_OPTION,
 												   JOptionPane.WARNING_MESSAGE, null, optionStrs,
 												   optionStrs[1]) == JOptionPane.OK_OPTION))
 				{
 					setPreferences();
 					accepted = true;
-					TaskProgressDialog.showDialog(this, WRITE_CONFIG_FILE_STR,
-												  new Task.WriteConfig(file));
+					TaskProgressDialog.showDialog(this, WRITE_CONFIG_FILE_STR, new Task.WriteConfig(file));
 				}
 			}
 		}
@@ -1089,7 +662,6 @@ class PreferencesDialog
 
 	private JPanel createPanelGeneral()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -1366,14 +938,12 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelAppearance()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -1484,14 +1054,12 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelPlot()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -2039,14 +1607,12 @@ class PreferencesDialog
 		outerPanel.add(plotColoursPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelFunction()
 	{
-
 		//----  Top panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -2231,14 +1797,12 @@ class PreferencesDialog
 		outerPanel.add(functionColoursPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelFonts()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -2360,7 +1924,6 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
@@ -2523,60 +2086,481 @@ class PreferencesDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
-	private static	int		tabIndex;
+
+	// TABS
+
+
+	private enum Tab
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		GENERAL
+		(
+			"General"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelGeneral();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesGeneral();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesGeneral();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		APPEARANCE
+		(
+			"Appearance"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelAppearance();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesAppearance();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesAppearance();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		PLOT
+		(
+			"Plot"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelPlot();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesPlot();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesPlot();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		FUNCTION
+		(
+			"Function"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelFunction();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesFunction();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesFunction();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		FONTS
+		(
+			"Fonts"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelFonts();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesFonts();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesFonts();
+			}
+
+			//----------------------------------------------------------
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Tab(String text)
+		{
+			this.text = text;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Abstract methods
+	////////////////////////////////////////////////////////////////////
+
+		protected abstract JPanel createPanel(PreferencesDialog dialog);
+
+		//--------------------------------------------------------------
+
+		protected abstract void validatePreferences(PreferencesDialog dialog)
+			throws AppException;
+
+		//--------------------------------------------------------------
+
+		protected abstract void setPreferences(PreferencesDialog dialog);
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		DIRECTORY_DOES_NOT_EXIST
+		("The directory does not exist."),
+
+		NOT_A_DIRECTORY
+		("The pathname does not denote a directory."),
+
+		DIRECTORY_ACCESS_NOT_PERMITTED
+		("Access to the directory was not permitted."),
+
+		FIXED_POINT_BOUNDS_OUT_OF_ORDER
+		("The upper bound of the fixed-point exponent range is less than the lower bound.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	// Main panel
-	private	boolean									accepted;
-	private	JTabbedPane								tabbedPanel;
 
-	// General panel
-	private	FComboBox<FileKind>						defaultFileKindComboBox;
-	private	BooleanComboBox							newDocOnStartupComboBox;
-	private	FComboBox<NoYesAsk>						saveFunctionColoursComboBox;
-	private	BooleanComboBox							showUnixPathnamesComboBox;
-	private	BooleanComboBox							selectTextOnFocusGainedComboBox;
-	private	BooleanComboBox							saveMainWindowLocationComboBox;
-	private	FIntegerSpinner							maxEditListLengthSpinner;
-	private	BooleanComboBox							clearEditListOnSaveComboBox;
+	// COLOUR BUTTON CLASS
 
-	// Appearance panel
-	private	FComboBox<String>						lookAndFeelComboBox;
-	private	FComboBox<TextRendering.Antialiasing>	textAntialiasingComboBox;
 
-	// Plot panel
-	private	DimensionsSpinnerPanel					plotSizePanel;
-	private	BooleanComboBox							showGridComboBox;
-	private	FIntegerSpinner							numFractionDigitsSpinner;
-	private	FIntegerSpinner							numYScaleDigitsSpinner;
-	private	FIntegerSpinner							fixedPointLowerBoundSpinner;
-	private	FIntegerSpinner							fixedPointUpperBoundSpinner;
-	private	BooleanComboBox							normaliseSciNotationComboBox;
-	private	BooleanComboBox							truncateXScaleTextComboBox;
-	private	JButton									plotColourFocusedBorderButton;
-	private	JButton									plotColourImageMarginButton;
-	private	JButton									plotColourBackgroundButton;
-	private	JButton									plotColourGridButton;
-	private	JButton									plotColourAxisButton;
-	private	JButton									plotColourScaleMarkingsButton;
+	private static class ColourButton
+		extends JButton
+	{
 
-	// Function panel
-	private	FPathnameField							directoryField;
-	private	JFileChooser							directoryFileChooser;
-	private	DimensionsSpinnerPanel					listSizePanel;
-	private	JCheckBox								functionObscuredColourCheckBox;
-	private	JButton									functionObscuredColourButton;
-	private	JButton[]								functionColourButtons;
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
 
-	// Fonts panel
-	private	FontPanel[]								fontPanels;
+		private static final	int		ICON_WIDTH	= 40;
+		private static final	int		ICON_HEIGHT	= 16;
+		private static final	Insets	MARGINS		= new Insets(2, 2, 2, 2);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ColourButton(Color colour)
+		{
+			super(new ColourSampleIcon(ICON_WIDTH, ICON_HEIGHT));
+			setMargin(MARGINS);
+			setForeground(colour);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// COLOUR BUTTON PANEL CLASS
+
+
+	private static class ColourButtonPanel
+		extends JPanel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ColourButtonPanel(int     index,
+								  JButton button)
+		{
+			// Set layout
+			GridBagLayout gridBag = new GridBagLayout();
+			GridBagConstraints gbc = new GridBagConstraints();
+			setLayout(gridBag);
+
+			// Label
+			JLabel label = new FLabel(Integer.toString(index));
+
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.gridwidth = 1;
+			gbc.gridheight = 1;
+			gbc.weightx = 1.0;
+			gbc.weighty = 0.0;
+			gbc.anchor = GridBagConstraints.LINE_END;
+			gbc.fill = GridBagConstraints.NONE;
+			gbc.insets = new Insets(0, 0, 0, 4);
+			gridBag.setConstraints(label, gbc);
+			add(label);
+
+			// Button
+			gbc.gridx = 1;
+			gbc.gridy = 0;
+			gbc.gridwidth = 1;
+			gbc.gridheight = 1;
+			gbc.weightx = 0.0;
+			gbc.weighty = 0.0;
+			gbc.anchor = GridBagConstraints.LINE_START;
+			gbc.fill = GridBagConstraints.NONE;
+			gbc.insets = new Insets(0, 0, 0, 0);
+			gridBag.setConstraints(button, gbc);
+			add(button);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// FONT PANEL CLASS
+
+
+	private static class FontPanel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		MIN_SIZE	= 0;
+		private static final	int		MAX_SIZE	= 99;
+
+		private static final	int		SIZE_FIELD_LENGTH	= 2;
+
+		private static final	String	DEFAULT_FONT_STR	= "<default font>";
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	FComboBox<String>		nameComboBox;
+		private	FComboBox<FontStyle>	styleComboBox;
+		private	SizeSpinner				sizeSpinner;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FontPanel(FontEx   font,
+						  String[] fontNames)
+		{
+			nameComboBox = new FComboBox<>();
+			nameComboBox.addItem(DEFAULT_FONT_STR);
+			for (String fontName : fontNames)
+				nameComboBox.addItem(fontName);
+			nameComboBox.setSelectedIndex(Utils.indexOf(font.getName(), fontNames) + 1);
+
+			styleComboBox = new FComboBox<>(FontStyle.values());
+			styleComboBox.setSelectedValue(font.getStyle());
+
+			sizeSpinner = new SizeSpinner(font.getSize());
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public FontEx getFont()
+		{
+			String name = (nameComboBox.getSelectedIndex() <= 0) ? null : nameComboBox.getSelectedValue();
+			return new FontEx(name, styleComboBox.getSelectedValue(), sizeSpinner.getIntValue());
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SIZE SPINNER CLASS
+
+
+		private static class SizeSpinner
+			extends IntegerSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private SizeSpinner(int value)
+			{
+				super(value, MIN_SIZE, MAX_SIZE, SIZE_FIELD_LENGTH);
+				AppFont.TEXT_FIELD.apply(this);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			/**
+			 * @throws NumberFormatException
+			 */
+
+			@Override
+			protected int getEditorValue()
+			{
+				IntegerValueField field = (IntegerValueField)getEditor();
+				return field.isEmpty() ? 0 : field.getValue();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setEditorValue(int value)
+			{
+				IntegerValueField field = (IntegerValueField)getEditor();
+				if (value == 0)
+					field.setText(null);
+				else
+					field.setValue(value);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
 
 }
 

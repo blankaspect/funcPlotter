@@ -20,6 +20,8 @@ package uk.blankaspect.funcplotter;
 
 import java.awt.Insets;
 
+import uk.blankaspect.common.misc.FilenameSuffixFilter;
+
 //----------------------------------------------------------------------
 
 
@@ -51,10 +53,13 @@ interface AppConstants
 	String	TEXT_FILENAME_EXTENSION	= ".txt";
 	String	XML_FILENAME_EXTENSION	= ".xml";
 
-	// File-filter descriptions
-	String	PNG_FILES_STR	= "PNG files";
-	String	TEXT_FILES_STR	= "Text files";
-	String	XML_FILES_STR	= "XML files";
+	// Filters for file choosers
+	FilenameSuffixFilter PNG_FILE_FILTER	=
+			new FilenameSuffixFilter("PNG files", PNG_FILENAME_EXTENSION);
+	FilenameSuffixFilter TEXT_FILE_FILTER	=
+			new FilenameSuffixFilter("Text files", TEXT_FILENAME_EXTENSION);
+	FilenameSuffixFilter XML_FILE_FILTER	=
+			new FilenameSuffixFilter("XML files", XML_FILENAME_EXTENSION);
 
 }
 

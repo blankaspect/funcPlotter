@@ -53,6 +53,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.textarea.FTextArea;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -188,11 +190,22 @@ class CommentDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -239,15 +252,14 @@ class CommentDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.ACCEPT -> onAccept();
+			case Command.CLOSE  -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -258,7 +270,7 @@ class CommentDialog
 
 	private String getComment()
 	{
-		return (accepted ? commentArea.getText().strip() : null);
+		return accepted ? commentArea.getText().strip() : null;
 	}
 
 	//------------------------------------------------------------------

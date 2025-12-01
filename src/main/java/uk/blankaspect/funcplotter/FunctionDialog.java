@@ -67,6 +67,8 @@ import uk.blankaspect.ui.swing.label.FLabel;
 import uk.blankaspect.ui.swing.misc.GuiConstants;
 import uk.blankaspect.ui.swing.misc.GuiUtils;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -113,10 +115,10 @@ class FunctionDialog
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.CTRL_DOWN_MASK),
-									 Command.CLEAR),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-									 Command.CLOSE)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.CTRL_DOWN_MASK),
+						  Command.CLEAR),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+						  Command.CLOSE)
 	};
 
 ////////////////////////////////////////////////////////////////////////
@@ -409,11 +411,22 @@ class FunctionDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -465,26 +478,20 @@ class FunctionDialog
 	{
 		String command = event.getActionCommand();
 
-		if (command.equals(Command.CHOOSE_COLOUR))
-			onChooseColour();
-
-		else if (command.startsWith(Command.SET_TO_FUNCTION_COLOUR))
+		if (command.startsWith(Command.SET_TO_FUNCTION_COLOUR))
 			onSetToFunctionColour(StringUtils.removePrefix(command, Command.SET_TO_FUNCTION_COLOUR));
-
-		else if (command.equals(Command.COPY))
-			onCopy();
-
-		else if (command.equals(Command.PASTE))
-			onPaste();
-
-		else if (command.equals(Command.CLEAR))
-			onClear();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		else
+		{
+			switch (command)
+			{
+				case Command.CHOOSE_COLOUR -> onChooseColour();
+				case Command.COPY          -> onCopy();
+				case Command.PASTE         -> onPaste();
+				case Command.CLEAR         -> onClear();
+				case Command.ACCEPT        -> onAccept();
+				case Command.CLOSE         -> onClose();
+			}
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -788,8 +795,8 @@ class FunctionDialog
 		protected boolean acceptCharacter(char ch,
 										  int  index)
 		{
-			return (((ch >= '0') && (ch <= '9')) || ((ch >= 'a') && (ch <= 'z')) ||
-					 isMinusCharacter(ch) || (VALID_CHARS.indexOf(ch) >= 0));
+			return ((ch >= '0') && (ch <= '9')) || ((ch >= 'a') && (ch <= 'z'))
+					|| isMinusCharacter(ch) || (VALID_CHARS.indexOf(ch) >= 0);
 		}
 
 		//--------------------------------------------------------------

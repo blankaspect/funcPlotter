@@ -18,7 +18,7 @@ package uk.blankaspect.funcplotter;
 // IMPORTS
 
 
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.IStringKeyed;
@@ -41,16 +41,14 @@ enum FileKind
 	(
 		"xml",
 		"XML",
-		AppConstants.XML_FILENAME_EXTENSION,
-		AppConstants.XML_FILES_STR
+		AppConstants.XML_FILE_FILTER
 	),
 
 	TEXT
 	(
 		"text",
 		"Text",
-		AppConstants.TEXT_FILENAME_EXTENSION,
-		AppConstants.TEXT_FILES_STR
+		AppConstants.TEXT_FILE_FILTER
 	);
 
 ////////////////////////////////////////////////////////////////////////
@@ -65,14 +63,14 @@ enum FileKind
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private FileKind(String key,
-					 String text,
-					 String suffix,
-					 String description)
+	private FileKind(
+		String					key,
+		String					text,
+		FilenameSuffixFilter	filter)
 	{
 		this.key = key;
 		this.text = text;
-		filter = new FilenameSuffixFilter(description, suffix);
+		this.filter = filter;
 	}
 
 	//------------------------------------------------------------------
@@ -81,32 +79,27 @@ enum FileKind
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static FileKind forKey(String key)
+	public static FileKind forKey(
+		String	key)
 	{
-		return Stream.of(values())
-				.filter(value -> value.key.equals(key))
-				.findFirst()
-				.orElse(null);
+		return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 	}
 
 	//------------------------------------------------------------------
 
-	public static FileKind forDescription(String description)
+	public static FileKind forDescription(
+		String	description)
 	{
-		return Stream.of(values())
-				.filter(value -> value.filter.getDescription().equals(description))
-				.findFirst()
-				.orElse(null);
+		return Arrays.stream(values())
+				.filter(value -> value.filter.getDescription().equals(description)).findFirst().orElse(null);
 	}
 
 	//------------------------------------------------------------------
 
-	public static FileKind forFilename(String filename)
+	public static FileKind forFilename(
+		String	filename)
 	{
-		return Stream.of(values())
-				.filter(value -> value.filter.accepts(filename))
-				.findFirst()
-				.orElse(null);
+		return Arrays.stream(values()).filter(value -> value.filter.accepts(filename)).findFirst().orElse(null);
 	}
 
 	//------------------------------------------------------------------

@@ -324,21 +324,21 @@ class PlotInterval
 
 	public double getInterval()
 	{
-		return (upperEndpoint.doubleValue() - lowerEndpoint.doubleValue());
+		return upperEndpoint.doubleValue() - lowerEndpoint.doubleValue();
 	}
 
 	//------------------------------------------------------------------
 
 	public double getHalfInterval()
 	{
-		return (0.5 * (upperEndpoint.doubleValue() - lowerEndpoint.doubleValue()));
+		return 0.5 * (upperEndpoint.doubleValue() - lowerEndpoint.doubleValue());
 	}
 
 	//------------------------------------------------------------------
 
 	public double getMedian()
 	{
-		return (0.5 * (upperEndpoint.doubleValue() + lowerEndpoint.doubleValue()));
+		return 0.5 * (upperEndpoint.doubleValue() + lowerEndpoint.doubleValue());
 	}
 
 	//------------------------------------------------------------------
@@ -347,17 +347,17 @@ class PlotInterval
 	{
 		double dLowerEndpoint = getLowerEndpoint();
 		double dUpperEndpoint = getUpperEndpoint();
-		return ((dLowerEndpoint >= MIN_VALUE) && (dLowerEndpoint <= MAX_VALUE) &&
-				 (dUpperEndpoint >= MIN_VALUE) && (dUpperEndpoint <= MAX_VALUE) &&
-				 (dLowerEndpoint < dUpperEndpoint));
+		return (dLowerEndpoint >= MIN_VALUE) && (dLowerEndpoint <= MAX_VALUE)
+				&& (dUpperEndpoint >= MIN_VALUE) && (dUpperEndpoint <= MAX_VALUE)
+				&& (dLowerEndpoint < dUpperEndpoint);
 	}
 
 	//------------------------------------------------------------------
 
 	public boolean equals(PlotInterval interval)
 	{
-		return ((interval != null) && lowerEndpoint.equals(interval.lowerEndpoint) &&
-				 upperEndpoint.equals(interval.upperEndpoint));
+		return (interval != null) && lowerEndpoint.equals(interval.lowerEndpoint)
+				&& upperEndpoint.equals(interval.upperEndpoint);
 	}
 
 	//------------------------------------------------------------------

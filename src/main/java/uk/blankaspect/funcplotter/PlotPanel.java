@@ -705,9 +705,9 @@ class PlotPanel
 		public boolean equals(
 			PlotParams	params)
 		{
-			return ((params != null) && (start == params.start) && (pixelDelta == params.pixelDelta)
+			return (params != null) && (start == params.start) && (pixelDelta == params.pixelDelta)
 					 && (pixelsPerDivision == params.pixelsPerDivision) && (divisionOffset == params.divisionOffset)
-					 && (divisionDelta == params.divisionDelta) && (intervalExponent == params.intervalExponent));
+					 && (divisionDelta == params.divisionDelta) && (intervalExponent == params.intervalExponent);
 		}
 
 		//--------------------------------------------------------------

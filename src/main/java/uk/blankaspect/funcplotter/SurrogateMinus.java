@@ -202,8 +202,11 @@ class SurrogateMinus
 	public static String minusToSurrogate(String str,
 										  char   ch)
 	{
-		return ((str == null) ? null
-							  : (ch == '-') ? str : str.replace('-', ch));
+		return (str == null)
+					? null
+					: (ch == '-')
+							? str
+							: str.replace('-', ch);
 	}
 
 	//------------------------------------------------------------------
@@ -211,8 +214,11 @@ class SurrogateMinus
 	public static String surrogateToMinus(String str,
 										  char   ch)
 	{
-		return ((str == null) ? null
-							  : (ch == '-') ? str : str.replace(ch, '-'));
+		return (str == null)
+					? null
+					: (ch == '-')
+							? str
+							: str.replace(ch, '-');
 	}
 
 	//------------------------------------------------------------------

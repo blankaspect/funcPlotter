@@ -185,7 +185,7 @@ class Utils
 
 	public static char getFileSeparatorChar()
 	{
-		return (AppConfig.INSTANCE.isShowUnixPathnames() ? '/' : File.separatorChar);
+		return AppConfig.INSTANCE.isShowUnixPathnames() ? '/' : File.separatorChar;
 	}
 
 	//------------------------------------------------------------------
@@ -239,7 +239,7 @@ class Utils
 		{
 			if (file1 == null)
 				return (file2 == null);
-			return ((file2 != null) && file1.getCanonicalPath().equals(file2.getCanonicalPath()));
+			return (file2 != null) && file1.getCanonicalPath().equals(file2.getCanonicalPath());
 		}
 		catch (IOException e)
 		{

@@ -24,9 +24,8 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import java.util.stream.Stream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -54,6 +53,8 @@ import uk.blankaspect.common.resource.ResourceProperties;
 import uk.blankaspect.common.resource.ResourceUtils;
 
 import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.ui.swing.filechooser.FileChooserUtils;
 
 import uk.blankaspect.ui.swing.misc.GuiUtils;
 
@@ -265,7 +266,7 @@ public class FuncPlotterApp
 
 	public String getTitleString()
 	{
-		return (LONG_NAME + " " + versionStr);
+		return LONG_NAME + " " + versionStr;
 	}
 
 	//------------------------------------------------------------------
@@ -494,8 +495,10 @@ public class FuncPlotterApp
 			}
 		}
 		if (lookAndFeelName != null)
+		{
 			showWarningMessage(SHORT_NAME + " : " + CONFIG_ERROR_STR,
 							   LAF_ERROR1_STR + lookAndFeelName + LAF_ERROR2_STR);
+		}
 
 		// Select all text when a text field gains focus
 		if (config.isSelectTextOnFocusGained())
@@ -524,7 +527,7 @@ public class FuncPlotterApp
 			else
 			{
 				// Create list of files from command-line arguments
-				List<File> files = Stream.of(args).map(arg -> new File(PathnameUtils.parsePathname(arg))).toList();
+				List<File> files = Arrays.stream(args).map(arg -> new File(PathnameUtils.parsePathname(arg))).toList();
 
 				// Open files
 				openFiles(files);
@@ -702,26 +705,23 @@ public class FuncPlotterApp
 	private void initFileChoosers()
 	{
 		AppConfig config = AppConfig.INSTANCE;
+		List<FilenameSuffixFilter> filters = Arrays.stream(FileKind.values()).map(kind -> kind.getFilter()).toList();
+		FilenameSuffixFilter initialFilter = config.getDefaultFileKind().getFilter();
 
 		openFileChooser = new JFileChooser(config.getFunctionDirectory());
 		openFileChooser.setDialogTitle(OPEN_FUNCTION_FILE_STR);
 		openFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		for (FileKind fileKind : FileKind.values())
-			openFileChooser.addChoosableFileFilter(fileKind.getFilter());
-		openFileChooser.setFileFilter(config.getDefaultFileKind().getFilter());
+		FileChooserUtils.setFilters(openFileChooser, filters, initialFilter);
 
 		saveFileChooser = new JFileChooser(config.getFunctionDirectory());
 		saveFileChooser.setDialogTitle(SAVE_FUNCTION_FILE_STR);
 		saveFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		for (FileKind fileKind : FileKind.values())
-			saveFileChooser.addChoosableFileFilter(fileKind.getFilter());
-		saveFileChooser.setFileFilter(config.getDefaultFileKind().getFilter());
+		FileChooserUtils.setFilters(saveFileChooser, filters, initialFilter);
 
 		exportFileChooser = new JFileChooser(config.getFunctionDirectory());
 		exportFileChooser.setDialogTitle(EXPORT_IMAGE_FILE_STR);
 		exportFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		exportFileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.PNG_FILES_STR,
-																 AppConstants.PNG_FILENAME_EXTENSION));
+		FileChooserUtils.setFilter(exportFileChooser, AppConstants.PNG_FILE_FILTER);
 	}
 
 	//------------------------------------------------------------------

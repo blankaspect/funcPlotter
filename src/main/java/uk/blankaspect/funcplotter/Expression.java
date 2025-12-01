@@ -115,8 +115,7 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return ((operand < 1.0) ? Double.NaN
-										: Math.log(operand + Math.sqrt(operand * operand - 1.0)));
+				return (operand < 1.0) ? Double.NaN : Math.log(operand + Math.sqrt(operand * operand - 1.0));
 			}
 		},
 
@@ -200,9 +199,9 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return (((operand >= -1.0) && (operand <= 1.0))
-													? 0.5 * Math.log((1.0 + operand) / (1.0 - operand))
-													: Double.NaN);
+				return ((operand >= -1.0) && (operand <= 1.0))
+						? 0.5 * Math.log((1.0 + operand) / (1.0 - operand))
+						: Double.NaN;
 			}
 		},
 
@@ -238,7 +237,7 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return (0.5 * (Math.exp(operand) + Math.exp(-operand)));
+				return 0.5 * (Math.exp(operand) + Math.exp(-operand));
 			}
 		},
 
@@ -250,7 +249,7 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return (1.0 / Math.tan(operand));
+				return 1.0 / Math.tan(operand);
 			}
 		},
 
@@ -262,7 +261,7 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return (1.0 / Math.sin(operand));
+				return 1.0 / Math.sin(operand);
 			}
 		},
 
@@ -298,7 +297,7 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return (Math.log10(operand));
+				return Math.log10(operand);
 			}
 		},
 
@@ -334,7 +333,7 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return (1.0 / Math.cos(operand));
+				return 1.0 / Math.cos(operand);
 			}
 		},
 
@@ -358,7 +357,7 @@ class Expression
 			@Override
 			protected double evaluate(double operand)
 			{
-				return (0.5 * (Math.exp(operand) - Math.exp(-operand)));
+				return 0.5 * (Math.exp(operand) - Math.exp(-operand));
 			}
 		},
 
@@ -395,7 +394,7 @@ class Expression
 			protected double evaluate(double operand)
 			{
 				double exp2X = Math.exp(2.0 * operand);
-				return ((exp2X - 1) / (exp2X + 1));
+				return (exp2X - 1) / (exp2X + 1);
 			}
 		},
 
@@ -485,7 +484,7 @@ class Expression
 			protected double evaluate(double operand1,
 									  double operand2)
 			{
-				return (operand1 + operand2);
+				return operand1 + operand2;
 			}
 		},
 
@@ -499,7 +498,7 @@ class Expression
 			protected double evaluate(double operand1,
 									  double operand2)
 			{
-				return (operand1 - operand2);
+				return operand1 - operand2;
 			}
 		},
 
@@ -513,7 +512,7 @@ class Expression
 			protected double evaluate(double operand1,
 									  double operand2)
 			{
-				return (operand1 * operand2);
+				return operand1 * operand2;
 			}
 		},
 
@@ -527,7 +526,7 @@ class Expression
 			protected double evaluate(double operand1,
 									  double operand2)
 			{
-				return (operand1 / operand2);
+				return operand1 / operand2;
 			}
 		},
 
@@ -541,7 +540,7 @@ class Expression
 			protected double evaluate(double operand1,
 									  double operand2)
 			{
-				return (operand1 % operand2);
+				return operand1 % operand2;
 			}
 		},
 
@@ -555,7 +554,7 @@ class Expression
 			protected double evaluate(double operand1,
 									  double operand2)
 			{
-				return (Math.IEEEremainder(operand1, operand2));
+				return Math.IEEEremainder(operand1, operand2);
 			}
 		},
 
@@ -1913,7 +1912,7 @@ class Expression
 		@Override
 		protected String getPrefix()
 		{
-			return (SYNTAX_ERROR_STR + ": ");
+			return SYNTAX_ERROR_STR + ": ";
 		}
 
 		//--------------------------------------------------------------
@@ -1985,14 +1984,14 @@ class Expression
 
 	private static boolean isNumber(char ch)
 	{
-		return (((ch >= '0') && (ch <= '9')) || (ch == '.'));
+		return ((ch >= '0') && (ch <= '9')) || (ch == '.');
 	}
 
 	//------------------------------------------------------------------
 
 	private static boolean isAlpha(char ch)
 	{
-		return ((ch >= 'a') && (ch <= 'z'));
+		return (ch >= 'a') && (ch <= 'z');
 	}
 
 	//------------------------------------------------------------------

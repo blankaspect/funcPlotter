@@ -123,7 +123,7 @@ enum AppCommand
 	EDIT_PREFERENCES
 	(
 		"editPreferences",
-		"Preferences" + AppConstants.ELLIPSIS_STR
+		"Preferences"
 	),
 
 	TOGGLE_SHOW_FULL_PATHNAMES

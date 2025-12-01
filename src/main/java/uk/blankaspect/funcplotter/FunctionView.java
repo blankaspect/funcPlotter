@@ -46,7 +46,6 @@ import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,13 +108,13 @@ class FunctionView
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	MIN_FUNCTION_LIST_NUM_COLUMNS	= 8;
-	public static final		int	MAX_FUNCTION_LIST_NUM_COLUMNS	= 80;
+	public static final		int		MIN_FUNCTION_LIST_NUM_COLUMNS	= 8;
+	public static final		int		MAX_FUNCTION_LIST_NUM_COLUMNS	= 80;
 
-	public static final		int	MIN_FUNCTION_LIST_NUM_ROWS	= 1;
-	public static final		int	MAX_FUNCTION_LIST_NUM_ROWS	= FunctionDocument.MAX_NUM_FUNCTIONS;
+	public static final		int		MIN_FUNCTION_LIST_NUM_ROWS	= 1;
+	public static final		int		MAX_FUNCTION_LIST_NUM_ROWS	= FunctionDocument.MAX_NUM_FUNCTIONS;
 
-	private static final	int	INTERVAL_EP_NUM_COLUMNS	= 22;
+	private static final	int		INTERVAL_EP_NUM_COLUMNS	= 22;
 
 	private static final	String	CURSOR_STR		= "Cursor";
 	private static final	String	X_INTERVAL_STR	= "x";
@@ -146,647 +145,70 @@ class FunctionView
 		String	SHOW_CONTEXT_MENU		= "showContextMenu";
 	}
 
-	private static final	Map<String, String>	COMMAND_MAP;
+	private static final	Map<String, String>	COMMAND_MAP	= Map.of
+	(
+		SingleSelectionList.Command.EDIT_ELEMENT,      Command.EDIT_FUNCTION,
+		SingleSelectionList.Command.DELETE_ELEMENT,    Command.CONFIRM_DELETE_FUNCTION,
+		SingleSelectionList.Command.DELETE_EX_ELEMENT, Command.DELETE_FUNCTION,
+		SingleSelectionList.Command.MOVE_ELEMENT_UP,   Command.MOVE_FUNCTION_UP,
+		SingleSelectionList.Command.MOVE_ELEMENT_DOWN, Command.MOVE_FUNCTION_DOWN,
+		SingleSelectionList.Command.DRAG_ELEMENT,      Command.MOVE_FUNCTION
+	);
 
 	// Key actions
 	private static final	KeyAction.KeyActionPair[]	PLOT_PANEL_KEY_ACTIONS	=
 	{
-		new KeyAction.KeyActionPair(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
-									FunctionDocument.Command.SCROLL_LEFT),
-		new KeyAction.KeyActionPair(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
-									FunctionDocument.Command.SCROLL_RIGHT),
-		new KeyAction.KeyActionPair(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
-									FunctionDocument.Command.SCROLL_DOWN),
-		new KeyAction.KeyActionPair(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
-									FunctionDocument.Command.SCROLL_UP),
-		new KeyAction.KeyActionPair(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
-									FunctionDocument.Command.CENTRE_ON_ORIGIN)
+		KeyAction.action(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+						 FunctionDocument.Command.SCROLL_LEFT),
+		KeyAction.action(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+						 FunctionDocument.Command.SCROLL_RIGHT),
+		KeyAction.action(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+						 FunctionDocument.Command.SCROLL_DOWN),
+		KeyAction.action(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+						 FunctionDocument.Command.SCROLL_UP),
+		KeyAction.action(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+						 FunctionDocument.Command.CENTRE_ON_ORIGIN)
 	};
 
 	private static final	KeyAction.KeyActionPair[]	FUNCTION_LIST_KEY_ACTIONS	=
 	{
-		new KeyAction.KeyActionPair(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK),
-									FunctionDocument.Command.COPY_FUNCTION),
-		new KeyAction.KeyActionPair(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK),
-									FunctionDocument.Command.TOGGLE_HIGHLIGHT_FUNCTION)
+		KeyAction.action(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK),
+						 FunctionDocument.Command.COPY_FUNCTION),
+		KeyAction.action(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, KeyEvent.CTRL_DOWN_MASK),
+						 FunctionDocument.Command.TOGGLE_HIGHLIGHT_FUNCTION)
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		INVALID_X_LOWER_ENDPOINT
-		("The lower endpoint of the x interval is invalid."),
-
-		X_LOWER_ENDPOINT_OUT_OF_BOUNDS
-		("The lower endpoint of the x interval must be between " + PlotInterval.MIN_VALUE + " and " +
-			PlotInterval.MAX_VALUE + "."),
-
-		X_LOWER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
-		("The lower endpoint of the x interval must not have more than " +
-			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
-
-		INVALID_X_UPPER_ENDPOINT
-		("The upper endpoint of the x interval is invalid."),
-
-		X_UPPER_ENDPOINT_OUT_OF_BOUNDS
-		("The upper endpoint of the x interval must be between " + PlotInterval.MIN_VALUE + " and " +
-			PlotInterval.MAX_VALUE + "."),
-
-		X_UPPER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
-		("The upper endpoint of the x interval must not have more than " +
-			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
-
-		X_ENDPOINTS_OUT_OF_ORDER
-		("The upper endpoint of the x interval is less than or equal to the lower endpoint."),
-
-		INVALID_Y_LOWER_ENDPOINT
-		("The lower endpoint of the y interval is invalid."),
-
-		Y_LOWER_ENDPOINT_OUT_OF_BOUNDS
-		("The lower endpoint of the y interval must be between " + PlotInterval.MIN_VALUE + " and " +
-			PlotInterval.MAX_VALUE + "."),
-
-		Y_LOWER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
-		("The lower endpoint of the y interval must not have more than " +
-			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
-
-		INVALID_Y_UPPER_ENDPOINT
-		("The upper endpoint of the y interval is invalid."),
-
-		Y_UPPER_ENDPOINT_OUT_OF_BOUNDS
-		("The upper endpoint of the y interval must be between " + PlotInterval.MIN_VALUE + " and " +
-			PlotInterval.MAX_VALUE + "."),
-
-		Y_UPPER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
-		("The upper endpoint of the y interval must not have more than " +
-			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
-
-		Y_ENDPOINTS_OUT_OF_ORDER
-		("The upper endpoint of the y interval is less than or equal to the lower endpoint.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	Dimension	plotSize;
+	private static	Dimension	functionListSize;
+	private static	String		xZoomFactorStr		= DEFAULT_ZOOM_FACTOR_STR;
+	private static	String		yZoomFactorStr		= DEFAULT_ZOOM_FACTOR_STR;
+	private static	JPopupMenu	contextMenu;
+	private static	JPopupMenu	viewFunctionMenu;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// FUNCTION LIST CLASS
-
-
-	public static class FunctionList
-		extends SingleSelectionList<Function>
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	ICON_WIDTH	= 20;
-		private static final	int	ICON_HEIGHT	= 12;
-
-		private static final	int	ICON_MARGIN	= 3;
-
-		private static final	Color	ICON_BORDER_COLOUR	= Color.GRAY;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FunctionList(FunctionDocument document,
-							 int              viewableColumns,
-							 int              viewableRows)
-		{
-			// Call superclass constructor
-			super(viewableColumns, viewableRows, AppFont.MAIN.getFont(), document);
-
-			// Initialise instance variables
-			minusChar = SurrogateMinus.getMinusChar(getFont());
-
-			// Set properties
-			int height = Math.max(getFontMetrics(getFont()).getHeight(), ICON_HEIGHT);
-			setRowHeight(2 * DEFAULT_VERTICAL_MARGIN + height);
-			setExtraWidth(ICON_MARGIN + ICON_WIDTH);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static BufferedImage createIconImage(Color   colour,
-													 boolean hidden,
-													 boolean obscured)
-		{
-			BufferedImage image = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D gr = image.createGraphics();
-
-			if (!hidden)
-			{
-				AppConfig config = AppConfig.INSTANCE;
-				if (!obscured || config.isFunctionObscuredColour())
-				{
-					gr.setColor(obscured ? config.getFunctionObscuredColour() : colour);
-					gr.fillRect(1, 1, ICON_WIDTH - 2, ICON_HEIGHT - 2);
-				}
-				gr.setColor(ICON_BORDER_COLOUR);
-				gr.drawRect(0, 0, ICON_WIDTH - 1, ICON_HEIGHT - 1);
-			}
-
-			return image;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String getElementText(int index)
-		{
-			return SurrogateMinus.minusToSurrogate(getElement(index).toString(), minusChar);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void drawElement(Graphics gr,
-								   int      index)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Draw icon
-			int rowHeight = getRowHeight();
-			int x = ICON_MARGIN;
-			int y = index * rowHeight;
-			Function function = getElement(index);
-			gr.drawImage(createIconImage(function.getColour(), function.isHidden(),
-										 function.isObscured()),
-						 x, y + (rowHeight - ICON_HEIGHT) / 2, null);
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Get text and truncate it if it is too wide
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			String text = truncateText(getElementText(index), fontMetrics, getMaxTextWidth());
-
-			// Draw text
-			x = getExtraWidth() + getHorizontalMargin();
-			gr.setColor(getForegroundColour(index));
-			gr.drawString(text, x, y + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected int getPopUpXOffset()
-		{
-			return getExtraWidth();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	char	minusChar;
-
-	}
-
-	//==================================================================
-
-
-	// FUNCTION BUTTON CLASS
-
-
-	private static class FunctionButton
-		extends FButton
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	Insets	MARGINS	= new Insets(2, 8, 2, 8);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FunctionButton(Action action)
-		{
-			super(action);
-			setMargin(MARGINS);
-
-			if (instances == null)
-				instances = new ArrayList<>();
-			instances.add(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static void reset()
-		{
-			if (instances != null)
-				instances.clear();
-		}
-
-		//--------------------------------------------------------------
-
-		private static void update()
-		{
-			int maxWidth = 0;
-			for (FunctionButton button : instances)
-			{
-				int width = button.getPreferredSize().width;
-				if (maxWidth < width)
-					maxWidth = width;
-			}
-
-			for (FunctionButton button : instances)
-				button.setPreferredSize(new Dimension(maxWidth, button.getPreferredSize().height));
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class variables
-	////////////////////////////////////////////////////////////////////
-
-		private static	List<FunctionButton>	instances;
-
-	}
-
-	//==================================================================
-
-
-	// SCROLL BUTTON CLASS
-
-
-	private static class ScrollButton
-		extends JButton
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	Insets	MARGINS	= new Insets(1, 1, 1, 1);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ScrollButton(Action action)
-		{
-			super(action);
-			setMargin(MARGINS);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// ZOOM BUTTON CLASS
-
-
-	private static class ZoomButton
-		extends JButton
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	Insets	MARGINS	= new Insets(1, 1, 1, 1);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ZoomButton(Action action)
-		{
-			super(action);
-			setMargin(MARGINS);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// COORDINATES FIELD CLASS
-
-
-	private static class CoordinatesField
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	NUM_ROWS	= 2;
-
-		private static final	int	TOP_MARGIN		= 3;
-		private static final	int	BOTTOM_MARGIN	= TOP_MARGIN;
-		private static final	int	LEADING_MARGIN	= 5;
-		private static final	int	TRAILING_MARGIN	= LEADING_MARGIN;
-		private static final	int	GAP				= 2 * (LEADING_MARGIN - 1);
-
-		private static final	Color	BACKGROUND_COLOUR		= new Color(248, 240, 200);
-		private static final	Color	FOREGROUND_COLOUR		= Color.BLACK;
-		private static final	Color	X_Y_BACKGROUND_COLOUR	= new Color(224, 216, 176);
-		private static final	Color	BORDER_COLOUR			= new Color(240, 192, 144);
-
-		private static final	String	BASE_STR	= "-.E-000";
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CoordinatesField()
-		{
-			AppFont.TEXT_FIELD.apply(this);
-			minusChar = SurrogateMinus.getMinusChar(getFont());
-			FontMetrics fontMetrics = getFontMetrics(getFont());
-			charWidth = Math.max(FontUtils.getCharWidth('x', fontMetrics),
-								 FontUtils.getCharWidth('y', fontMetrics));
-			int maxStrWidth = fontMetrics.stringWidth(convertString(BASE_STR))
-									+ fontMetrics.stringWidth("0".repeat(PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS));
-			width = LEADING_MARGIN + charWidth + GAP + maxStrWidth + TRAILING_MARGIN;
-			height = TOP_MARGIN + NUM_ROWS * fontMetrics.getHeight() + BOTTOM_MARGIN;
-
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(width, height);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Draw background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Draw x/y background
-			int x = 0;
-			gr.setColor(X_Y_BACKGROUND_COLOUR);
-			gr.fillRect(x, rect.y, LEADING_MARGIN + charWidth + GAP / 2, rect.height);
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Get text x and y coordinates
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			x += LEADING_MARGIN;
-			int y1 = TOP_MARGIN + fontMetrics.getAscent();
-			int y2 = y1 + fontMetrics.getHeight();
-
-			// Draw text
-			gr.setColor(FOREGROUND_COLOUR);
-			gr.drawString("x", x, y1);
-			gr.drawString("y", x, y2);
-			if (text1 != null)
-			{
-				int x1 = x + charWidth + GAP;
-				gr.drawString(text1, x1, y1);
-			}
-			if (text2 != null)
-			{
-				int x1 = x + charWidth + GAP;
-				gr.drawString(text2, x1, y2);
-			}
-
-			// Draw border
-			gr.setColor(BORDER_COLOUR);
-			gr.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void setText(String text1,
-							String text2)
-		{
-			this.text1 = convertString(text1);
-			this.text2 = convertString(text2);
-			repaint();
-		}
-
-		//--------------------------------------------------------------
-
-		private String convertString(String str)
-		{
-			return SurrogateMinus.minusToSurrogate(str, minusChar);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int		width;
-		private	int		height;
-		private	int		charWidth;
-		private	char	minusChar;
-		private	String	text1;
-		private	String	text2;
-
-	}
-
-	//==================================================================
-
-
-	// INTERVAL ENDPOINT FIELD CLASS
-
-
-	private static class EndpointField
-		extends SurrogateMinus.Field
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	NUM_COLUMNS	= 12;
-
-		private static final	String	VALID_CHARS	= "+.0123456789E";
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private EndpointField(int maxLength)
-		{
-			super(maxLength, NUM_COLUMNS);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected int getColumnWidth()
-		{
-			return (FontUtils.getCharWidth('0', getFontMetrics(getFont())) + 1);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected String translateInsertString(String str,
-											   int    offset)
-		{
-			return super.translateInsertString(str, offset).toUpperCase();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected boolean acceptCharacter(char ch,
-										  int  index)
-		{
-			return (isMinusCharacter(ch) || VALID_CHARS.indexOf(ch) >= 0);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		/**
-		 * @throws NumberFormatException
-		 */
-
-		public BigDecimal getValue()
-		{
-			return new BigDecimal(getText());
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// DRAG START CLASS
-
-
-	private static class DragStart
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DragStart(int          x,
-						  int          y,
-						  PlotInterval xInterval,
-						  PlotInterval yInterval)
-		{
-			this.x = x;
-			this.y = y;
-			this.xInterval = xInterval;
-			this.yInterval = yInterval;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		int				x;
-		int				y;
-		PlotInterval	xInterval;
-		PlotInterval	yInterval;
-
-	}
-
-	//==================================================================
+	private	FunctionDocument	document;
+	private	PlotPanel			plotPanel;
+	private	FunctionList		functionList;
+	private	JScrollPane			functionListScrollPane;
+	private	CoordinatesField	coordinatesField;
+	private	EndpointField		xLowerEndpointField;
+	private	EndpointField		xUpperEndpointField;
+	private	EndpointField		yLowerEndpointField;
+	private	EndpointField		yUpperEndpointField;
+	private	JButton				addButton;
+	private	JButton				viewButton;
+	private	JButton				deleteButton;
+	private	FComboBox<String>	xZoomFactorComboBox;
+	private	FComboBox<String>	yZoomFactorComboBox;
+	private	Point				mouseCursorLocation;
+	private	DragStart			dragStart;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -1469,8 +891,7 @@ class FunctionView
 
 		// Add key actions
 		KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
-						 KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0), Command.SHOW_CONTEXT_MENU,
-						 this);
+						 KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0), Command.SHOW_CONTEXT_MENU, this);
 	}
 
 	//------------------------------------------------------------------
@@ -1497,6 +918,7 @@ class FunctionView
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		try
@@ -1505,38 +927,20 @@ class FunctionView
 			if (COMMAND_MAP.containsKey(command))
 				command = COMMAND_MAP.get(command);
 
-			if (command.equals(Command.EDIT_FUNCTION))
-				onEditFunction();
-
-			else if (command.equals(Command.DELETE_FUNCTION))
-				onDeleteFunction();
-
-			else if (command.equals(Command.CONFIRM_DELETE_FUNCTION))
-				onConfirmDeleteFunction();
-
-			else if (command.equals(Command.MOVE_FUNCTION_UP))
-				onMoveFunctionUp();
-
-			else if (command.equals(Command.MOVE_FUNCTION_DOWN))
-				onMoveFunctionDown();
-
-			else if (command.equals(Command.MOVE_FUNCTION))
-				onMoveFunction();
-
-			else if (command.equals(Command.SET_X_INTERVAL))
-				onSetXInterval();
-
-			else if (command.equals(Command.SET_Y_INTERVAL))
-				onSetYInterval();
-
-			else if (command.equals(Command.SELECT_X_ZOOM_FACTOR))
-				onSelectXZoomFactor();
-
-			else if (command.equals(Command.SELECT_Y_ZOOM_FACTOR))
-				onSelectYZoomFactor();
-
-			else if (command.equals(Command.SHOW_CONTEXT_MENU))
-				onShowContextMenu();
+			switch (command)
+			{
+				case Command.EDIT_FUNCTION           -> onEditFunction();
+				case Command.DELETE_FUNCTION         -> onDeleteFunction();
+				case Command.CONFIRM_DELETE_FUNCTION -> onConfirmDeleteFunction();
+				case Command.MOVE_FUNCTION_UP        -> onMoveFunctionUp();
+				case Command.MOVE_FUNCTION_DOWN      -> onMoveFunctionDown();
+				case Command.MOVE_FUNCTION           -> onMoveFunction();
+				case Command.SET_X_INTERVAL          -> onSetXInterval();
+				case Command.SET_Y_INTERVAL          -> onSetYInterval();
+				case Command.SELECT_X_ZOOM_FACTOR    -> onSelectXZoomFactor();
+				case Command.SELECT_Y_ZOOM_FACTOR    -> onSelectYZoomFactor();
+				case Command.SHOW_CONTEXT_MENU       -> onShowContextMenu();
+			}
 		}
 		catch (AppException e)
 		{
@@ -1550,6 +954,7 @@ class FunctionView
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		Object eventSource = event.getSource();
@@ -1574,6 +979,7 @@ class FunctionView
 //  Instance methods : ListSelectionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void valueChanged(ListSelectionEvent event)
 	{
 		if (!event.getValueIsAdjusting())
@@ -1586,6 +992,7 @@ class FunctionView
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseClicked(MouseEvent event)
 	{
 		// do nothing
@@ -1593,6 +1000,7 @@ class FunctionView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		if (event.getComponent() == plotPanel)
@@ -1601,6 +1009,7 @@ class FunctionView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		if (event.getComponent() == plotPanel)
@@ -1609,6 +1018,7 @@ class FunctionView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		if (SwingUtilities.isLeftMouseButton(event))
@@ -1626,6 +1036,7 @@ class FunctionView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		if (SwingUtilities.isLeftMouseButton(event))
@@ -1647,6 +1058,7 @@ class FunctionView
 //  Instance methods : MouseMotionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseDragged(MouseEvent event)
 	{
 		if (dragStart != null)
@@ -1657,6 +1069,7 @@ class FunctionView
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseMoved(MouseEvent event)
 	{
 		updateMouseCursorCoords(event);
@@ -1668,6 +1081,7 @@ class FunctionView
 //  Instance methods : MouseWheelListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseWheelMoved(MouseWheelEvent event)
 	{
 		FunctionDocument.Command command = null;
@@ -1721,6 +1135,7 @@ class FunctionView
 //  Instance methods : SingleSelectionList.IModelListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void modelChanged(SingleSelectionList.ModelEvent event)
 	{
 		updatePlot();
@@ -1828,8 +1243,7 @@ class FunctionView
 		if (viewFunctionMenu == null)
 		{
 			viewFunctionMenu = new JPopupMenu();
-			viewFunctionMenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.
-																			TOGGLE_HIGHLIGHT_FUNCTION));
+			viewFunctionMenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIGHLIGHT_FUNCTION));
 			viewFunctionMenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIDE_FUNCTION));
 		}
 
@@ -2057,8 +1471,7 @@ class FunctionView
 				throw new AppException(ErrorId.INVALID_X_UPPER_ENDPOINT);
 			}
 
-			if (xLowerEndpointField.getValue().doubleValue() >=
-															xUpperEndpointField.getValue().doubleValue())
+			if (xLowerEndpointField.getValue().doubleValue() >= xUpperEndpointField.getValue().doubleValue())
 				throw new AppException(ErrorId.X_ENDPOINTS_OUT_OF_ORDER);
 		}
 		catch (AppException e)
@@ -2070,8 +1483,7 @@ class FunctionView
 		// Set interval
 		FunctionDocument.Command command = FunctionDocument.Command.SET_X_INTERVAL;
 		command.putValue(FunctionDocument.Command.Property.X_INTERVAL,
-						 new PlotInterval(xLowerEndpointField.getText(),
-										  xUpperEndpointField.getText()));
+						 new PlotInterval(xLowerEndpointField.getText(), xUpperEndpointField.getText()));
 		command.execute();
 	}
 
@@ -2118,8 +1530,7 @@ class FunctionView
 				throw new AppException(ErrorId.INVALID_Y_UPPER_ENDPOINT);
 			}
 
-			if (yLowerEndpointField.getValue().doubleValue() >=
-															yUpperEndpointField.getValue().doubleValue())
+			if (yLowerEndpointField.getValue().doubleValue() >= yUpperEndpointField.getValue().doubleValue())
 				throw new AppException(ErrorId.Y_ENDPOINTS_OUT_OF_ORDER);
 		}
 		catch (AppException e)
@@ -2131,8 +1542,7 @@ class FunctionView
 		// Set interval
 		FunctionDocument.Command command = FunctionDocument.Command.SET_Y_INTERVAL;
 		command.putValue(FunctionDocument.Command.Property.Y_INTERVAL,
-						 new PlotInterval(yLowerEndpointField.getText(),
-										  yUpperEndpointField.getText()));
+						 new PlotInterval(yLowerEndpointField.getText(), yUpperEndpointField.getText()));
 		command.execute();
 	}
 
@@ -2160,51 +1570,621 @@ class FunctionView
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Dimension	plotSize;
-	private static	Dimension	functionListSize;
-	private static	String		xZoomFactorStr		= DEFAULT_ZOOM_FACTOR_STR;
-	private static	String		yZoomFactorStr		= DEFAULT_ZOOM_FACTOR_STR;
-	private static	JPopupMenu	contextMenu;
-	private static	JPopupMenu	viewFunctionMenu;
 
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
+	// ERROR IDENTIFIERS
 
-	static
+
+	private enum ErrorId
+		implements AppException.IId
 	{
-		COMMAND_MAP = new HashMap<>();
-		COMMAND_MAP.put(SingleSelectionList.Command.EDIT_ELEMENT,      Command.EDIT_FUNCTION);
-		COMMAND_MAP.put(SingleSelectionList.Command.DELETE_ELEMENT,    Command.CONFIRM_DELETE_FUNCTION);
-		COMMAND_MAP.put(SingleSelectionList.Command.DELETE_EX_ELEMENT, Command.DELETE_FUNCTION);
-		COMMAND_MAP.put(SingleSelectionList.Command.MOVE_ELEMENT_UP,   Command.MOVE_FUNCTION_UP);
-		COMMAND_MAP.put(SingleSelectionList.Command.MOVE_ELEMENT_DOWN, Command.MOVE_FUNCTION_DOWN);
-		COMMAND_MAP.put(SingleSelectionList.Command.DRAG_ELEMENT,      Command.MOVE_FUNCTION);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		INVALID_X_LOWER_ENDPOINT
+		("The lower endpoint of the x interval is invalid."),
+
+		X_LOWER_ENDPOINT_OUT_OF_BOUNDS
+		("The lower endpoint of the x interval must be between " + PlotInterval.MIN_VALUE + " and " +
+			PlotInterval.MAX_VALUE + "."),
+
+		X_LOWER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
+		("The lower endpoint of the x interval must not have more than " +
+			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
+
+		INVALID_X_UPPER_ENDPOINT
+		("The upper endpoint of the x interval is invalid."),
+
+		X_UPPER_ENDPOINT_OUT_OF_BOUNDS
+		("The upper endpoint of the x interval must be between " + PlotInterval.MIN_VALUE + " and " +
+			PlotInterval.MAX_VALUE + "."),
+
+		X_UPPER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
+		("The upper endpoint of the x interval must not have more than " +
+			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
+
+		X_ENDPOINTS_OUT_OF_ORDER
+		("The upper endpoint of the x interval is less than or equal to the lower endpoint."),
+
+		INVALID_Y_LOWER_ENDPOINT
+		("The lower endpoint of the y interval is invalid."),
+
+		Y_LOWER_ENDPOINT_OUT_OF_BOUNDS
+		("The lower endpoint of the y interval must be between " + PlotInterval.MIN_VALUE + " and " +
+			PlotInterval.MAX_VALUE + "."),
+
+		Y_LOWER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
+		("The lower endpoint of the y interval must not have more than " +
+			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
+
+		INVALID_Y_UPPER_ENDPOINT
+		("The upper endpoint of the y interval is invalid."),
+
+		Y_UPPER_ENDPOINT_OUT_OF_BOUNDS
+		("The upper endpoint of the y interval must be between " + PlotInterval.MIN_VALUE + " and " +
+			PlotInterval.MAX_VALUE + "."),
+
+		Y_UPPER_ENDPOINT_HAS_TOO_MANY_SIGNIFICANT_DIGITS
+		("The upper endpoint of the y interval must not have more than " +
+			PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS + " significant digits."),
+
+		Y_ENDPOINTS_OUT_OF_ORDER
+		("The upper endpoint of the y interval is less than or equal to the lower endpoint.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
 	}
 
+	//==================================================================
+
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	FunctionDocument	document;
-	private	PlotPanel			plotPanel;
-	private	FunctionList		functionList;
-	private	JScrollPane			functionListScrollPane;
-	private	CoordinatesField	coordinatesField;
-	private	EndpointField		xLowerEndpointField;
-	private	EndpointField		xUpperEndpointField;
-	private	EndpointField		yLowerEndpointField;
-	private	EndpointField		yUpperEndpointField;
-	private	JButton				addButton;
-	private	JButton				viewButton;
-	private	JButton				deleteButton;
-	private	FComboBox<String>	xZoomFactorComboBox;
-	private	FComboBox<String>	yZoomFactorComboBox;
-	private	Point				mouseCursorLocation;
-	private	DragStart			dragStart;
+
+	// FUNCTION LIST CLASS
+
+
+	public static class FunctionList
+		extends SingleSelectionList<Function>
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		ICON_WIDTH	= 20;
+		private static final	int		ICON_HEIGHT	= 12;
+
+		private static final	int		ICON_MARGIN	= 3;
+
+		private static final	Color	ICON_BORDER_COLOUR	= Color.GRAY;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	char	minusChar;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FunctionList(FunctionDocument document,
+							 int              viewableColumns,
+							 int              viewableRows)
+		{
+			// Call superclass constructor
+			super(viewableColumns, viewableRows, AppFont.MAIN.getFont(), document);
+
+			// Initialise instance variables
+			minusChar = SurrogateMinus.getMinusChar(getFont());
+
+			// Set properties
+			int height = Math.max(getFontMetrics(getFont()).getHeight(), ICON_HEIGHT);
+			setRowHeight(2 * DEFAULT_VERTICAL_MARGIN + height);
+			setExtraWidth(ICON_MARGIN + ICON_WIDTH);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		private static BufferedImage createIconImage(Color   colour,
+													 boolean hidden,
+													 boolean obscured)
+		{
+			BufferedImage image = new BufferedImage(ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D gr = image.createGraphics();
+
+			if (!hidden)
+			{
+				AppConfig config = AppConfig.INSTANCE;
+				if (!obscured || config.isFunctionObscuredColour())
+				{
+					gr.setColor(obscured ? config.getFunctionObscuredColour() : colour);
+					gr.fillRect(1, 1, ICON_WIDTH - 2, ICON_HEIGHT - 2);
+				}
+				gr.setColor(ICON_BORDER_COLOUR);
+				gr.drawRect(0, 0, ICON_WIDTH - 1, ICON_HEIGHT - 1);
+			}
+
+			return image;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getElementText(int index)
+		{
+			return SurrogateMinus.minusToSurrogate(getElement(index).toString(), minusChar);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void drawElement(Graphics gr,
+								   int      index)
+		{
+			// Create copy of graphics context
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+			// Draw icon
+			int rowHeight = getRowHeight();
+			int x = ICON_MARGIN;
+			int y = index * rowHeight;
+			Function function = getElement(index);
+			gr2d.drawImage(createIconImage(function.getColour(), function.isHidden(), function.isObscured()),
+						   x, y + (rowHeight - ICON_HEIGHT) / 2, null);
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints(gr2d);
+
+			// Get text and truncate it if it is too wide
+			FontMetrics fontMetrics = gr2d.getFontMetrics();
+			String text = truncateText(getElementText(index), fontMetrics, getMaxTextWidth());
+
+			// Draw text
+			x = getExtraWidth() + getHorizontalMargin();
+			gr2d.setColor(getForegroundColour(index));
+			gr2d.drawString(text, x, y + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected int getPopUpXOffset()
+		{
+			return getExtraWidth();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// FUNCTION BUTTON CLASS
+
+
+	private static class FunctionButton
+		extends FButton
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	Insets	MARGINS	= new Insets(2, 8, 2, 8);
+
+	////////////////////////////////////////////////////////////////////
+	//  Class variables
+	////////////////////////////////////////////////////////////////////
+
+		private static	List<FunctionButton>	instances;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FunctionButton(Action action)
+		{
+			super(action);
+			setMargin(MARGINS);
+
+			if (instances == null)
+				instances = new ArrayList<>();
+			instances.add(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		private static void reset()
+		{
+			if (instances != null)
+				instances.clear();
+		}
+
+		//--------------------------------------------------------------
+
+		private static void update()
+		{
+			int maxWidth = 0;
+			for (FunctionButton button : instances)
+			{
+				int width = button.getPreferredSize().width;
+				if (maxWidth < width)
+					maxWidth = width;
+			}
+
+			for (FunctionButton button : instances)
+				button.setPreferredSize(new Dimension(maxWidth, button.getPreferredSize().height));
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// SCROLL BUTTON CLASS
+
+
+	private static class ScrollButton
+		extends JButton
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	Insets	MARGINS	= new Insets(1, 1, 1, 1);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ScrollButton(Action action)
+		{
+			super(action);
+			setMargin(MARGINS);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ZOOM BUTTON CLASS
+
+
+	private static class ZoomButton
+		extends JButton
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	Insets	MARGINS	= new Insets(1, 1, 1, 1);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ZoomButton(Action action)
+		{
+			super(action);
+			setMargin(MARGINS);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// COORDINATES FIELD CLASS
+
+
+	private static class CoordinatesField
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		NUM_ROWS	= 2;
+
+		private static final	int		TOP_MARGIN		= 3;
+		private static final	int		BOTTOM_MARGIN	= TOP_MARGIN;
+		private static final	int		LEADING_MARGIN	= 5;
+		private static final	int		TRAILING_MARGIN	= LEADING_MARGIN;
+		private static final	int		GAP				= 2 * (LEADING_MARGIN - 1);
+
+		private static final	Color	BACKGROUND_COLOUR		= new Color(248, 240, 200);
+		private static final	Color	FOREGROUND_COLOUR		= Color.BLACK;
+		private static final	Color	X_Y_BACKGROUND_COLOUR	= new Color(224, 216, 176);
+		private static final	Color	BORDER_COLOUR			= new Color(240, 192, 144);
+
+		private static final	String	BASE_STR	= "-.E-000";
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int		width;
+		private	int		height;
+		private	int		charWidth;
+		private	char	minusChar;
+		private	String	text1;
+		private	String	text2;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CoordinatesField()
+		{
+			AppFont.TEXT_FIELD.apply(this);
+			minusChar = SurrogateMinus.getMinusChar(getFont());
+			FontMetrics fontMetrics = getFontMetrics(getFont());
+			charWidth = Math.max(FontUtils.getCharWidth('x', fontMetrics),
+								 FontUtils.getCharWidth('y', fontMetrics));
+			int maxStrWidth = fontMetrics.stringWidth(convertString(BASE_STR))
+									+ fontMetrics.stringWidth("0".repeat(PlotInterval.MAX_NUM_SIGNIFICANT_DIGITS));
+			width = LEADING_MARGIN + charWidth + GAP + maxStrWidth + TRAILING_MARGIN;
+			height = TOP_MARGIN + NUM_ROWS * fontMetrics.getHeight() + BOTTOM_MARGIN;
+
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(width, height);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+			// Draw background
+			Rectangle rect = gr2d.getClipBounds();
+			gr2d.setColor(BACKGROUND_COLOUR);
+			gr2d.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Draw x/y background
+			int x = 0;
+			gr2d.setColor(X_Y_BACKGROUND_COLOUR);
+			gr2d.fillRect(x, rect.y, LEADING_MARGIN + charWidth + GAP / 2, rect.height);
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints(gr2d);
+
+			// Get text x and y coordinates
+			FontMetrics fontMetrics = gr2d.getFontMetrics();
+			x += LEADING_MARGIN;
+			int y1 = TOP_MARGIN + fontMetrics.getAscent();
+			int y2 = y1 + fontMetrics.getHeight();
+
+			// Draw text
+			gr2d.setColor(FOREGROUND_COLOUR);
+			gr2d.drawString("x", x, y1);
+			gr2d.drawString("y", x, y2);
+			if (text1 != null)
+			{
+				int x1 = x + charWidth + GAP;
+				gr2d.drawString(text1, x1, y1);
+			}
+			if (text2 != null)
+			{
+				int x1 = x + charWidth + GAP;
+				gr2d.drawString(text2, x1, y2);
+			}
+
+			// Draw border
+			gr2d.setColor(BORDER_COLOUR);
+			gr2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void setText(String text1,
+							String text2)
+		{
+			this.text1 = convertString(text1);
+			this.text2 = convertString(text2);
+			repaint();
+		}
+
+		//--------------------------------------------------------------
+
+		private String convertString(String str)
+		{
+			return SurrogateMinus.minusToSurrogate(str, minusChar);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// INTERVAL ENDPOINT FIELD CLASS
+
+
+	private static class EndpointField
+		extends SurrogateMinus.Field
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	NUM_COLUMNS	= 12;
+
+		private static final	String	VALID_CHARS	= "+.0123456789E";
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private EndpointField(int maxLength)
+		{
+			super(maxLength, NUM_COLUMNS);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected int getColumnWidth()
+		{
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont())) + 1;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected String translateInsertString(String str,
+											   int    offset)
+		{
+			return super.translateInsertString(str, offset).toUpperCase();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected boolean acceptCharacter(char ch,
+										  int  index)
+		{
+			return isMinusCharacter(ch) || (VALID_CHARS.indexOf(ch) >= 0);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		/**
+		 * @throws NumberFormatException
+		 */
+
+		public BigDecimal getValue()
+		{
+			return new BigDecimal(getText());
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// DRAG START CLASS
+
+
+	private static class DragStart
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		int				x;
+		int				y;
+		PlotInterval	xInterval;
+		PlotInterval	yInterval;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private DragStart(int          x,
+						  int          y,
+						  PlotInterval xInterval,
+						  PlotInterval yInterval)
+		{
+			this.x = x;
+			this.y = y;
+			this.xInterval = xInterval;
+			this.yInterval = yInterval;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 
