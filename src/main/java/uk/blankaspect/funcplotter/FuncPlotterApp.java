@@ -354,61 +354,20 @@ public class FuncPlotterApp
 		{
 			switch (command)
 			{
-				case CHECK_MODIFIED_FILE:
-					onCheckModifiedFile();
-					break;
-
-				case IMPORT_FILES:
-					onImportFiles();
-					break;
-
-				case CREATE_FILE:
-					onCreateFile();
-					break;
-
-				case OPEN_FILE:
-					onOpenFile();
-					break;
-
-				case REVERT_FILE:
-					onRevertFile();
-					break;
-
-				case CLOSE_FILE:
-					onCloseFile();
-					break;
-
-				case CLOSE_ALL_FILES:
-					onCloseAllFiles();
-					break;
-
-				case SAVE_FILE:
-					onSaveFile();
-					break;
-
-				case SAVE_FILE_AS:
-					onSaveFileAs();
-					break;
-
-				case EXPORT_IMAGE:
-					onExportImage();
-					break;
-
-				case EXIT:
-					onExit();
-					break;
-
-				case COPY_INTERVALS:
-					onCopyIntervals();
-					break;
-
-				case EDIT_PREFERENCES:
-					onEditPreferences();
-					break;
-
-				case TOGGLE_SHOW_FULL_PATHNAMES:
-					onToggleShowFullPathnames();
-					break;
+				case CHECK_MODIFIED_FILE        -> onCheckModifiedFile();
+				case IMPORT_FILES               -> onImportFiles();
+				case CREATE_FILE                -> onCreateFile();
+				case OPEN_FILE                  -> onOpenFile();
+				case REVERT_FILE                -> onRevertFile();
+				case CLOSE_FILE                 -> onCloseFile();
+				case CLOSE_ALL_FILES            -> onCloseAllFiles();
+				case SAVE_FILE                  -> onSaveFile();
+				case SAVE_FILE_AS               -> onSaveFileAs();
+				case EXPORT_IMAGE               -> onExportImage();
+				case EXIT                       -> onExit();
+				case COPY_INTERVALS             -> onCopyIntervals();
+				case EDIT_PREFERENCES           -> onEditPreferences();
+				case TOGGLE_SHOW_FULL_PATHNAMES -> onToggleShowFullPathnames();
 			}
 		}
 		catch (AppException e)

@@ -603,120 +603,37 @@ class FunctionDocument
 		{
 			try
 			{
-				switch (command)
+				edit = switch (command)
 				{
-					case UNDO:
-						edit = onUndo();
-						break;
-
-					case REDO:
-						edit = onRedo();
-						break;
-
-					case CLEAR_EDIT_LIST:
-						edit = onClearEditList();
-						break;
-
-					case EDIT_COMMENT:
-						edit = onEditComment();
-						break;
-
-					case ADD_FUNCTION:
-						edit = onAddFunction();
-						break;
-
-					case EDIT_FUNCTION:
-						edit = onEditFunction();
-						break;
-
-					case COPY_FUNCTION:
-						edit = onCopyFunction();
-						break;
-
-					case VIEW_FUNCTION:
-						edit = onViewFunction();
-						break;
-
-					case TOGGLE_HIGHLIGHT_FUNCTION:
-						edit = onToggleHighlightFunction();
-						break;
-
-					case TOGGLE_HIDE_FUNCTION:
-						edit = onToggleHideFunction();
-						break;
-
-					case DELETE_FUNCTION:
-						edit = onDeleteFunction();
-						break;
-
-					case CONFIRM_DELETE_FUNCTION:
-						edit = onConfirmDeleteFunction();
-						break;
-
-					case CLEAR_FUNCTIONS:
-						edit = onClearFunctions();
-						break;
-
-					case MOVE_FUNCTION:
-						edit = onMoveFunction();
-						break;
-
-					case REVERSE_FUNCTIONS:
-						edit = onReverseFunctions();
-						break;
-
-					case SCROLL_LEFT:
-						edit = onScrollLeft();
-						break;
-
-					case SCROLL_RIGHT:
-						edit = onScrollRight();
-						break;
-
-					case SCROLL_DOWN:
-						edit = onScrollDown();
-						break;
-
-					case SCROLL_UP:
-						edit = onScrollUp();
-						break;
-
-					case CENTRE_ON_ORIGIN:
-						edit = onCentreOnOrigin();
-						break;
-
-					case X_ZOOM_OUT:
-						edit = onXZoomOut();
-						break;
-
-					case X_ZOOM_IN:
-						edit = onXZoomIn();
-						break;
-
-					case Y_ZOOM_OUT:
-						edit = onYZoomOut();
-						break;
-
-					case Y_ZOOM_IN:
-						edit = onYZoomIn();
-						break;
-
-					case SET_X_INTERVAL:
-						edit = onSetXInterval();
-						break;
-
-					case SET_Y_INTERVAL:
-						edit = onSetYInterval();
-						break;
-
-					case SET_INTERVALS:
-						edit = onSetIntervals();
-						break;
-
-					case TOGGLE_SHOW_GRID:
-						edit = onToggleShowGrid();
-						break;
-				}
+					case UNDO                      -> onUndo();
+					case REDO                      -> onRedo();
+					case CLEAR_EDIT_LIST           -> onClearEditList();
+					case EDIT_COMMENT              -> onEditComment();
+					case ADD_FUNCTION              -> onAddFunction();
+					case EDIT_FUNCTION             -> onEditFunction();
+					case COPY_FUNCTION             -> onCopyFunction();
+					case VIEW_FUNCTION             -> onViewFunction();
+					case TOGGLE_HIGHLIGHT_FUNCTION -> onToggleHighlightFunction();
+					case TOGGLE_HIDE_FUNCTION      -> onToggleHideFunction();
+					case DELETE_FUNCTION           -> onDeleteFunction();
+					case CONFIRM_DELETE_FUNCTION   -> onConfirmDeleteFunction();
+					case CLEAR_FUNCTIONS           -> onClearFunctions();
+					case MOVE_FUNCTION             -> onMoveFunction();
+					case REVERSE_FUNCTIONS         -> onReverseFunctions();
+					case SCROLL_LEFT               -> onScrollLeft();
+					case SCROLL_RIGHT              -> onScrollRight();
+					case SCROLL_DOWN               -> onScrollDown();
+					case SCROLL_UP                 -> onScrollUp();
+					case CENTRE_ON_ORIGIN          -> onCentreOnOrigin();
+					case X_ZOOM_OUT                -> onXZoomOut();
+					case X_ZOOM_IN                 -> onXZoomIn();
+					case Y_ZOOM_OUT                -> onYZoomOut();
+					case Y_ZOOM_IN                 -> onYZoomIn();
+					case SET_X_INTERVAL            -> onSetXInterval();
+					case SET_Y_INTERVAL            -> onSetYInterval();
+					case SET_INTERVALS             -> onSetIntervals();
+					case TOGGLE_SHOW_GRID          -> onToggleShowGrid();
+				};
 			}
 			catch (OutOfMemoryError e)
 			{
