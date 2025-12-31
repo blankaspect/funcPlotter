@@ -165,8 +165,6 @@ class MainWindow
 		tabbedPanel = new TabbedPane();
 		tabbedPanel.setIgnoreCase(true);
 		tabbedPanel.addChangeListener(this);
-
-		// Set transfer handler
 		tabbedPanel.setTransferHandler(new FileTransferHandler());
 
 

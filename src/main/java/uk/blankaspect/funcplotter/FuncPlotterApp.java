@@ -38,7 +38,6 @@ import uk.blankaspect.common.build.BuildUtils;
 import uk.blankaspect.common.cls.ClassUtils;
 
 import uk.blankaspect.common.exception.AppException;
-import uk.blankaspect.common.exception.ExceptionUtils;
 import uk.blankaspect.common.exception.TaskCancelledException;
 
 import uk.blankaspect.common.exception2.LocationException;
@@ -428,9 +427,6 @@ public class FuncPlotterApp
 		// Read configuration
 		AppConfig config = AppConfig.INSTANCE;
 		config.read();
-
-		// Set UNIX style for pathnames in file exceptions
-		ExceptionUtils.setUnixStyle(config.isShowUnixPathnames());
 
 		// Set text antialiasing
 		TextRendering.setAntialiasing(config.getTextAntialiasing());
@@ -1054,7 +1050,6 @@ public class FuncPlotterApp
 	{
 		if (PreferencesDialog.showDialog(mainWindow))
 		{
-			ExceptionUtils.setUnixStyle(AppConfig.INSTANCE.isShowUnixPathnames());
 			if (getView() != null)
 				getView().repaint();
 		}

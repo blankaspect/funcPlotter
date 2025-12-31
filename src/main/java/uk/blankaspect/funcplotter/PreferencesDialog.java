@@ -110,8 +110,6 @@ class PreferencesDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	String	KEY	= PreferencesDialog.class.getCanonicalName();
-
 	// Main panel
 	private static final	String	TITLE_STR				= "Preferences";
 	private static final	String	SAVE_CONFIGURATION_STR	= "Save configuration";
@@ -124,7 +122,6 @@ class PreferencesDialog
 	private static final	String	DEFAULT_FILE_KIND_STR			= "Default file kind";
 	private static final	String	NEW_DOCUMENT_ON_STARTUP_STR		= "New document on startup";
 	private static final	String	SAVE_FUNCTION_COLOURS_STR		= "Save function colours in document";
-	private static final	String	SHOW_UNIX_PATHNAMES_STR			= "Display UNIX-style pathnames";
 	private static final	String	SELECT_TEXT_ON_FOCUS_GAINED_STR	= "Select text when focus is gained";
 	private static final	String	SAVE_MAIN_WINDOW_LOCATION_STR	= "Save location of main window";
 	private static final	String	MAX_EDIT_HISTORY_SIZE_STR		= "Maximum size of edit history";
@@ -222,7 +219,6 @@ class PreferencesDialog
 	private	FComboBox<FileKind>						defaultFileKindComboBox;
 	private	BooleanComboBox							newDocOnStartupComboBox;
 	private	FComboBox<NoYesAsk>						saveFunctionColoursComboBox;
-	private	BooleanComboBox							showUnixPathnamesComboBox;
 	private	BooleanComboBox							selectTextOnFocusGainedComboBox;
 	private	BooleanComboBox							saveMainWindowLocationComboBox;
 	private	FIntegerSpinner							maxEditListLengthSpinner;
@@ -650,8 +646,6 @@ class PreferencesDialog
 
 	private void onClose()
 	{
-		FPathnameField.removeObservers(KEY);
-
 		location = getLocation();
 		tabIndex = tabbedPanel.getSelectedIndex();
 		setVisible(false);
@@ -765,36 +759,6 @@ class PreferencesDialog
 		gbc.insets = AppConstants.COMPONENT_INSETS;
 		gridBag.setConstraints(saveFunctionColoursComboBox, gbc);
 		controlPanel.add(saveFunctionColoursComboBox);
-
-		// Label: show UNIX pathnames
-		JLabel showUnixPathnamesLabel = new FLabel(SHOW_UNIX_PATHNAMES_STR);
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_END;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(showUnixPathnamesLabel, gbc);
-		controlPanel.add(showUnixPathnamesLabel);
-
-		// Combo box: show UNIX pathnames
-		showUnixPathnamesComboBox = new BooleanComboBox(config.isShowUnixPathnames());
-
-		gbc.gridx = 1;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(showUnixPathnamesComboBox, gbc);
-		controlPanel.add(showUnixPathnamesComboBox);
 
 		// Label: select text on focus gained
 		JLabel selectTextOnFocusGainedLabel = new FLabel(SELECT_TEXT_ON_FOCUS_GAINED_STR);
@@ -1642,7 +1606,6 @@ class PreferencesDialog
 
 		// Panel: directory
 		directoryField = new FPathnameField(config.getFunctionDirectory());
-		FPathnameField.addObserver(KEY, directoryField);
 		JPanel directoryPanel = new PathnamePanel(directoryField, Command.CHOOSE_FUNCTION_DIRECTORY,
 												  this);
 
@@ -2018,7 +1981,6 @@ class PreferencesDialog
 		config.setDefaultFileKind(defaultFileKindComboBox.getSelectedValue());
 		config.setNewDocumentOnStartup(newDocOnStartupComboBox.getSelectedValue());
 		config.setSaveFunctionColours(saveFunctionColoursComboBox.getSelectedValue());
-		config.setShowUnixPathnames(showUnixPathnamesComboBox.getSelectedValue());
 		config.setSelectTextOnFocusGained(selectTextOnFocusGainedComboBox.getSelectedValue());
 		if (saveMainWindowLocationComboBox.getSelectedValue() != config.isMainWindowLocation())
 			config.setMainWindowLocation(saveMainWindowLocationComboBox.getSelectedValue() ? new Point()
