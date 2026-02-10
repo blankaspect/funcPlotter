@@ -186,8 +186,6 @@ class FunctionView
 	private static	Dimension	functionListSize;
 	private static	String		xZoomFactorStr		= DEFAULT_ZOOM_FACTOR_STR;
 	private static	String		yZoomFactorStr		= DEFAULT_ZOOM_FACTOR_STR;
-	private static	JPopupMenu	contextMenu;
-	private static	JPopupMenu	viewFunctionMenu;
 
 ////////////////////////////////////////////////////////////////////////
 //  Instance variables
@@ -1240,18 +1238,15 @@ class FunctionView
 	public void showViewFunctionMenu()
 	{
 		// Create context menu
-		if (viewFunctionMenu == null)
-		{
-			viewFunctionMenu = new JPopupMenu();
-			viewFunctionMenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIGHLIGHT_FUNCTION));
-			viewFunctionMenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIDE_FUNCTION));
-		}
+		JPopupMenu menu = new JPopupMenu();
+		menu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIGHLIGHT_FUNCTION));
+		menu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIDE_FUNCTION));
 
 		// Update commands for menu items
 		document.updateCommands();
 
 		// Display menu
-		viewFunctionMenu.show(viewButton, viewButton.getWidth() - 1, 0);
+		menu.show(viewButton, viewButton.getWidth() - 1, 0);
 	}
 
 	//------------------------------------------------------------------
@@ -1346,34 +1341,31 @@ class FunctionView
 		if ((event == null) || event.isPopupTrigger())
 		{
 			// Create context menu
-			if (contextMenu == null)
-			{
-				contextMenu = new JPopupMenu();
-				contextMenu.add(new FMenuItem(FunctionDocument.Command.ADD_FUNCTION));
-				contextMenu.add(new FMenuItem(FunctionDocument.Command.EDIT_FUNCTION));
-				contextMenu.add(new FMenuItem(FunctionDocument.Command.COPY_FUNCTION));
+			JPopupMenu menu = new JPopupMenu();
+			menu.add(new FMenuItem(FunctionDocument.Command.ADD_FUNCTION));
+			menu.add(new FMenuItem(FunctionDocument.Command.EDIT_FUNCTION));
+			menu.add(new FMenuItem(FunctionDocument.Command.COPY_FUNCTION));
 
-				JMenu submenu = new FMenu(FunctionDocument.Command.VIEW_FUNCTION);
-				submenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIGHLIGHT_FUNCTION));
-				submenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIDE_FUNCTION));
-				contextMenu.add(submenu);
+			JMenu submenu = new FMenu(FunctionDocument.Command.VIEW_FUNCTION);
+			submenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIGHLIGHT_FUNCTION));
+			submenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_HIDE_FUNCTION));
+			menu.add(submenu);
 
-				contextMenu.add(new FMenuItem(FunctionDocument.Command.DELETE_FUNCTION));
-				contextMenu.add(new FMenuItem(FunctionDocument.Command.CLEAR_FUNCTIONS));
+			menu.add(new FMenuItem(FunctionDocument.Command.DELETE_FUNCTION));
+			menu.add(new FMenuItem(FunctionDocument.Command.CLEAR_FUNCTIONS));
 
-				contextMenu.addSeparator();
+			menu.addSeparator();
 
-				contextMenu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_SHOW_GRID));
-			}
+			menu.add(new FCheckBoxMenuItem(FunctionDocument.Command.TOGGLE_SHOW_GRID));
 
 			// Update commands for menu items
 			document.updateCommands();
 
 			// Display menu
 			if (event == null)
-				contextMenu.show(this, 0, 0);
+				menu.show(this, 0, 0);
 			else
-				contextMenu.show(event.getComponent(), event.getX(), event.getY());
+				menu.show(event.getComponent(), event.getX(), event.getY());
 		}
 	}
 

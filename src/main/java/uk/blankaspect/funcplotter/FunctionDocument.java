@@ -39,7 +39,6 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -61,6 +60,7 @@ import uk.blankaspect.common.exception2.ValueOutOfBoundsException;
 
 import uk.blankaspect.common.list.IListModel;
 
+import uk.blankaspect.common.misc.EditList;
 import uk.blankaspect.common.misc.FileWritingMode;
 import uk.blankaspect.common.misc.SystemUtils;
 import uk.blankaspect.common.misc.TextFile;
@@ -200,7 +200,43 @@ class FunctionDocument
 		xInterval = new PlotInterval();
 		yInterval = new PlotInterval();
 		comment = new Comment();
-		editList = new EditList();
+		editList = new EditList(AppConfig.INSTANCE.getMaxEditListLength())
+		{
+			protected EditList.IEdit processEdit(
+				EditList.IEdit	edit)
+			{
+				// Case: change to an x interval
+				if (edit instanceof XIntervalEdit currInterval)
+				{
+					while (canUndo())
+					{
+						if (!(edits.getLast() instanceof XIntervalEdit prevInterval))
+							break;
+						if (currInterval.timestamp - prevInterval.timestamp > MERGE_INTERVAL_EDITS_INTERVAL)
+							break;
+						currInterval.oldInterval = prevInterval.oldInterval;
+						edits.removeLast();
+						--currentIndex;
+					}
+				}
+
+				// Case: change to a y interval
+				else if (edit instanceof YIntervalEdit currInterval)
+				{
+					while (canUndo())
+					{
+						if (!(edits.getLast() instanceof YIntervalEdit prevInterval))
+							break;
+						if (currInterval.timestamp - prevInterval.timestamp > MERGE_INTERVAL_EDITS_INTERVAL)
+							break;
+						currInterval.oldInterval = prevInterval.oldInterval;
+						edits.removeLast();
+						--currentIndex;
+					}
+				}
+				return edit;
+			}
+		};
 	}
 
 	//------------------------------------------------------------------
@@ -598,7 +634,7 @@ class FunctionDocument
 		executingCommand = true;
 
 		// Perform command
-		Edit edit = null;
+		EditList.IEdit edit = null;
 		try
 		{
 			try
@@ -647,7 +683,7 @@ class FunctionDocument
 
 		// Add edit to undo list
 		if (edit != null)
-			editList.addEdit(edit);
+			editList.add(edit);
 
 		// Update function buttons
 		updateView(ViewComponent.BUTTONS);
@@ -703,12 +739,12 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit setXIntervalEdit(PlotInterval interval)
+	private XIntervalEdit setXIntervalEdit(PlotInterval interval)
 	{
-		Edit edit = null;
+		XIntervalEdit edit = null;
 		if (interval.isValid())
 		{
-			edit = new Edit.XInterval(xInterval, interval);
+			edit = new XIntervalEdit(xInterval, interval);
 			setXInterval(interval);
 		}
 		else
@@ -718,12 +754,12 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit setYIntervalEdit(PlotInterval interval)
+	private YIntervalEdit setYIntervalEdit(PlotInterval interval)
 	{
-		Edit edit = null;
+		YIntervalEdit edit = null;
 		if (interval.isValid())
 		{
-			edit = new Edit.YInterval(yInterval, interval);
+			edit = new YIntervalEdit(yInterval, interval);
 			setYInterval(interval);
 		}
 		else
@@ -733,11 +769,12 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit setIntervals(PlotInterval xInterval,
-							  PlotInterval yInterval,
-							  boolean      end)
+	private CompoundEdit setIntervals(
+		PlotInterval	xInterval,
+		PlotInterval	yInterval,
+		boolean			end)
 	{
-		Edit.Compound edit = null;
+		CompoundEdit edit = null;
 
 		if (xStartInterval == null)
 			xStartInterval = new PlotInterval(this.xInterval);
@@ -748,9 +785,9 @@ class FunctionDocument
 		{
 			if (end && (!xStartInterval.equals(xInterval) || !yStartInterval.equals(yInterval)))
 			{
-				edit = new Edit.Compound();
-				edit.addEdit(new Edit.XInterval(xStartInterval, xInterval));
-				edit.addEdit(new Edit.YInterval(yStartInterval, yInterval));
+				edit = new CompoundEdit();
+				edit.add(new XIntervalEdit(xStartInterval, xInterval));
+				edit.add(new YIntervalEdit(yStartInterval, yInterval));
 			}
 			setXInterval(xInterval);
 			setYInterval(yInterval);
@@ -1348,29 +1385,12 @@ class FunctionDocument
 			{
 				switch (component)
 				{
-					case PLOT:
-						view.updatePlot();
-						break;
-
-					case BUTTONS:
-						view.updateButtons();
-						break;
-
-					case X_INTERVAL:
-						view.updateXInterval();
-						break;
-
-					case Y_INTERVAL:
-						view.updateYInterval();
-						break;
-
-					case INTERVALS:
-						view.updateIntervals();
-						break;
-
-					case FUNCTION_LIST:
-						view.updateFunctionList();
-						break;
+					case PLOT          -> view.updatePlot();
+					case BUTTONS       -> view.updateButtons();
+					case X_INTERVAL    -> view.updateXInterval();
+					case Y_INTERVAL    -> view.updateYInterval();
+					case INTERVALS     -> view.updateIntervals();
+					case FUNCTION_LIST -> view.updateFunctionList();
 				}
 			}
 		}
@@ -1378,13 +1398,13 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onUndo()
+	private EditList.IEdit onUndo()
 	{
-		Edit edit = editList.removeUndo();
+		EditList.IEdit edit = editList.removeUndo();
 		if (edit != null)
 		{
 			int selectedIndex = getSelectedIndex();
-			edit.undo(this);
+			edit.undo();
 			if (selectedIndex < getNumFunctions())
 				getFunctionList().setSelectedIndex(selectedIndex);
 			updateView(ViewComponent.PLOT, ViewComponent.INTERVALS);
@@ -1394,13 +1414,13 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onRedo()
+	private EditList.IEdit onRedo()
 	{
-		Edit edit = editList.removeRedo();
+		EditList.IEdit edit = editList.removeRedo();
 		if (edit != null)
 		{
 			int selectedIndex = getSelectedIndex();
-			edit.redo(this);
+			edit.redo();
 			if (selectedIndex < getNumFunctions())
 				getFunctionList().setSelectedIndex(selectedIndex);
 			updateView(ViewComponent.PLOT, ViewComponent.INTERVALS);
@@ -1410,7 +1430,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onClearEditList()
+	private EditList.IEdit onClearEditList()
 	{
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.CLEAR_STR);
 		if (JOptionPane.showOptionDialog(getWindow(), CLEAR_EDIT_LIST_STR, FuncPlotterApp.SHORT_NAME,
@@ -1425,13 +1445,13 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onEditComment()
+	private CommentEdit onEditComment()
 	{
-		Edit.Comment edit = null;
+		CommentEdit edit = null;
 		String text = CommentDialog.showDialog(getWindow(), COMMENT_STR, comment.getText());
 		if ((text != null) && !text.equals(comment.getText()))
 		{
-			edit = new Edit.Comment(comment.getText(), text);
+			edit = new CommentEdit(comment.getText(), text);
 			comment.setText(text);
 		}
 		return edit;
@@ -1439,9 +1459,9 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onAddFunction()
+	private AddEdit onAddFunction()
 	{
-		Edit edit = null;
+		AddEdit edit = null;
 		if (!isFull())
 		{
 			Color colour = AppConfig.INSTANCE.getFunctionColour(getNumFunctions());
@@ -1449,7 +1469,7 @@ class FunctionDocument
 			if (dialog.isAccepted())
 			{
 				Function function = new Function(dialog.getColour(), dialog.getExpression());
-				edit = new Edit.Add(getNumFunctions(), function);
+				edit = new AddEdit(getNumFunctions(), function);
 
 				getFunctionList().addElement(function);
 			}
@@ -1459,9 +1479,9 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onEditFunction()
+	private CompoundEdit onEditFunction()
 	{
-		Edit.Compound edit = null;
+		CompoundEdit edit = null;
 		int index = getSelectedIndex();
 		if (hasFunctions() && (index >= 0))
 		{
@@ -1472,9 +1492,9 @@ class FunctionDocument
 			if (dialog.isAccepted())
 			{
 				Function newFunction = new Function(dialog.getColour(), dialog.getExpression(), function.isHidden());
-				edit = new Edit.Compound();
-				edit.addEdit(new Edit.Remove(index, function));
-				edit.addEdit(new Edit.Add(index, newFunction));
+				edit = new CompoundEdit();
+				edit.add(new RemoveEdit(index, function));
+				edit.add(new AddEdit(index, newFunction));
 
 				getFunctionList().setElement(index, newFunction);
 			}
@@ -1484,7 +1504,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onCopyFunction()
+	private EditList.IEdit onCopyFunction()
 		throws AppException
 	{
 		int index = getSelectedIndex();
@@ -1495,7 +1515,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onViewFunction()
+	private EditList.IEdit onViewFunction()
 	{
 		getView().showViewFunctionMenu();
 		return null;
@@ -1503,7 +1523,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onToggleHighlightFunction()
+	private EditList.IEdit onToggleHighlightFunction()
 	{
 		int index = getSelectedIndex();
 		if (hasFunctions() && (index >= 0))
@@ -1519,7 +1539,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onToggleHideFunction()
+	private EditList.IEdit onToggleHideFunction()
 	{
 		int index = getSelectedIndex();
 		if (hasFunctions() && (index >= 0))
@@ -1534,9 +1554,9 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onDeleteFunction()
+	private RemoveEdit onDeleteFunction()
 	{
-		Edit edit = null;
+		RemoveEdit edit = null;
 		int index = getSelectedIndex();
 		if (hasFunctions() && (index >= 0))
 		{
@@ -1547,7 +1567,7 @@ class FunctionDocument
 				function.setHighlight(Function.Highlight.NONE);
 			updateView(ViewComponent.FUNCTION_LIST);
 
-			edit = new Edit.Remove(index, function);
+			edit = new RemoveEdit(index, function);
 
 			getFunctionList().removeElement(index);
 		}
@@ -1556,9 +1576,9 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onConfirmDeleteFunction()
+	private RemoveEdit onConfirmDeleteFunction()
 	{
-		Edit edit = null;
+		RemoveEdit edit = null;
 		String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
 		if (JOptionPane.showOptionDialog(getWindow(), DELETE_MESSAGE_STR,
 										 FuncPlotterApp.SHORT_NAME + " : " + DELETE_FUNCTION_STR,
@@ -1570,9 +1590,9 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onClearFunctions()
+	private CompoundEdit onClearFunctions()
 	{
-		Edit.Compound edit = null;
+		CompoundEdit edit = null;
 		String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
 		if (hasFunctions()
 				&& (JOptionPane.showOptionDialog(getWindow(), DELETE_ALL_MESSAGE_STR,
@@ -1580,9 +1600,9 @@ class FunctionDocument
 												 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 												 optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION))
 		{
-			edit = new Edit.Compound();
+			edit = new CompoundEdit();
 			for (int i = getNumFunctions() - 1; i >= 0; i--)
-				edit.addEdit(new Edit.Remove(i, getFunction(i)));
+				edit.add(new RemoveEdit(i, getFunction(i)));
 
 			getFunctionList().setElements((Function[])null);
 		}
@@ -1591,17 +1611,17 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onMoveFunction()
+	private CompoundEdit onMoveFunction()
 	{
-		Edit.Compound edit = null;
+		CompoundEdit edit = null;
 		int fromIndex = getSelectedIndex();
 		int toIndex = (Integer)Command.MOVE_FUNCTION.getValue(Command.Property.INDEX);
 		if (toIndex != fromIndex)
 		{
 			Function function = getFunction(fromIndex);
-			edit = new Edit.Compound();
-			edit.addEdit(new Edit.Remove(fromIndex, function));
-			edit.addEdit(new Edit.Add(toIndex, function));
+			edit = new CompoundEdit();
+			edit.add(new RemoveEdit(fromIndex, function));
+			edit.add(new AddEdit(toIndex, function));
 
 			getFunctionList().moveElement(fromIndex, toIndex);
 		}
@@ -1610,19 +1630,19 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onReverseFunctions()
+	private CompoundEdit onReverseFunctions()
 	{
-		Edit.Compound edit = null;
+		CompoundEdit edit = null;
 		if (getNumFunctions() > 1)
 		{
 			int selectedIndex = getSelectedIndex();
-			edit = new Edit.Compound();
+			edit = new CompoundEdit();
 			List<Function> reversedFunctions = new ArrayList<>(functions);
 			Collections.reverse(reversedFunctions);
 			for (int i = getNumFunctions() - 1; i >= 0; i--)
-				edit.addEdit(new Edit.Remove(i, getFunction(i)));
+				edit.add(new RemoveEdit(i, getFunction(i)));
 			for (int i = 0; i < getNumFunctions(); i++)
-				edit.addEdit(new Edit.Add(i, reversedFunctions.get(i)));
+				edit.add(new AddEdit(i, reversedFunctions.get(i)));
 
 			getFunctionList().setElements(reversedFunctions);
 			getFunctionList().setSelectedIndex(selectedIndex);
@@ -1632,7 +1652,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onScrollLeft()
+	private XIntervalEdit onScrollLeft()
 	{
 		double increment = getView().getPlotPanel().getXScrollIncrement();
 		return setXIntervalEdit(new PlotInterval(xInterval.getLowerEndpoint() - increment,
@@ -1641,7 +1661,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onScrollRight()
+	private XIntervalEdit onScrollRight()
 	{
 		double increment = getView().getPlotPanel().getXScrollIncrement();
 		return setXIntervalEdit(new PlotInterval(xInterval.getLowerEndpoint() + increment,
@@ -1650,7 +1670,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onScrollDown()
+	private YIntervalEdit onScrollDown()
 	{
 		double increment = getView().getPlotPanel().getYScrollIncrement();
 		return setYIntervalEdit(new PlotInterval(yInterval.getLowerEndpoint() - increment,
@@ -1659,7 +1679,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onScrollUp()
+	private YIntervalEdit onScrollUp()
 	{
 		double increment = getView().getPlotPanel().getYScrollIncrement();
 		return setYIntervalEdit(new PlotInterval(yInterval.getLowerEndpoint() + increment,
@@ -1668,9 +1688,9 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onCentreOnOrigin()
+	private CompoundEdit onCentreOnOrigin()
 	{
-		Edit.Compound edit = null;
+		CompoundEdit edit = null;
 		double halfWidth = xInterval.getHalfInterval();
 		PlotInterval newXInterval = new PlotInterval(-halfWidth, halfWidth);
 
@@ -1679,9 +1699,9 @@ class FunctionDocument
 
 		if (newXInterval.isValid() && newYInterval.isValid())
 		{
-			edit = new Edit.Compound();
-			edit.addEdit(new Edit.XInterval(xInterval, newXInterval));
-			edit.addEdit(new Edit.YInterval(yInterval, newYInterval));
+			edit = new CompoundEdit();
+			edit.add(new XIntervalEdit(xInterval, newXInterval));
+			edit.add(new YIntervalEdit(yInterval, newYInterval));
 
 			setIntervals(newXInterval, newYInterval);
 		}
@@ -1692,7 +1712,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onXZoomOut()
+	private XIntervalEdit onXZoomOut()
 	{
 		double median = xInterval.getMedian();
 		double halfInterval = xInterval.getHalfInterval() * FunctionView.getXZoomFactor();
@@ -1701,7 +1721,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onXZoomIn()
+	private XIntervalEdit onXZoomIn()
 	{
 		double median = xInterval.getMedian();
 		double halfInterval = xInterval.getHalfInterval() / FunctionView.getXZoomFactor();
@@ -1710,7 +1730,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onYZoomOut()
+	private YIntervalEdit onYZoomOut()
 	{
 		double median = yInterval.getMedian();
 		double halfInterval = yInterval.getHalfInterval() * FunctionView.getYZoomFactor();
@@ -1719,7 +1739,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onYZoomIn()
+	private YIntervalEdit onYZoomIn()
 	{
 		double median = yInterval.getMedian();
 		double halfInterval = yInterval.getHalfInterval() / FunctionView.getYZoomFactor();
@@ -1728,21 +1748,21 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onSetXInterval()
+	private XIntervalEdit onSetXInterval()
 	{
 		return setXIntervalEdit((PlotInterval)Command.SET_X_INTERVAL.getValue(Command.Property.X_INTERVAL));
 	}
 
 	//------------------------------------------------------------------
 
-	private Edit onSetYInterval()
+	private YIntervalEdit onSetYInterval()
 	{
 		return setYIntervalEdit((PlotInterval)Command.SET_Y_INTERVAL.getValue(Command.Property.Y_INTERVAL));
 	}
 
 	//------------------------------------------------------------------
 
-	private Edit onSetIntervals()
+	private CompoundEdit onSetIntervals()
 	{
 		Command command = Command.SET_INTERVALS;
 		PlotInterval xInterval = (PlotInterval)command.getValue(Command.Property.X_INTERVAL);
@@ -1753,7 +1773,7 @@ class FunctionDocument
 
 	//------------------------------------------------------------------
 
-	private Edit onToggleShowGrid()
+	private EditList.IEdit onToggleShowGrid()
 	{
 		PlotPanel plotPanel = getView().getPlotPanel();
 		plotPanel.setGridVisible(!plotPanel.isGridVisible());
@@ -2282,362 +2302,56 @@ class FunctionDocument
 
 	//==================================================================
 
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
 
-	// CLASS: EDIT
+
+	// ADD FUNCTION EDIT CLASS
 
 
-	public static abstract class Edit
+	private class AddEdit
+		implements EditList.IEdit
 	{
 
 	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
-
-		// ADD FUNCTION EDIT CLASS
-
-
-		private static class Add
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	int			index;
-			private	Function	function;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Add(int      index,
-						Function function)
-			{
-				this.index = index;
-				this.function = function.clone();
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(FunctionDocument document)
-			{
-				document.getFunctionList().removeElement(index);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(FunctionDocument document)
-			{
-				document.getFunctionList().addElement(index, function);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-
-		// REMOVE FUNCTION EDIT CLASS
-
-
-		private static class Remove
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	int			index;
-			private	Function	function;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Remove(int      index,
-						   Function function)
-			{
-				this.index = index;
-				this.function = function.clone();
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(FunctionDocument document)
-			{
-				document.getFunctionList().addElement(index, function);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(FunctionDocument document)
-			{
-				document.getFunctionList().removeElement(index);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-
-		// CLASS: X INTERVAL EDIT
-
-
-		private static class XInterval
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	PlotInterval	oldInterval;
-			private	PlotInterval	newInterval;
-			private	long			timestamp;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private XInterval(PlotInterval oldInterval,
-							  PlotInterval newInterval)
-			{
-				this.oldInterval = new PlotInterval(oldInterval);
-				this.newInterval = new PlotInterval(newInterval);
-				timestamp = System.currentTimeMillis();
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(FunctionDocument document)
-			{
-				document.setXInterval(oldInterval);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(FunctionDocument document)
-			{
-				document.setXInterval(newInterval);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-
-		// CLASS: Y INTERVAL EDIT
-
-
-		private static class YInterval
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	PlotInterval	oldInterval;
-			private	PlotInterval	newInterval;
-			private	long			timestamp;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private YInterval(PlotInterval oldInterval,
-							  PlotInterval newInterval)
-			{
-				this.oldInterval = new PlotInterval(oldInterval);
-				this.newInterval = new PlotInterval(newInterval);
-				timestamp = System.currentTimeMillis();
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(FunctionDocument document)
-			{
-				document.setYInterval(oldInterval);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(FunctionDocument document)
-			{
-				document.setYInterval(newInterval);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-
-		// CLASS: COMMENT EDIT
-
-
-		private static class Comment
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	String	oldText;
-			private	String	newText;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Comment(String oldText,
-							String newText)
-			{
-				this.oldText = oldText;
-				this.newText = newText;
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(FunctionDocument document)
-			{
-				document.comment.setText(oldText);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(FunctionDocument document)
-			{
-				document.comment.setText(newText);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-
-		// CLASS: COMPOUND EDIT
-
-
-		private static class Compound
-			extends Edit
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Instance variables
-		////////////////////////////////////////////////////////////////
-
-			private	List<Edit>	edits;
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private Compound()
-			{
-				edits = new ArrayList<>();
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected void undo(FunctionDocument document)
-			{
-				for (int i = edits.size() - 1; i >= 0; i--)
-					edits.get(i).undo(document);
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void redo(FunctionDocument document)
-			{
-				for (Edit edit : edits)
-					edit.redo(document);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods
-		////////////////////////////////////////////////////////////////
-
-			public void addEdit(Edit edit)
-			{
-				edits.add(edit);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
+		private	int			index;
+		private	Function	function;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private Edit()
+		private AddEdit(
+			int			index,
+			Function	function)
 		{
+			this.index = index;
+			this.function = function.clone();
 		}
 
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
+	//  Instance methods : EditList.IEdit interface
 	////////////////////////////////////////////////////////////////////
 
-		protected abstract void undo(FunctionDocument document);
+		@Override
+		public void undo()
+		{
+			getFunctionList().removeElement(index);
+		}
 
 		//--------------------------------------------------------------
 
-		protected abstract void redo(FunctionDocument document);
+		@Override
+		public void redo()
+		{
+			getFunctionList().addElement(index, function);
+		}
 
 		//--------------------------------------------------------------
 
@@ -2646,41 +2360,264 @@ class FunctionDocument
 	//==================================================================
 
 
-	// CLASS: EDIT LIST
+	// REMOVE FUNCTION EDIT CLASS
 
 
-	private static class EditList
-		extends LinkedList<Edit>
+	private class RemoveEdit
+		implements EditList.IEdit
 	{
 
 	////////////////////////////////////////////////////////////////////
 	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
-		private	int	maxLength;
-		private	int	currentIndex;
-		private	int	unchangedIndex;
+		private	int			index;
+		private	Function	function;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private EditList()
+		private RemoveEdit(
+			int			index,
+			Function	function)
 		{
-			maxLength = AppConfig.INSTANCE.getMaxEditListLength();
+			this.index = index;
+			this.function = function.clone();
 		}
 
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
+	//  Instance methods : EditList.IEdit interface
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		public void clear()
+		public void undo()
 		{
-			super.clear();
-			unchangedIndex = currentIndex = 0;
+			getFunctionList().addElement(index, function);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			getFunctionList().removeElement(index);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: X INTERVAL EDIT
+
+
+	private class XIntervalEdit
+		implements EditList.IEdit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	PlotInterval	oldInterval;
+		private	PlotInterval	newInterval;
+		private	long			timestamp;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private XIntervalEdit(
+			PlotInterval	oldInterval,
+			PlotInterval	newInterval)
+		{
+			this.oldInterval = new PlotInterval(oldInterval);
+			this.newInterval = new PlotInterval(newInterval);
+			timestamp = System.currentTimeMillis();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : EditList.IEdit interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void undo()
+		{
+			setXInterval(oldInterval);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			setXInterval(newInterval);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: Y INTERVAL EDIT
+
+
+	private class YIntervalEdit
+		implements EditList.IEdit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	PlotInterval	oldInterval;
+		private	PlotInterval	newInterval;
+		private	long			timestamp;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private YIntervalEdit(
+			PlotInterval	oldInterval,
+			PlotInterval	newInterval)
+		{
+			this.oldInterval = new PlotInterval(oldInterval);
+			this.newInterval = new PlotInterval(newInterval);
+			timestamp = System.currentTimeMillis();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : EditList.IEdit interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void undo()
+		{
+			setYInterval(oldInterval);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			setYInterval(newInterval);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: COMMENT EDIT
+
+
+	private class CommentEdit
+		implements EditList.IEdit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	oldText;
+		private	String	newText;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CommentEdit(
+			String	oldText,
+			String	newText)
+		{
+			this.oldText = oldText;
+			this.newText = newText;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : EditList.IEdit interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void undo()
+		{
+			comment.setText(oldText);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			comment.setText(newText);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: COMPOUND EDIT
+
+
+	private class CompoundEdit
+		implements EditList.IEdit
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	List<EditList.IEdit>	edits;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CompoundEdit()
+		{
+			edits = new ArrayList<>();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : EditList.IEdit interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void undo()
+		{
+			for (int i = edits.size() - 1; i >= 0; i--)
+				edits.get(i).undo();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void redo()
+		{
+			for (EditList.IEdit edit : edits)
+				edit.redo();
 		}
 
 		//--------------------------------------------------------------
@@ -2689,120 +2626,9 @@ class FunctionDocument
 	//  Instance methods
 	////////////////////////////////////////////////////////////////////
 
-		private Edit removeUndo()
+		public void add(EditList.IEdit edit)
 		{
-			return canUndo() ? get(--currentIndex) : null;
-		}
-
-		//--------------------------------------------------------------
-
-		private Edit removeRedo()
-		{
-			return canRedo() ? get(currentIndex++) : null;
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean canUndo()
-		{
-			return (currentIndex > 0);
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean canRedo()
-		{
-			return (currentIndex < size());
-		}
-
-		//--------------------------------------------------------------
-
-		private boolean isChanged()
-		{
-			return (currentIndex != unchangedIndex);
-		}
-
-		//--------------------------------------------------------------
-
-		private void addEdit(Edit edit)
-		{
-			// Remove redos
-			while (size() > currentIndex)
-				removeLast();
-
-			// Preserve changed status if unchanged state cannot be recovered
-			if (unchangedIndex > currentIndex)
-				unchangedIndex = -1;
-
-			// Merge intervals
-			mergeXIntervals(edit);
-			mergeYIntervals(edit);
-
-			// Remove oldest edits while list is full
-			while (size() >= maxLength)
-			{
-				removeFirst();
-				if (--unchangedIndex < 0)
-					unchangedIndex = -1;
-				if (--currentIndex < 0)
-					currentIndex = 0;
-			}
-
-			// Add new edit
-			add(edit);
-			++currentIndex;
-		}
-
-		//--------------------------------------------------------------
-
-		private void reset()
-		{
-			while (size() > currentIndex)
-				removeLast();
-
-			unchangedIndex = currentIndex;
-		}
-
-		//--------------------------------------------------------------
-
-		private void mergeXIntervals(Edit edit)
-		{
-			if (edit instanceof Edit.XInterval)
-			{
-				Edit.XInterval currEdit = (Edit.XInterval)edit;
-				while (canUndo())
-				{
-					if (!(getLast() instanceof Edit.XInterval))
-						break;
-					Edit.XInterval prevEdit = (Edit.XInterval)getLast();
-					if (currEdit.timestamp - prevEdit.timestamp > MERGE_INTERVAL_EDITS_INTERVAL)
-						break;
-					currEdit.oldInterval = prevEdit.oldInterval;
-					removeLast();
-					--currentIndex;
-				}
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void mergeYIntervals(Edit edit)
-		{
-			if (edit instanceof Edit.YInterval)
-			{
-				Edit.YInterval currEdit = (Edit.YInterval)edit;
-				while (canUndo())
-				{
-					if (!(getLast() instanceof Edit.YInterval))
-						break;
-					Edit.YInterval prevEdit = (Edit.YInterval)getLast();
-					if (currEdit.timestamp - prevEdit.timestamp > MERGE_INTERVAL_EDITS_INTERVAL)
-						break;
-					currEdit.oldInterval = prevEdit.oldInterval;
-					removeLast();
-					--currentIndex;
-				}
-			}
+			edits.add(edit);
 		}
 
 		//--------------------------------------------------------------
