@@ -463,9 +463,6 @@ class FunctionDocument
 		progressView.setInfo(READING_STR, file);
 		progressView.setProgress(0, 0.0);
 
-		// Run garbage collector to maximise available memory
-		System.gc();
-
 		// Read file
 		TextFile textFile = new TextFile(file, StandardCharsets.UTF_8);
 		textFile.addProgressListener(progressView);
@@ -1436,10 +1433,7 @@ class FunctionDocument
 		if (JOptionPane.showOptionDialog(getWindow(), CLEAR_EDIT_LIST_STR, FuncPlotterApp.SHORT_NAME,
 										 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 										 optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION)
-		{
 			editList.clear();
-			System.gc();
-		}
 		return null;
 	}
 
