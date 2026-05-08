@@ -14,8 +14,8 @@ Styles for FuncPlotter manual
 }
 
 table.operation {
-  margin-left: 2.5%;
-  margin-right: 2.5%;
+  margin-left: 2.0em;
+  margin-right: 2.0em;
 }
 table.operation td {
   border: 1px solid;
@@ -26,8 +26,8 @@ table.operation td code {
 }
 
 table.simpleOperand {
-  margin-left: 2.5%;
-  margin-right: 2.5%;
+  margin-left: 2.0em;
+  margin-right: 2.0em;
 }
 table.simpleOperand td {
   border: 1px solid;
